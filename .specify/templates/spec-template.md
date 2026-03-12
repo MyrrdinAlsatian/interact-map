@@ -95,6 +95,14 @@
 - **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
 - **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
 
+### Constitution Alignment *(mandatory)*
+
+- **CA-001 Scope Mapping**: Each user story MUST map to a clear user-visible outcome.
+- **CA-002 Runtime Boundaries**: Any move beyond static web delivery MUST be explicitly approved in requirements.
+- **CA-003 Verification Plan**: The spec MUST define how each story is independently verified.
+- **CA-004 Documentation Impact**: The spec MUST identify which docs change when behavior changes.
+- **CA-005 Complexity Justification**: New dependencies or architecture layers MUST include a necessity rationale.
+
 ### Key Entities *(include if feature involves data)*
 
 - **[Entity 1]**: [What it represents, key attributes without implementation]

@@ -31,7 +31,11 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- Scope-first: Planned work maps to explicit user-visible outcomes from the spec; non-essential scope is deferred.
+- Standards baseline: Technical choices preserve static web delivery unless the spec explicitly approves expansion.
+- Verification: A concrete validation approach is listed (manual checks and any available lint/test/build steps).
+- Documentation: Required docs updates are identified (`README.md`, quickstart, or spec notes).
+- Simplicity: Added dependencies/layers are justified in Complexity Tracking when introduced.
 
 ## Project Structure
 
