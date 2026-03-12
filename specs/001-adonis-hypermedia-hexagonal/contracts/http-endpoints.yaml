@@ -1,0 +1,87 @@
+openapi: 3.0.3
+info:
+  title: Hypermedia Architecture API Contract
+  version: 0.1.0
+paths:
+  /health:
+    get:
+      summary: Health probe
+      responses:
+        '200':
+          description: Service healthy
+  /users:
+    get:
+      summary: Get all users
+      responses:
+        '200':
+          description: User list
+  /users/register:
+    post:
+      summary: Register user (development auth flow)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, displayName, password]
+              properties:
+                email: { type: string, format: email }
+                displayName: { type: string }
+                password: { type: string, minLength: 8 }
+      responses:
+        '201':
+          description: User created
+        '400':
+          description: Validation error
+  /graph/simulate-incident:
+    post:
+      summary: Simulate graph impact from a failing node
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [projectId, failedNodeId]
+              properties:
+                projectId: { type: string }
+                failedNodeId: { type: string }
+                traversal:
+                  type: string
+                  enum: [bfs, dfs]
+      responses:
+        '200':
+          description: Incident impact result
+components:
+  schemas:
+    GraphModel:
+      type: object
+      required: [nodes, edges]
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/GraphNode'
+        edges:
+          type: array
+          items:
+            $ref: '#/components/schemas/GraphEdge'
+    GraphNode:
+      type: object
+      required: [id, type, label]
+      properties:
+        id: { type: string }
+        type: { type: string, enum: [application, service, container, server, external] }
+        label: { type: string }
+        metadata: { type: object, additionalProperties: true }
+    GraphEdge:
+      type: object
+      required: [id, source, target, criticality]
+      properties:
+        id: { type: string }
+        source: { type: string }
+        target: { type: string }
+        criticality: { type: string, enum: [critical, high, medium, low] }
+        dependencyType: { type: string, enum: [required, optional, async, cache] }
+        protocol: { type: string }
