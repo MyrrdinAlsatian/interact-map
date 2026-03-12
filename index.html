@@ -3,10 +3,92 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Interactive Map - Hello World</title>
+    <title>System Architecture Mapping Platform</title>
+    <script src="https://unpkg.com/unpoly@3.8.0/unpoly.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/unpoly@3.8.0/unpoly.min.css" />
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 0;
+        background: #f8f9fa;
+        color: #212529;
+      }
+      header {
+        background: #ffffff;
+        border-bottom: 1px solid #dee2e6;
+        padding: 14px 18px;
+      }
+      main {
+        padding: 18px;
+      }
+      .card {
+        background: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .controls {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      input,
+      select,
+      button {
+        padding: 8px;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+      }
+      nav a {
+        margin-right: 8px;
+      }
+    </style>
   </head>
   <body>
-    <h1>Hello World</h1>
-    <p>Interactive map project scaffold is ready.</p>
+    <header>
+      <h1>System Architecture Mapping Platform</h1>
+      <p>Server-driven hypermedia + Web Components capability islands.</p>
+      <nav>
+        <a href="backend/resources/views/graph/index.edge">Graph (server template)</a>
+        <a href="docs/system-architecture-overview.md">Architecture overview</a>
+        <a href="database/schema.sql">SQL schema</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Graph Capability Island Demo</h2>
+        <p>This demo loads a framework-agnostic graph model and renders it through the X6 adapter.</p>
+
+        <architecture-graph id="architectureGraph" height="560px"></architecture-graph>
+
+        <div class="controls">
+          <input id="nodeInput" placeholder="Failed node id (example: app-orders)" />
+          <select id="modeSelect">
+            <option value="bfs">BFS</option>
+            <option value="dfs">DFS</option>
+          </select>
+          <button id="simulateButton" type="button">Simulate incident impact</button>
+        </div>
+
+        <pre id="output" aria-live="polite"></pre>
+      </section>
+    </main>
+
+    <script type="module">
+      import './frontend/components/architecture-graph.js';
+
+      const graphElement = document.getElementById('architectureGraph');
+      const output = document.getElementById('output');
+      const dataset = await fetch('./examples/project-dataset.json').then((response) => response.json());
+      graphElement.loadGraph(dataset.graph);
+
+      document.getElementById('simulateButton').addEventListener('click', () => {
+        const nodeId = document.getElementById('nodeInput').value;
+        const mode = document.getElementById('modeSelect').value;
+        const result = graphElement.simulateIncident(nodeId, mode);
+        output.textContent = JSON.stringify(result, null, 2);
+      });
+    </script>
   </body>
 </html>

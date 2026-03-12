@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "#entity/*": ["src/domain/models/*"],
+      "#domain/*": ["src/domain/*"],
+      "#infrastructure/*": ["src/infrastructure/*"],
+      "#controllers/*": ["src/infrastructure/controllers/*"],
+      "#exceptions/*": ["src/infrastructure/exceptions/*"],
+      "#listeners/*": ["src/infrastructure/listeners/*"],
+      "#events/*": ["src/infrastructure/events/*"],
+      "#middleware/*": ["src/infrastructure/middleware/*"],
+      "#providers/*": ["providers/*"],
+      "#services/*": ["services/*"],
+      "#policies/*": ["policies/*"],
+      "#abilities/*": ["abilities/*"],
+      "#database/*": ["database/*"],
+      "#tests/*": ["tests/*"],
+      "#config/*": ["config/*"]
+    },
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": ["src", "config", "bin", "tests", "providers", "adonisrc.ts"]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "well-cooking-api",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#entity/*": "./src/domain/models/*.js",
+    "#domain/*": "./src/domain/*.js",
+    "#infrastructure/*": "./src/infrastructure/*.js",
+    "#controllers/*": "./src/infrastructure/controllers/*.js",
+    "#exceptions/*": "./src/infrastructure/exceptions/*.js",
+    "#listeners/*": "./src/infrastructure/listeners/*.js",
+    "#events/*": "./src/infrastructure/events/*.js",
+    "#middleware/*": "./src/infrastructure/middleware/*.js",
+    "#providers/*": "./providers/*.js",
+    "#services/*": "./services/*.js",
+    "#policies/*": "./policies/*.js",
+    "#abilities/*": "./abilities/*.js",
+    "#database/*": "./database/*.js",
+    "#tests/*": "./tests/*.js",
+    "#config/*": "./config/*.js"
+  },
+  "scripts": {
+    "dev": "node ace.js serve --watch",
+    "start": "node ace.js serve",
+    "test": "node --test tests/unit/**/*.spec.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@adonisjs/auth": "^9.3.0",
+    "@adonisjs/core": "^6.13.1",
+    "@adonisjs/lucid": "^21.3.0",
+    "pg": "^8.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.15",
+    "typescript": "^5.9.3"
+  }
+}
