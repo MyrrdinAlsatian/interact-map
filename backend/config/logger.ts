@@ -1,31 +1,35 @@
-/**
- * Structured logger configuration.
- *
- * Fields emitted on every log record:
- *   - level     — debug | info | warn | error
- *   - timestamp — ISO-8601
- *   - feature   — constant tag for this feature branch
- *
- * Application code emits structured events using ctx.logger or the global pino instance.
- * Key events:
- *   - request.received  — { method, url, actorId }
- *   - fragment.resolved — { target, statusCode }
- *   - fragment.error    — { target, code }
- *   - contract.valid    — { schemaVersion }
- *   - contract.invalid  — { schemaVersion, errorCount }
- *   - incident.simulated — { projectId, failedNodeId, traversal, impactedCount }
- *   - parser.success    — { sourceType, nodeCount, edgeCount }
- *   - parser.error      — { sourceType, errorCount }
- */
-export default {
-  enabled: true,
-  level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
-  format: process.env.LOG_FORMAT === 'json' ? 'json' : 'pretty',
-  timestamp: true,
-  prettyPrint: process.env.NODE_ENV === 'development',
-  defaultMeta: {
-    feature: '001-adonis-hypermedia-hexagonal',
-    service: 'interact-map-backend',
-  },
-}
+import env from '#infrastructure/adonis/env'
+import app from '@adonisjs/core/services/app'
+import { defineConfig, targets } from '@adonisjs/core/logger'
 
+const loggerConfig = defineConfig({
+  default: 'app',
+
+  /**
+   * The loggers object can be used to define multiple loggers.
+   * By default, we configure only one logger (named "app").
+   */
+  loggers: {
+    app: {
+      enabled: true,
+      name: env.get('APP_NAME'),
+      level: env.get('LOG_LEVEL'),
+      transport: {
+        targets: targets()
+          .pushIf(!app.inProduction, targets.pretty())
+          .pushIf(app.inProduction, targets.file({ destination: 1 }))
+          .toArray(),
+      },
+    },
+  },
+})
+
+export default loggerConfig
+
+/**
+ * Inferring types for the list of loggers you have configured
+ * in your application.
+ */
+declare module '@adonisjs/core/types' {
+  export interface LoggersList extends InferLoggers<typeof loggerConfig> {}
+}

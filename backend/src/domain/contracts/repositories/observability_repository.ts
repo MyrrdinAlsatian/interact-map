@@ -1,4 +1,4 @@
-import type { ActorRole, AuditOutcome } from '#domain/contracts/dto/graph_contract_dto.js'
+import type { ActorRole, AuditOutcome } from '#domain/contracts/dto/graph_contract_dto'
 
 export interface CoreMetrics {
   request_latency_ms: number

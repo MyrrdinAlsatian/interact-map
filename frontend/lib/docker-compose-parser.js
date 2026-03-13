@@ -1,5 +1,5 @@
 import YAML from 'https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/+esm';
-import { validateParserInput, buildParserResult } from './parser-contract.js';
+import { validateParserInput, buildParserResult } from './parser-contract';
 
 function normalizePorts(ports) {
   if (!Array.isArray(ports)) {

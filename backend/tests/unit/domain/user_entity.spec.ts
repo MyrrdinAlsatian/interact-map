@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { User } from '#entity/user.js'
+import { User } from '#entity/user'
 
 test('User entity keeps payload', () => {
   const user = new User({

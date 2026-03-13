@@ -1,6 +1,6 @@
-import { RegisterUserUseCase } from '#domain/usecases/register_user_usecase.js'
-import { InMemoryUserRepository } from '#infrastructure/repositories/inmemory_user_repository.js'
-import { observabilityRepository } from '#repositories/observability_repository.js'
+import { RegisterUserUseCase } from '#domain/usecases/register_user_usecase'
+import { InMemoryUserRepository } from '#infrastructure/repositories/inmemory_user_repository'
+import { observabilityRepository } from '#repositories/observability_repository'
 
 export default class UsersController {
   async register({ request, response }: { request: any; response: any }) {

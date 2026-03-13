@@ -1,7 +1,7 @@
-import { ImportParserResultUseCase } from '#domain/usecases/import_parser_result_usecase.js'
-import { observabilityRepository } from '#repositories/observability_repository.js'
-import type { ParserResult } from '#domain/contracts/dto/parser_contract_dto.js'
-import type { GraphContract } from '#domain/contracts/dto/graph_contract_dto.js'
+import { ImportParserResultUseCase } from '#domain/usecases/import_parser_result_usecase'
+import { observabilityRepository } from '#repositories/observability_repository'
+import type { ParserResult } from '#domain/contracts/dto/parser_contract_dto'
+import type { GraphContract } from '#domain/contracts/dto/graph_contract_dto'
 
 const importParserResult = new ImportParserResultUseCase()
 

@@ -1,33 +1,54 @@
 {
+  "extends": "@adonisjs/tsconfig/tsconfig.app.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "baseUrl": ".",
+    "rootDir": "./",
+    "outDir": "./build",
     "paths": {
-      "#entity/*": ["src/domain/models/*"],
-      "#domain/*": ["src/domain/*"],
-      "#usecases/*": ["src/domain/usecases/*"],
-      "#contracts/*": ["src/domain/contracts/*"],
-      "#infrastructure/*": ["src/infrastructure/*"],
-      "#controllers/*": ["src/infrastructure/controllers/*"],
-      "#exceptions/*": ["src/infrastructure/exceptions/*"],
-      "#listeners/*": ["src/infrastructure/listeners/*"],
-      "#events/*": ["src/infrastructure/events/*"],
-      "#middleware/*": ["src/infrastructure/middleware/*"],
-      "#repositories/*": ["src/infrastructure/repositories/*"],
-      "#providers/*": ["providers/*"],
-      "#services/*": ["services/*"],
-      "#policies/*": ["policies/*"],
-      "#abilities/*": ["abilities/*"],
-      "#database/*": ["database/*"],
-      "#tests/*": ["tests/*"],
-      "#config/*": ["config/*"]
-    },
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "types": ["node"]
-  },
-  "include": ["src", "config", "bin", "tests", "providers", "adonisrc.ts"]
+      "#entity/*": [
+        "./src/domain/models/*.js"
+      ],
+      "#domain/*": [
+        "./src/domain/*.js"
+      ],
+      "#infrastructure/*": [
+        "./src/infrastructure/*.js"
+      ],
+      "#controllers/*": [
+        "./src/infrastructure/controllers/*.js"
+      ],
+      "#exceptions/*": [
+        "./src/infrastructure/exceptions/*.js"
+      ],
+      "#listeners/*": [
+        "./src/infrastructure/listeners/*.js"
+      ],
+      "#events/*": [
+        "./src/infrastructure/events/*.js"
+      ],
+      "#middleware/*": [
+        "./src/infrastructure/middleware/*.js"
+      ],
+      "#providers/*": [
+        "./providers/*.js"
+      ],
+      "#services/*": [
+        "./services/*.js"
+      ],
+      "#policies/*": [
+        "./policies/*.js"
+      ],
+      "#abilities/*": [
+        "./abilities/*.js"
+      ],
+      "#database/*": [
+        "./database/*.js"
+      ],
+      "#tests/*": [
+        "./tests/*.js"
+      ],
+      "#config/*": [
+        "./config/*.js"
+      ]
+    }
+  }
 }

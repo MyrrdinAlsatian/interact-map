@@ -1,5 +1,5 @@
-import { ROLE_HIERARCHY } from '#infrastructure/adonis/kernel.js'
-import type { ActorRole } from '#domain/contracts/dto/graph_contract_dto.js'
+import { ROLE_HIERARCHY } from '#infrastructure/adonis/kernel'
+import type { ActorRole } from '#domain/contracts/dto/graph_contract_dto'
 
 /**
  * Requires a valid authenticated user on the request context.

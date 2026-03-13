@@ -4,7 +4,7 @@ import type {
   CoreMetrics,
   AuditLogEntry,
   AuditEventInput,
-} from '#domain/contracts/repositories/observability_repository.js'
+} from '#domain/contracts/repositories/observability_repository'
 
 class InMemoryObservabilityRepository implements ObservabilityRepository {
   private latencySamples: number[] = []

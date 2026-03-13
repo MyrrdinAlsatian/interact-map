@@ -1,5 +1,5 @@
-import type { GraphContract, ContractError } from '#domain/contracts/dto/graph_contract_dto.js'
-import { ValidateContractVersionUseCase } from '#domain/usecases/validate_contract_version_usecase.js'
+import type { GraphContract, ContractError } from '#domain/contracts/dto/graph_contract_dto'
+import { ValidateContractVersionUseCase } from '#domain/usecases/validate_contract_version_usecase'
 
 const VALID_NODE_TYPES = ['application', 'service', 'container', 'server', 'external'] as const
 const VALID_CRITICALITY = ['critical', 'high', 'medium', 'low'] as const

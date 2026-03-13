@@ -1,5 +1,5 @@
-import { InMemoryUserRepository } from '#infrastructure/repositories/inmemory_user_repository.js'
-import { GetAllUserUseCase } from '#domain/usecases/getall_user_usecase.js'
+import { InMemoryUserRepository } from '#infrastructure/repositories/inmemory_user_repository'
+import { GetAllUserUseCase } from '#domain/usecases/getall_user_usecase'
 
 export default class GetAllUserController {
   async handle({ response }: { response: any }) {

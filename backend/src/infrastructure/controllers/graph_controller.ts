@@ -1,6 +1,6 @@
-import type { GraphContract } from '#domain/contracts/dto/graph_contract_dto.js'
-import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_contract_usecase.js'
-import { observabilityRepository } from '#repositories/observability_repository.js'
+import type { GraphContract } from '#domain/contracts/dto/graph_contract_dto'
+import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_contract_usecase'
+import { observabilityRepository } from '#repositories/observability_repository'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 

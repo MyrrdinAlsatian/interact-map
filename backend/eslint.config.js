@@ -1,28 +1,8 @@
-import tsParser from '@typescript-eslint/parser'
+import { configApp } from '@adonisjs/eslint-config'
 
 export default [
   {
-    ignores: ['node_modules/**', 'dist/**', 'build/**', 'coverage/**', '**/*.min.js'],
+    ignores: ['database/migrations/**/*', '.adonisjs/**/*'],
   },
-  {
-    files: ['**/*.js'],
-    languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-    },
-    rules: {
-      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-    },
-  },
-  {
-    files: ['**/*.ts'],
-    languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      parser: tsParser,
-    },
-    rules: {
-      'no-unused-vars': 'off',
-    },
-  },
+  ...configApp(),
 ]

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
-import { User } from '#entity/user.js'
-import type { RegisterUserDto } from '#domain/contracts/dto/register_user_dto.js'
-import type { UserRepository } from '#domain/contracts/repositories/user_repository.js'
+import { User } from '#entity/user'
+import type { RegisterUserDto } from '#domain/contracts/dto/register_user_dto'
+import type { UserRepository } from '#domain/contracts/repositories/user_repository'
 
 const users: User[] = []
 

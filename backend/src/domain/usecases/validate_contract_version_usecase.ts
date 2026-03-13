@@ -1,5 +1,5 @@
-import { SUPPORTED_SCHEMA_VERSIONS } from '#domain/contracts/dto/graph_contract_dto.js'
-import type { ContractError } from '#domain/contracts/dto/graph_contract_dto.js'
+import { SUPPORTED_SCHEMA_VERSIONS } from '#domain/contracts/dto/graph_contract_dto'
+import type { ContractError } from '#domain/contracts/dto/graph_contract_dto'
 
 export interface ContractVersionValidationResult {
   valid: boolean

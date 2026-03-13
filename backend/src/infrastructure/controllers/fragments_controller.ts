@@ -1,4 +1,4 @@
-import { observabilityRepository } from '#repositories/observability_repository.js'
+import { observabilityRepository } from '#repositories/observability_repository'
 
 /**
  * FragmentsController — resolves named server-rendered fragments for Unpoly requests.

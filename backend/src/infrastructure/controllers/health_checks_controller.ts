@@ -1,4 +1,4 @@
-import { getHealthStatus } from '#infrastructure/adonis/health.js'
+import { getHealthStatus } from '#infrastructure/adonis/health'
 
 export default class HealthChecksController {
   async handle({ response }: { response: any }) {

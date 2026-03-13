@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
-import type { RegisterUserDto } from '#domain/contracts/dto/register_user_dto.js'
-import type { UserRepository } from '#domain/contracts/repositories/user_repository.js'
+import type { RegisterUserDto } from '#domain/contracts/dto/register_user_dto'
+import type { UserRepository } from '#domain/contracts/repositories/user_repository'
 
 export class RegisterUserUseCase {
   #repository: UserRepository

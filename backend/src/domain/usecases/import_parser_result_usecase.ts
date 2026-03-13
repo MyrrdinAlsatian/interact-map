@@ -1,7 +1,7 @@
-import type { ParserResult } from '#domain/contracts/dto/parser_contract_dto.js'
-import type { GraphContract, ContractError } from '#domain/contracts/dto/graph_contract_dto.js'
-import { ValidateContractVersionUseCase } from '#domain/usecases/validate_contract_version_usecase.js'
-import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_contract_usecase.js'
+import type { ParserResult } from '#domain/contracts/dto/parser_contract_dto'
+import type { GraphContract, ContractError } from '#domain/contracts/dto/graph_contract_dto'
+import { ValidateContractVersionUseCase } from '#domain/usecases/validate_contract_version_usecase'
+import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_contract_usecase'
 
 export interface ImportParserResultOutput {
   merged: GraphContract

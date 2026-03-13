@@ -1,4 +1,4 @@
-import { validateParserInput, buildParserResult } from './parser-contract.js';
+import { validateParserInput, buildParserResult } from './parser-contract';
 
 /**
  * Parses a `docker ps --format json` array into a canonical ParserResult.

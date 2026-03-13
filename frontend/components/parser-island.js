@@ -1,7 +1,7 @@
-import { validateParserInput } from '../lib/parser-contract.js';
-import { parseDockerCompose } from '../lib/docker-compose-parser.js';
-import { parseDockerInspect } from '../lib/docker-inspect-parser.js';
-import { parseDockerPsJson } from '../lib/docker-ps-parser.js';
+import { validateParserInput } from '../lib/parser-contract';
+import { parseDockerCompose } from '../lib/docker-compose-parser';
+import { parseDockerInspect } from '../lib/docker-inspect-parser';
+import { parseDockerPsJson } from '../lib/docker-ps-parser';
 
 /**
  * parser-island — Web Component for parsing infrastructure source formats into canonical graph contracts.

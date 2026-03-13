@@ -1,4 +1,4 @@
-import { validateParserInput, buildParserResult } from './parser-contract.js';
+import { validateParserInput, buildParserResult } from './parser-contract';
 
 function parsePorts(networkSettings = {}) {
   const portMap = networkSettings.Ports || {};

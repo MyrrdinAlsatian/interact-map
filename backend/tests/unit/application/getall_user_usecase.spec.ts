@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { GetAllUserUseCase } from '#domain/usecases/getall_user_usecase.js'
-import { InMemoryUserRepository } from '#infrastructure/repositories/inmemory_user_repository.js'
+import { GetAllUserUseCase } from '#domain/usecases/getall_user_usecase'
+import { InMemoryUserRepository } from '#infrastructure/repositories/inmemory_user_repository'
 
 test('GetAllUserUseCase returns list', async () => {
   const useCase = new GetAllUserUseCase(new InMemoryUserRepository())

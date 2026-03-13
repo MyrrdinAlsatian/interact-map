@@ -1,4 +1,4 @@
-import type { UserRepository } from '#domain/contracts/repositories/user_repository.js'
+import type { UserRepository } from '#domain/contracts/repositories/user_repository'
 
 export class GetAllUserUseCase {
   #repository: UserRepository

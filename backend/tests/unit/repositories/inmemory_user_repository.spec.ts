@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { InMemoryUserRepository } from '#infrastructure/repositories/inmemory_user_repository.js'
+import { InMemoryUserRepository } from '#infrastructure/repositories/inmemory_user_repository'
 
 test('InMemoryUserRepository creates user', async () => {
   const repository = new InMemoryUserRepository()

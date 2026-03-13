@@ -1,4 +1,4 @@
-import type { GraphNode, GraphEdge, ContractError } from '#domain/contracts/dto/graph_contract_dto.js'
+import type { GraphNode, GraphEdge, ContractError } from '#domain/contracts/dto/graph_contract_dto'
 
 export type ParserSourceType = 'docker-compose' | 'docker-inspect' | 'docker-ps'
 

@@ -1,4 +1,4 @@
-import { observabilityRepository } from '#repositories/observability_repository.js'
+import { observabilityRepository } from '#repositories/observability_repository'
 
 export default class UploadsController {
   async store({ response, auth }: { response: any; auth?: any }) {

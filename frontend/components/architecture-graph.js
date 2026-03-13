@@ -1,7 +1,7 @@
 import { Graph } from 'https://cdn.jsdelivr.net/npm/@antv/x6@2.18.1/+esm';
-import { validateGraphModel, validateGraphContract } from '../lib/graph-model.js';
-import { toX6Graph, getCriticalityColor } from '../lib/x6-adapter.js';
-import { analyzeIncidentImpact } from '../lib/incident-impact.js';
+import { validateGraphModel, validateGraphContract } from '../lib/graph-model';
+import { toX6Graph, getCriticalityColor } from '../lib/x6-adapter';
+import { analyzeIncidentImpact } from '../lib/incident-impact';
 
 /**
  * architecture-graph — X6-backed graph capability island.

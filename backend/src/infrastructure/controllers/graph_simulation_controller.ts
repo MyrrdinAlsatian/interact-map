@@ -1,5 +1,5 @@
-import { observabilityRepository } from '#repositories/observability_repository.js'
-import type { TraversalMode, GraphContract } from '#domain/contracts/dto/graph_contract_dto.js'
+import { observabilityRepository } from '#repositories/observability_repository'
+import type { TraversalMode, GraphContract } from '#domain/contracts/dto/graph_contract_dto'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 

@@ -1,4 +1,4 @@
-import { observabilityRepository } from '#repositories/observability_repository.js'
+import { observabilityRepository } from '#repositories/observability_repository'
 
 /**
  * MetricsController — exposes core service metrics.

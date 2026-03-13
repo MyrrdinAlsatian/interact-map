@@ -1,5 +1,5 @@
-import { observabilityRepository } from '#repositories/observability_repository.js'
-import { ROLE_HIERARCHY } from '#infrastructure/adonis/kernel.js'
+import { observabilityRepository } from '#repositories/observability_repository'
+import { ROLE_HIERARCHY } from '#infrastructure/adonis/kernel'
 
 /**
  * AuditLogsController — read-only access to audit log entries.

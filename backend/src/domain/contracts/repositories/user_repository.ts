@@ -1,5 +1,5 @@
-import { User } from '#entity/user.js'
-import type { RegisterUserDto } from '#domain/contracts/dto/register_user_dto.js'
+import { User } from '#entity/user'
+import type { RegisterUserDto } from '#domain/contracts/dto/register_user_dto'
 
 export interface UserRepository {
   getAll(): Promise<User[]>
