@@ -25,8 +25,9 @@ TypeScript (Node.js 20+): Follow standard conventions
 
 ## Recent Changes
 - 001-adonis-hypermedia-hexagonal: Added TypeScript 5.9 (backend), JavaScript ES modules (frontend), Node.js 20+ + AdonisJS 6 (`@adonisjs/core`, `@adonisjs/auth`, `@adonisjs/lucid`), `pg`, Unpoly 3.8, AntV X6 adapter layer, native Web Components
+- 001-adonis-hypermedia-hexagonal: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
+- 001-adonis-hypermedia-hexagonal: Added TypeScript 5.9 (backend), JavaScript ES modules (frontend), Node.js 20+ + AdonisJS 6 (`@adonisjs/core`, `@adonisjs/auth`, `@adonisjs/lucid`), `pg`, Unpoly 3.8, AntV X6 adapter layer, native Web Components
 
-- 001-adonis-hypermedia-hexagonal: Added TypeScript (Node.js 20+) + AdonisJS, Unpoly, AntV X6, native Web Components
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

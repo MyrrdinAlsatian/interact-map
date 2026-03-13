@@ -15,7 +15,7 @@ Deliver a hypermedia-first AdonisJS foundation where server-rendered pages remai
 **Testing**: Node built-in test runner for unit tests, ESLint, `tsc --noEmit`, manual progressive-enhancement checks in browser  
 **Target Platform**: Linux backend runtime + modern desktop browsers (Chrome/Firefox/Edge)  
 **Project Type**: Web application (server-rendered backend + frontend capability islands)  
-**Performance Goals**: Graph component renders sample graph in <2s locally; at least 3 key interactions update via Unpoly fragments without full reload  
+**Performance Goals**: Graph component renders sample graph in <2s locally; at least 3 key navigation/fragment interactions update via Unpoly without full reload  
 **Constraints**: Non-SPA baseline, no-JS full-page fallback, authenticated access with RBAC on writes, versioned contract validation, structured `422` fragment errors with deterministic fallback, audit and metrics coverage  
 **Scale/Scope**: Initial foundation for architecture inventory + graph + parser flows; optimized for iterative feature expansion with clear domain/infrastructure separation
 
@@ -24,15 +24,15 @@ Deliver a hypermedia-first AdonisJS foundation where server-rendered pages remai
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 - Scope-first: PASS. Plan maps directly to three user stories (server navigation, graph island, parser island).
-- Standards baseline: PASS. Server-rendered HTML remains default; JS enhances rather than replaces.
+- Standards baseline: PASS. Server-rendered HTML remains default; JavaScript enhances rather than replaces.
 - Verification: PASS. Verification includes lint, typecheck, unit tests, and explicit manual no-JS/Unpoly behavior checks.
-- Documentation: PASS. `spec.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/`, and `quickstart.md` updated.
+- Documentation: PASS. `spec.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/`, and `quickstart.md` are included.
 - Simplicity: PASS with justified complexity. Added dependencies (Unpoly, X6) are explicitly tied to capability-island requirements.
 
 ## Phase 0 Research Output
 
 Research decisions and alternatives are documented in `/specs/001-adonis-hypermedia-hexagonal/research.md`.
-All prior clarifications are resolved; no `NEEDS CLARIFICATION` items remain.
+All clarifications in the current spec are resolved; no `NEEDS CLARIFICATION` items remain.
 
 ## Phase 1 Design Output
 
@@ -94,22 +94,6 @@ index.html
 - Verification: PASS. Quickstart includes reproducible validation for auth/RBAC, contract versioning, fallback handling, and observability/audit expectations.
 - Documentation: PASS. Design artifacts are present and synchronized.
 - Simplicity: PASS. No additional architectural layers beyond declared hexagonal boundaries.
-
-## Post-Implementation Constitution Check
-
-- Scope-first: PASS. Implementation delivered server-rendered inventory navigation (US1), graph capability island with incident simulation and contract validation (US2), and parser capability island with structured ingestion flow (US3).
-- Standards baseline: PASS. Primary navigation remains server-rendered HTML; Unpoly is progressive enhancement; capability islands are isolated Web Components.
-- Verification: PASS. Full quickstart validation run was executed and recorded in `quickstart.md`; backend quality gate (`lint`, `typecheck`, `test`) passes after toolchain remediation.
-- Documentation: PASS. Design and operational documentation were updated in `docs/security-and-auth.md`, `docs/system-architecture-overview.md`, and `docs/frontend-architecture.md`, with quickstart validation evidence appended.
-- Simplicity: PASS. Hexagonal boundaries are preserved (`domain` remains framework-agnostic; framework concerns remain in `infrastructure`) and shared contract validation is centralized.
-
-## Final Compliance Notes
-
-- Task execution status: all tasks T001-T062 are implemented and tracked in `tasks.md`.
-- RBAC policy implemented with explicit role hierarchy (`viewer`, `analyst`, `architect`, `admin`) and route-level enforcement through `requireRole(minimumRole)`.
-- Audit policy implemented for write/mutate operations via `ObservabilityRepository.appendAuditLog(...)`, with admin-gated retrieval endpoint.
-- Observability baseline implemented with latency and error counters exposed by `/observability/metrics`.
-- Capability-island observability events implemented for graph/parser interaction metrics (`observability-metric`).
 
 ## Complexity Tracking
 
