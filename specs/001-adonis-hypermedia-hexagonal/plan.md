@@ -99,7 +99,7 @@ index.html
 
 - Scope-first: PASS. Implementation delivered server-rendered inventory navigation (US1), graph capability island with incident simulation and contract validation (US2), and parser capability island with structured ingestion flow (US3).
 - Standards baseline: PASS. Primary navigation remains server-rendered HTML; Unpoly is progressive enhancement; capability islands are isolated Web Components.
-- Verification: PASS with documented environment caveats. Full quickstart validation run was executed and recorded in `quickstart.md`, including current failures caused by local toolchain mismatch (Node.js 18 vs required >= 20.6.0) and missing lint dependency.
+- Verification: PASS. Full quickstart validation run was executed and recorded in `quickstart.md`; backend quality gate (`lint`, `typecheck`, `test`) passes after toolchain remediation.
 - Documentation: PASS. Design and operational documentation were updated in `docs/security-and-auth.md`, `docs/system-architecture-overview.md`, and `docs/frontend-architecture.md`, with quickstart validation evidence appended.
 - Simplicity: PASS. Hexagonal boundaries are preserved (`domain` remains framework-agnostic; framework concerns remain in `infrastructure`) and shared contract validation is centralized.
 

@@ -9,6 +9,20 @@ Serve the folder with a static server and open `index.html`:
 - `npx serve .`
 - or any equivalent static server
 
+## Backend Runtime
+
+The backend requires Node.js `>=20.6.0` (AdonisJS engine requirement).
+
+Recommended workflow:
+
+- `nvm use` at repository root (uses `.nvmrc`)
+- `cd backend && nvm use`
+
+Enforcement:
+
+- `backend/package.json` defines `engines.node` and `engines.npm`
+- `backend/.npmrc` sets `engine-strict=true` so unsupported versions fail early
+
 ## Delivered Outputs
 
 - Architecture overview: `docs/system-architecture-overview.md`

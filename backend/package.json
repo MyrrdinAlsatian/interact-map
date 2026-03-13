@@ -2,6 +2,10 @@
   "name": "interact-map-backend",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20.6.0",
+    "npm": ">=10.0.0"
+  },
   "imports": {
     "#entity/*": "./src/domain/models/*.js",
     "#domain/*": "./src/domain/*.js",
@@ -25,7 +29,7 @@
   "scripts": {
     "dev": "node ace.js serve --watch",
     "start": "node ace.js serve",
-    "test": "node --test tests/unit/**/*.spec.ts",
+    "test": "node --import tsx --test tests/unit/**/*.spec.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
@@ -36,7 +40,10 @@
     "pg": "^8.12.0"
   },
   "devDependencies": {
+    "@typescript-eslint/parser": "^8.44.0",
     "@types/node": "^22.19.15",
+    "eslint": "^9.35.0",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.3"
   }
 }
