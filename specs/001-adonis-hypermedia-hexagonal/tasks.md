@@ -81,6 +81,7 @@
 - [ ] T034 [US2] Wire graph page and simulation routes with RBAC checks in `backend/src/infrastructure/adonis/routes.ts`
 - [ ] T035 [US2] Align graph contract endpoint semantics for US2 in `specs/001-adonis-hypermedia-hexagonal/contracts/http-endpoints.yaml`
 - [ ] T036 [US2] Update graph sample fixture for interaction verification in `examples/project-dataset.json`
+- [ ] T037 [US2] Execute and document US2 independent verification checklist in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
 
 **Checkpoint**: US2 graph island is independently functional and contract-compliant.
 
@@ -94,16 +95,17 @@
 
 ### Implementation for User Story 3
 
-- [ ] T037 [US3] Implement parser contract validation utility with version policy enforcement in `frontend/lib/parser-contract.js`
-- [ ] T038 [P] [US3] Implement docker-compose normalization parser in `frontend/lib/docker-compose-parser.js`
-- [ ] T039 [P] [US3] Implement docker-inspect normalization parser in `frontend/lib/docker-inspect-parser.js`
-- [ ] T040 [P] [US3] Implement docker-ps normalization parser in `frontend/lib/docker-ps-parser.js`
-- [ ] T041 [US3] Implement parser capability island API and structured error output in `frontend/components/parser-island.js`
-- [ ] T042 [US3] Implement parser result ingestion use case in `backend/src/domain/usecases/import_parser_result_usecase.ts`
-- [ ] T043 [US3] Implement parser ingestion controller with compatibility error mapping in `backend/src/infrastructure/controllers/parser_controller.ts`
-- [ ] T044 [US3] Wire parser ingestion route with authenticated read/write policy in `backend/src/infrastructure/adonis/routes.ts`
-- [ ] T045 [US3] Add parser fixtures for valid, malformed, and older-version cases in `examples/parser-fixtures.json`
-- [ ] T046 [US3] Align parser-island contract and error semantics in `specs/001-adonis-hypermedia-hexagonal/contracts/web-components.md`
+- [ ] T038 [US3] Implement parser contract validation utility with version policy enforcement in `frontend/lib/parser-contract.js`
+- [ ] T039 [P] [US3] Implement docker-compose normalization parser in `frontend/lib/docker-compose-parser.js`
+- [ ] T040 [P] [US3] Implement docker-inspect normalization parser in `frontend/lib/docker-inspect-parser.js`
+- [ ] T041 [P] [US3] Implement docker-ps normalization parser in `frontend/lib/docker-ps-parser.js`
+- [ ] T042 [US3] Implement parser capability island API and structured error output in `frontend/components/parser-island.js`
+- [ ] T043 [US3] Implement parser result ingestion use case in `backend/src/domain/usecases/import_parser_result_usecase.ts`
+- [ ] T044 [US3] Implement parser ingestion controller with compatibility error mapping in `backend/src/infrastructure/controllers/parser_controller.ts`
+- [ ] T045 [US3] Wire parser ingestion route with authenticated read/write policy in `backend/src/infrastructure/adonis/routes.ts`
+- [ ] T046 [US3] Add parser fixtures for valid, malformed, and older-version cases in `examples/parser-fixtures.json`
+- [ ] T047 [US3] Align parser-island contract and error semantics in `specs/001-adonis-hypermedia-hexagonal/contracts/web-components.md`
+- [ ] T048 [US3] Execute and document US3 independent verification checklist in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
 
 **Checkpoint**: US3 parser island independently produces normalized graph fragments and structured errors.
 
@@ -113,14 +115,14 @@
 
 **Purpose**: Finalize cross-story quality, observability, documentation, and constitution compliance.
 
-- [ ] T047 Implement `/observability/metrics` response controller using core counters in `backend/src/infrastructure/controllers/metrics_controller.ts`
-- [ ] T048 Implement `/audit/logs` query controller and admin gating in `backend/src/infrastructure/controllers/audit_logs_controller.ts`
-- [ ] T049 Wire metrics and audit routes with role policies in `backend/src/infrastructure/adonis/routes.ts`
-- [ ] T050 [P] Update architecture and security docs with auth/RBAC/audit decisions in `docs/security-and-auth.md`
-- [ ] T051 [P] Update system architecture overview for capability-island + observability flows in `docs/system-architecture-overview.md`
-- [ ] T052 [P] Update frontend architecture doc for parser/graph contract version policy in `docs/frontend-architecture.md`
-- [ ] T053 Run full quickstart validation and record results in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
-- [ ] T054 Verify constitution gate outcomes and final compliance notes in `specs/001-adonis-hypermedia-hexagonal/plan.md`
+- [ ] T049 Implement `/observability/metrics` response controller using core counters in `backend/src/infrastructure/controllers/metrics_controller.ts`
+- [ ] T050 Implement `/audit/logs` query controller and admin gating in `backend/src/infrastructure/controllers/audit_logs_controller.ts`
+- [ ] T051 Wire metrics and audit routes with role policies in `backend/src/infrastructure/adonis/routes.ts`
+- [ ] T052 [P] Update architecture and security docs with auth/RBAC/audit decisions in `docs/security-and-auth.md`
+- [ ] T053 [P] Update system architecture overview for capability-island + observability flows in `docs/system-architecture-overview.md`
+- [ ] T054 [P] Update frontend architecture doc for parser/graph contract version policy in `docs/frontend-architecture.md`
+- [ ] T055 Run full quickstart validation and record results in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
+- [ ] T056 Verify constitution gate outcomes and final compliance notes in `specs/001-adonis-hypermedia-hexagonal/plan.md`
 
 ---
 
