@@ -5,6 +5,16 @@
 **Status**: Draft  
 **Input**: User description: "AdonisJS backend for hypermedia app with Unpoly, Web Components islands (AntV X6 and parser), hexagonal architecture and clean code"
 
+## Clarifications
+
+### Session 2026-03-13
+
+- Q: What baseline access-control model should apply to pages and APIs? → A: Authentication required; read access for all authenticated users, write/mutate actions restricted by role.
+- Q: Which contract strategy should backend and capability islands use for graph/parser payloads? → A: Versioned JSON contract (`schemaVersion`, `nodes[]`, `edges[]`, `errors[]`) validated on both backend and frontend.
+- Q: How should the system handle Unpoly requests that target a missing fragment? → A: Return structured fragment error (`422` + error payload) and trigger fallback to full-page navigation.
+- Q: What baseline observability should the system provide? → A: Structured JSON logs + core metrics (`request_latency_ms`, `fragment_error_count`, `parse_error_count`) and audit logging for write/mutate actions.
+- Q: What schema-version compatibility policy should parser and graph contract support? → A: Support current and previous `schemaVersion`; reject older versions with structured error.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Server-driven navigation foundation (Priority: P1)
@@ -52,9 +62,9 @@ As an operator, I can parse infrastructure input through a custom Web Component 
 
 ### Edge Cases
 
-- What happens when Unpoly requests target a missing fragment?
+- Missing Unpoly fragment target returns `422` with structured error payload and client fallback to full-page navigation.
 - How does the graph component behave on invalid or partially missing node/edge payloads?
-- How does the parser handle unsupported schema versions?
+- Parser accepts current and previous `schemaVersion`; older versions are rejected with structured compatibility errors.
 - What happens when JavaScript is unavailable (degrade to server-only navigation)?
 
 ## Requirements *(mandatory)*
@@ -69,6 +79,12 @@ As an operator, I can parse infrastructure input through a custom Web Component 
 - **FR-006**: System MUST follow hexagonal architecture boundaries (`domain` vs `infrastructure`).
 - **FR-007**: System MUST follow clean code principles (small modules, explicit dependencies, testable use cases).
 - **FR-008**: System MUST define a framework-agnostic graph contract shared by backend and capability islands.
+- **FR-009**: System MUST require authentication for application access, allow read operations for authenticated users, and restrict write/mutate operations through role-based authorization.
+- **FR-010**: System MUST expose and consume a versioned JSON contract with `schemaVersion`, `nodes[]`, `edges[]`, and `errors[]`, with runtime schema validation on backend and frontend boundaries.
+- **FR-011**: System MUST return `422` structured fragment errors for missing Unpoly targets and provide deterministic client fallback to full-page navigation.
+- **FR-012**: System MUST emit structured JSON logs and core metrics (`request_latency_ms`, `fragment_error_count`, `parse_error_count`) for backend and capability-island interactions.
+- **FR-013**: System MUST produce audit logs for all write/mutate operations including actor identity, action, target resource, timestamp, and outcome.
+- **FR-014**: System MUST support current and previous `schemaVersion` values for graph/parser contracts and MUST reject older versions with structured compatibility errors.
 
 ### Constitution Alignment *(mandatory)*
 
@@ -84,6 +100,7 @@ As an operator, I can parse infrastructure input through a custom Web Component 
 - **GraphEdge**: A dependency link between nodes with criticality and dependency semantics.
 - **ParserInput**: Raw source payload consumed by custom parser components.
 - **ParserResult**: Normalized graph fragment plus structured parse diagnostics.
+- **GraphContract**: Versioned JSON document containing `schemaVersion`, `nodes[]`, `edges[]`, and `errors[]` used as canonical interchange between backend and capability islands.
 - **PageFragment**: Server-rendered partial HTML target used by Unpoly updates.
 
 ## Success Criteria *(mandatory)*
@@ -94,3 +111,4 @@ As an operator, I can parse infrastructure input through a custom Web Component 
 - **SC-002**: At least 3 key interactions (filter, pagination, detail switch) update via Unpoly without full reload.
 - **SC-003**: Graph component renders and interacts with a sample graph under 2 seconds on local dev hardware.
 - **SC-004**: Parser component transforms supported input into valid graph fragments with deterministic output schema.
+- **SC-005**: 100% of write/mutate operations generate audit log entries with actor, action, target, timestamp, and outcome.
