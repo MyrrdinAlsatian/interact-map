@@ -15,8 +15,8 @@ Deliver a hypermedia-first AdonisJS foundation where server-rendered pages remai
 **Testing**: Node built-in test runner for unit tests, ESLint, `tsc --noEmit`, manual progressive-enhancement checks in browser  
 **Target Platform**: Linux backend runtime + modern desktop browsers (Chrome/Firefox/Edge)  
 **Project Type**: Web application (server-rendered backend + frontend capability islands)  
-**Performance Goals**: Graph component renders sample graph in <2s locally; at least 3 key navigation/fragment interactions update via Unpoly without full reload  
-**Constraints**: Non-SPA baseline, no-JS full-page fallback, authenticated access with RBAC on writes, versioned contract validation, structured `422` fragment errors with deterministic fallback, audit and metrics coverage  
+**Performance Goals**: Graph component renders sample graph in <2s on a Linux x86-64 developer workstation (>=8 GB RAM) using a modern Chromium-based browser; `applications`, `services`, and `servers` inventory fragment interactions update via Unpoly without full reload  
+**Constraints**: Non-SPA baseline, no-JS full-page fallback, authenticated access with RBAC on writes, versioned contract validation, structured `422` fragment errors followed by a full-page `GET` to the originating target URL, audit and metrics coverage  
 **Scale/Scope**: Initial foundation for architecture inventory + graph + parser flows; optimized for iterative feature expansion with clear domain/infrastructure separation
 
 ## Constitution Check
@@ -89,7 +89,7 @@ index.html
 
 ## Post-Design Constitution Check
 
-- Scope-first: PASS. Data model and contracts only cover behavior in accepted user stories and FR-001..FR-014.
+- Scope-first: PASS. Data model and contracts cover behavior in accepted user stories and FR-001..FR-015.
 - Standards baseline: PASS. Contracts preserve server-rendered baseline and explicit progressive enhancement semantics.
 - Verification: PASS. Quickstart includes reproducible validation for auth/RBAC, contract versioning, fallback handling, and observability/audit expectations.
 - Documentation: PASS. Design artifacts are present and synchronized.
