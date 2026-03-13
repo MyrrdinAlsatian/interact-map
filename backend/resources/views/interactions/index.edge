@@ -1,0 +1,9 @@
+@layout('layout', { title: 'Interactions' })
+
+@slot('content')
+  <h2 class="page-title">Interactions</h2>
+  <p style="color:#868e96;margin:0 0 16px;">Dependency edges between inventory nodes.</p>
+  <div id="inventory-table" up-target="#inventory-table">
+    @include('partials/inventory_rows')
+  </div>
+@endslot

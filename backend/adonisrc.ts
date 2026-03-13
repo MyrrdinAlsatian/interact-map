@@ -1,10 +1,13 @@
 const adonisrc = {
-  preloads: [],
+  preloads: [{ file: './src/infrastructure/adonis/routes.ts', environment: ['web', 'console'] }],
   providers: ['./providers/app_provider.ts'],
-  metaFiles: ['**/*.json'],
+  metaFiles: ['**/*.json', 'resources/views/**/*.edge'],
   commands: ['@adonisjs/core/commands'],
   tests: {
-    suites: [{ name: 'unit', files: ['tests/unit/**/*.spec.ts'] }],
+    suites: [
+      { name: 'unit', files: ['tests/unit/**/*.spec.ts'] },
+      { name: 'integration', files: ['tests/integration/**/*.spec.ts'] },
+    ],
   },
 }
 

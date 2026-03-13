@@ -1,3 +1,12 @@
+/**
+ * incident-impact.js — BFS/DFS traversal for dependency impact projection.
+ *
+ * Works on the canonical graph model (nodes[], edges[]). Agnostic to
+ * schemaVersion — call graph-model.js validateGraphContract() first.
+ *
+ * Returns:
+ *   { failedNodeId, traversal, impactedNodes: string[], impactedEdges: string[] }
+ */
 export function analyzeIncidentImpact(graph, failedNodeId, mode = 'bfs') {
   if (!graph || !failedNodeId) {
     throw new Error('graph and failedNodeId are required');

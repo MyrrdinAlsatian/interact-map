@@ -1,3 +1,11 @@
+/**
+ * x6-adapter.js — converts canonical GraphContract format to AntV X6 cell descriptors.
+ *
+ * This adapter is visualization-library specific. The canonical GraphContract
+ * (schemaVersion, nodes[], edges[]) must be validated by graph-model.js before
+ * passing to toX6Graph(). This file has no dependency on the validation logic.
+ */
+
 const criticalityColors = {
   critical: '#e03131',
   high: '#f08c00',

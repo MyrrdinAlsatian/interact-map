@@ -1,3 +1,5 @@
+import { validateParserInput, buildParserResult } from './parser-contract.js';
+
 function parsePorts(networkSettings = {}) {
   const portMap = networkSettings.Ports || {};
   return Object.entries(portMap).map(([containerPort, mappings]) => ({
@@ -23,7 +25,19 @@ function inferDependencyByEnv(container, knownNames) {
   return [...new Set(dependencies)];
 }
 
-export function parseDockerInspect(input) {
+/**
+ * Parses a `docker inspect` JSON array into a canonical ParserResult.
+ *
+ * @param {string|object[]} input - Raw JSON string or parsed array from docker inspect
+ * @param {string} [schemaVersion='1.0'] - Parser schema version for the envelope
+ * @returns {ParserResult | { valid: false, errors: ContractError[], warnings: ContractError[] }}
+ */
+export function parseDockerInspect(input, schemaVersion = '1.0') {
+  const validation = validateParserInput({ sourceType: 'docker-inspect', schemaVersion, payload: input });
+  if (!validation.valid) {
+    return { schemaVersion, nodes: [], edges: [], errors: validation.errors, warnings: validation.warnings };
+  }
+
   const containers = typeof input === 'string' ? JSON.parse(input) : input;
   if (!Array.isArray(containers)) {
     throw new Error('docker inspect payload must be an array');
@@ -66,12 +80,5 @@ export function parseDockerInspect(input) {
     }
   }
 
-  return {
-    nodes,
-    edges,
-    metadata: {
-      sourceType: 'docker-inspect',
-      sourceName: 'docker inspect',
-    },
-  };
+  return buildParserResult({ nodes, edges, metadata: { sourceType: 'docker-inspect', sourceName: 'docker inspect' } }, schemaVersion, [], validation.warnings);
 }

@@ -1,6 +1,7 @@
 {
   "project_name": "Acme Commerce Platform",
   "graph": {
+    "schemaVersion": "1.0",
     "nodes": [
       {"id": "app-web", "type": "application", "label": "Web Frontend", "metadata": {"business_criticality": "high"}},
       {"id": "app-orders", "type": "application", "label": "Orders API", "metadata": {"business_criticality": "critical"}},
@@ -16,7 +17,8 @@
       {"id": "e3", "source": "app-orders", "target": "svc-redis", "criticality": "medium", "dependencyType": "cache", "protocol": "tcp"},
       {"id": "e4", "source": "app-orders", "target": "svc-mailjet", "criticality": "low", "dependencyType": "async", "protocol": "https"},
       {"id": "e5", "source": "ctr-orders", "target": "srv-prod-1", "criticality": "high", "dependencyType": "required", "protocol": "host"}
-    ]
+    ],
+    "errors": []
   },
   "sources": [
     {

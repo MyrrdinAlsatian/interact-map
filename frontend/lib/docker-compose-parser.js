@@ -1,4 +1,5 @@
 import YAML from 'https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/+esm';
+import { validateParserInput, buildParserResult } from './parser-contract.js';
 
 function normalizePorts(ports) {
   if (!Array.isArray(ports)) {
@@ -17,7 +18,20 @@ function normalizePorts(ports) {
   });
 }
 
-export function parseDockerCompose(input, projectName = 'docker-compose-project') {
+/**
+ * Parses a docker-compose YAML string into a canonical ParserResult.
+ *
+ * @param {string} input - Raw docker-compose YAML content
+ * @param {string} [projectName] - Project label for node metadata
+ * @param {string} [schemaVersion='1.0'] - Parser schema version for the envelope
+ * @returns {ParserResult | { valid: false, errors: ContractError[], warnings: ContractError[] }}
+ */
+export function parseDockerCompose(input, projectName = 'docker-compose-project', schemaVersion = '1.0') {
+  const validation = validateParserInput({ sourceType: 'docker-compose', schemaVersion, payload: input });
+  if (!validation.valid) {
+    return { schemaVersion, nodes: [], edges: [], errors: validation.errors, warnings: validation.warnings };
+  }
+
   const parsed = YAML.load(input);
   const services = parsed?.services || {};
 
@@ -53,12 +67,5 @@ export function parseDockerCompose(input, projectName = 'docker-compose-project'
     }
   }
 
-  return {
-    nodes,
-    edges,
-    metadata: {
-      sourceType: 'docker-compose',
-      sourceName: projectName,
-    },
-  };
+  return buildParserResult({ nodes, edges, metadata: { sourceType: 'docker-compose', sourceName: projectName } }, schemaVersion, [], validation.warnings);
 }

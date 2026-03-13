@@ -1,7 +1,24 @@
 import { Graph } from 'https://cdn.jsdelivr.net/npm/@antv/x6@2.18.1/+esm';
-import { validateGraphModel } from '../lib/graph-model.js';
+import { validateGraphModel, validateGraphContract } from '../lib/graph-model.js';
 import { toX6Graph, getCriticalityColor } from '../lib/x6-adapter.js';
 import { analyzeIncidentImpact } from '../lib/incident-impact.js';
+
+/**
+ * architecture-graph — X6-backed graph capability island.
+ *
+ * Public API:
+ *   loadGraph(graphModel)          — load a canonical GraphContract (with schemaVersion)
+ *   focusNode(nodeId)              — center and select a node
+ *   highlightDependencies(nodeId)  — visually emphasize edges connected to nodeId
+ *   simulateIncident(nodeId, mode) — run BFS/DFS impact traversal, returns result + fires event
+ *
+ * Events dispatched:
+ *   contract-validation-error — { detail: { errors: ContractError[] } } when loadGraph receives an invalid contract
+ *   incident-simulated        — { detail: IncidentSimulationResult }
+ *
+ * Schema version policy: '1.0' (current) and '0.9' (previous) are accepted.
+ * Older versions dispatch 'contract-validation-error' and do NOT render.
+ */
 
 class ArchitectureGraph extends HTMLElement {
   #graph;
@@ -14,7 +31,17 @@ class ArchitectureGraph extends HTMLElement {
   }
 
   set data(graphModel) {
-    validateGraphModel(graphModel);
+    // Use schema-version-aware validation when schemaVersion is present
+    if (graphModel && graphModel.schemaVersion !== undefined) {
+      const validation = validateGraphContract(graphModel);
+      if (!validation.valid) {
+        this.dispatchEvent(new CustomEvent('contract-validation-error', { detail: { errors: validation.errors }, bubbles: true }));
+        return;
+      }
+    } else {
+      // Fallback: basic structural check (no schemaVersion field)
+      validateGraphModel(graphModel);
+    }
     this.#graphModel = graphModel;
     this.#renderGraph();
   }

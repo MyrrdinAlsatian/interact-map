@@ -1,0 +1,94 @@
+{
+  "_comment": "Parser fixtures for US3 independent verification. Use with POST /parser/ingest.",
+  "fixtures": {
+    "valid_docker_compose_v1": {
+      "_description": "Valid docker-compose input, schemaVersion 1.0. Expect: 200, 2 nodes, 1 edge.",
+      "parserResult": {
+        "schemaVersion": "1.0",
+        "nodes": [
+          { "id": "container:web", "type": "container", "label": "web", "metadata": { "docker_image": "nginx:alpine", "exposed_ports": [{"host": "80", "container": "80"}], "environment_variables": {}, "project": "acme" } },
+          { "id": "container:api", "type": "container", "label": "api", "metadata": { "docker_image": "acme/api:1.0", "exposed_ports": [{"host": "3333", "container": "3333"}], "environment_variables": {"DATABASE_URL": "postgresql://db/acme"}, "project": "acme" } }
+        ],
+        "edges": [
+          { "id": "depends:web->api", "source": "container:web", "target": "container:api", "criticality": "high", "dependencyType": "required", "protocol": "docker-network" }
+        ],
+        "errors": [],
+        "warnings": []
+      },
+      "base": {
+        "schemaVersion": "1.0",
+        "nodes": [],
+        "edges": [],
+        "errors": []
+      }
+    },
+    "valid_docker_compose_v09": {
+      "_description": "Valid docker-compose input, schemaVersion 0.9 (previous). Expect: 200 with warnings[].",
+      "parserResult": {
+        "schemaVersion": "0.9",
+        "nodes": [
+          { "id": "container:db", "type": "container", "label": "db", "metadata": { "docker_image": "postgres:16" } }
+        ],
+        "edges": [],
+        "errors": [],
+        "warnings": [{ "code": "VERSION_PREVIOUS", "message": "Using previous schema version 0.9. Consider upgrading to 1.0.", "path": "schemaVersion", "severity": "warning" }]
+      },
+      "base": {
+        "schemaVersion": "1.0",
+        "nodes": [],
+        "edges": [],
+        "errors": []
+      }
+    },
+    "malformed_missing_node_fields": {
+      "_description": "Node missing required 'label' field. Expect: 422, errors[NODE_LABEL_MISSING].",
+      "parserResult": {
+        "schemaVersion": "1.0",
+        "nodes": [
+          { "id": "container:bad", "type": "container" }
+        ],
+        "edges": [],
+        "errors": [],
+        "warnings": []
+      },
+      "base": {
+        "schemaVersion": "1.0",
+        "nodes": [],
+        "edges": [],
+        "errors": []
+      }
+    },
+    "older_schema_version": {
+      "_description": "Parser result with unsupported schema version 0.1. Expect: 422, errors[VERSION_UNSUPPORTED].",
+      "parserResult": {
+        "schemaVersion": "0.1",
+        "nodes": [],
+        "edges": [],
+        "errors": [],
+        "warnings": []
+      },
+      "base": {
+        "schemaVersion": "1.0",
+        "nodes": [],
+        "edges": [],
+        "errors": []
+      }
+    },
+    "parser_result_with_errors": {
+      "_description": "ParserResult already contains errors (e.g. upstream parse failure). Expect: 422, errors[PARSER_RESULT_INVALID].",
+      "parserResult": {
+        "schemaVersion": "1.0",
+        "nodes": [],
+        "edges": [],
+        "errors": [{ "code": "SOURCE_PARSE_FAILED", "message": "YAML syntax error at line 4", "severity": "error" }],
+        "warnings": []
+      },
+      "base": {
+        "schemaVersion": "1.0",
+        "nodes": [],
+        "edges": [],
+        "errors": []
+      }
+    }
+  }
+}
