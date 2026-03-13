@@ -1,23 +1,32 @@
 openapi: 3.0.3
 info:
   title: Hypermedia Architecture API Contract
-  version: 0.1.0
+  version: 0.2.0
+servers:
+  - url: http://localhost:3333
+security:
+  - bearerAuth: []
 paths:
   /health:
     get:
       summary: Health probe
+      security: []
       responses:
         '200':
           description: Service healthy
   /users:
     get:
       summary: Get all users
+      description: Read operation available to authenticated users.
       responses:
         '200':
           description: User list
+        '401':
+          description: Authentication required
   /users/register:
     post:
       summary: Register user (development auth flow)
+      security: []
       requestBody:
         required: true
         content:
@@ -34,9 +43,31 @@ paths:
           description: User created
         '400':
           description: Validation error
+  /graph/contract/validate:
+    post:
+      summary: Validate graph contract payload
+      description: Accepts current and previous schema versions only.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphContract'
+      responses:
+        '200':
+          description: Contract payload is valid
+        '422':
+          description: Contract payload rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Authentication required
   /graph/simulate-incident:
     post:
       summary: Simulate graph impact from a failing node
+      description: Requires authenticated user with role `analyst` or higher.
       requestBody:
         required: true
         content:
@@ -53,12 +84,71 @@ paths:
       responses:
         '200':
           description: Incident impact result
+        '403':
+          description: Role does not permit simulation
+        '401':
+          description: Authentication required
+  /fragments/{target}:
+    get:
+      summary: Resolve server-rendered fragment for Unpoly requests
+      parameters:
+        - in: path
+          name: target
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Fragment resolved
+          content:
+            text/html:
+              schema:
+                type: string
+        '422':
+          description: Missing fragment target with fallback metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /observability/metrics:
+    get:
+      summary: Read core service metrics
+      description: Exposes request latency and error counters.
+      responses:
+        '200':
+          description: Metrics snapshot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoreMetrics'
+  /audit/logs:
+    get:
+      summary: Query audit records
+      description: Read-only access for `admin` role.
+      responses:
+        '200':
+          description: Audit log entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditLogEntry'
+        '403':
+          description: Role does not permit audit access
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
-    GraphModel:
+    GraphContract:
       type: object
-      required: [nodes, edges]
+      required: [schemaVersion, nodes, edges, errors]
       properties:
+        schemaVersion:
+          type: string
         nodes:
           type: array
           items:
@@ -67,6 +157,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/GraphEdge'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContractError'
     GraphNode:
       type: object
       required: [id, type, label]
@@ -85,3 +179,42 @@ components:
         criticality: { type: string, enum: [critical, high, medium, low] }
         dependencyType: { type: string, enum: [required, optional, async, cache] }
         protocol: { type: string }
+    ContractError:
+      type: object
+      required: [code, message, severity]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        path: { type: string }
+        severity: { type: string, enum: [error, warning] }
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          $ref: '#/components/schemas/ContractError'
+        fallbackNavigation:
+          type: string
+          enum: [full_page]
+    CoreMetrics:
+      type: object
+      required: [request_latency_ms, fragment_error_count, parse_error_count]
+      properties:
+        request_latency_ms: { type: number }
+        fragment_error_count: { type: integer }
+        parse_error_count: { type: integer }
+    AuditLogEntry:
+      type: object
+      required: [id, actorId, actorRole, action, resourceType, resourceId, timestamp, outcome]
+      properties:
+        id: { type: string }
+        actorId: { type: string }
+        actorRole: { type: string, enum: [viewer, analyst, architect, admin] }
+        action: { type: string }
+        resourceType: { type: string }
+        resourceId: { type: string }
+        timestamp: { type: string, format: date-time }
+        outcome: { type: string, enum: [success, denied, failure] }
+        metadata:
+          type: object
+          additionalProperties: true

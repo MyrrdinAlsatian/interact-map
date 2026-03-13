@@ -7,7 +7,7 @@
   - `label` (string, required)
   - `metadata` (object, optional)
 - **Validation rules**:
-  - `id` must be stable and non-empty
+  - `id` must be non-empty and stable across updates
   - `type` must be one of the supported enum values
 
 ## 2) GraphEdge
@@ -19,53 +19,84 @@
   - `dependencyType` (enum: `required | optional | async | cache`, optional, default `required`)
   - `protocol` (string, optional)
 - **Validation rules**:
-  - `source` and `target` must exist in current graph node set
-  - self-loop handling must be explicit (allowed or rejected by use case)
+  - `source` and `target` must reference existing node ids
+  - duplicate edge ids are rejected
 
-## 3) GraphModel
+## 3) GraphContract
 - **Fields**:
-  - `nodes` (GraphNode[])
-  - `edges` (GraphEdge[])
+  - `schemaVersion` (string, required)
+  - `nodes` (GraphNode[], required)
+  - `edges` (GraphEdge[], required)
+  - `errors` (ContractError[], required; empty on success)
 - **Validation rules**:
-  - duplicate ids are rejected
-  - orphan edges are rejected
-  - model stays library-agnostic (no X6-specific fields)
+  - accepted versions are current and previous only
+  - older versions return structured compatibility errors
+  - payload remains visualization-library agnostic
 
-## 4) ParserInput
+## 4) ContractError
+- **Fields**:
+  - `code` (string, required)
+  - `message` (string, required)
+  - `path` (string, optional)
+  - `severity` (enum: `error | warning`, required)
+- **Validation rules**:
+  - `code` must be stable for client error handling
+
+## 5) ParserInput
 - **Fields**:
   - `sourceType` (string, required)
+  - `schemaVersion` (string, required)
   - `payload` (unknown, required)
-  - `version` (string, optional)
 - **Validation rules**:
-  - source-specific schema validation by parser adapter
+  - parser adapter validates source-specific schema before normalization
 
-## 5) ParserResult
+## 6) ParserResult
 - **Fields**:
-  - `nodes` (GraphNode[])
-  - `edges` (GraphEdge[])
-  - `errors` ({ code: string; message: string; path?: string }[])
-  - `warnings` ({ code: string; message: string; path?: string }[])
+  - `schemaVersion` (string, required)
+  - `nodes` (GraphNode[], required)
+  - `edges` (GraphEdge[], required)
+  - `errors` (ContractError[], required)
+  - `warnings` (ContractError[], required)
 - **Validation rules**:
   - deterministic output for identical input
-  - malformed input returns typed `errors`, not implicit crashes
+  - malformed input returns structured errors (no implicit crashes)
 
-## 6) PageFragment
+## 7) PageFragmentResponse
 - **Fields**:
-  - `target` (string, required; Unpoly target selector/id)
-  - `html` (string, required)
-  - `status` (enum: `ok | validation_error | failure`, required)
+  - `target` (string, required)
+  - `statusCode` (number, required)
+  - `html` (string, optional)
+  - `error` (ContractError, optional)
 - **Validation rules**:
-  - target must map to an existing template fragment id in rendered page
+  - missing fragment target produces `statusCode = 422` with structured `error`
+  - success responses must include `html`
+
+## 8) AuditLogEntry
+- **Fields**:
+  - `id` (string, required, unique)
+  - `actorId` (string, required)
+  - `actorRole` (enum: `viewer | analyst | architect | admin`, required)
+  - `action` (string, required)
+  - `resourceType` (string, required)
+  - `resourceId` (string, required)
+  - `timestamp` (ISO-8601 string, required)
+  - `outcome` (enum: `success | denied | failure`, required)
+  - `metadata` (object, optional)
+- **Validation rules**:
+  - all write/mutate operations must emit one audit record
+  - audit entries are append-only
 
 ## Relationships
-- GraphModel has many GraphNodes and GraphEdges.
-- GraphEdge references two GraphNodes.
-- ParserResult contributes nodes/edges into GraphModel merge flow.
-- PageFragment carries rendered partial UI state for hypermedia interactions.
+- GraphContract has many GraphNodes and GraphEdges.
+- GraphEdge references GraphNode ids (`source`, `target`).
+- ParserInput is transformed into ParserResult, which is merged into GraphContract.
+- PageFragmentResponse wraps server fragment output for Unpoly interactions.
+- Write/mutate use cases emit AuditLogEntry records.
 
 ## State Transitions
-1. **Initial**: empty graph + server-rendered pages.
-2. **Parsed**: ParserInput -> ParserResult.
-3. **Merged**: ParserResult merged into GraphModel.
-4. **Rendered**: GraphModel adapted to X6 visual state in Web Component.
-5. **Simulated**: incident traversal marks impacted nodes/edges for visualization.
+1. **Requested**: authenticated user requests page, fragment, or parse operation.
+2. **Validated**: auth/RBAC and `schemaVersion` checks run at boundary.
+3. **Parsed/Normalized**: parser input produces deterministic ParserResult.
+4. **Merged**: validated ParserResult updates GraphContract state.
+5. **Rendered**: GraphContract is adapted to UI component state.
+6. **Observed/Audited**: metrics/logs are emitted and audit entries are appended for write/mutate actions.
