@@ -66,6 +66,18 @@ Operations that emit audit entries:
 - `POST /graph/contract/validate` — outcome: success | failure
 - `POST /graph/simulate-incident` — outcome: success
 - `POST /parser/ingest` — outcome: success | failure
+- `POST /users/register` — outcome: success | failure
+- `POST /uploads` — outcome: success
+
+### Write/Mutate Endpoint Audit Coverage Map
+
+| Endpoint | Controller action | Audit action | Outcome coverage |
+|---|---|---|---|
+| `POST /users/register` | `UsersController.register` | `users.register` | success + failure |
+| `POST /graph/contract/validate` | `GraphController.validate` | `graph.contract.validate` | success + failure |
+| `POST /graph/simulate-incident` | `GraphSimulationController.simulate` | `graph.simulate-incident` | success |
+| `POST /parser/ingest` | `ParserController.ingest` | `parser.ingest` | success + failure |
+| `POST /uploads` | `UploadsController.store` | `uploads.store` | success |
 
 Audit log is append-only. Query via `GET /audit/logs` (admin only).
 

@@ -19,10 +19,16 @@
   - `set data(value)` — triggers `validateGraphContract(value)` before rendering.
   - On validation failure, fires `contract-validation-error` event (`detail.errors: ContractError[]`) and aborts render.
   - Features: zoom, pan, selection, dependency highlight, incident impact overlays.
+  - Emits `observability-metric` events for:
+    - `graph.render_duration_ms`
+    - `graph.contract_validation_error_count`
 - `parser-island`
   - `parse(input: ParserInput)` — validates input, runs selected parser, returns `ParserResult`.
   - Dispatches `parse-success` (`detail: ParserResult`) or `parse-error` (`detail: { errors: ContractError[] }`).
   - Renders own UI shell: textarea, source type select, parse button, output display.
+  - Emits `observability-metric` events for:
+    - `parser.parse_duration_ms`
+    - `parser.contract_validation_error_count`
 - Future islands can be added without converting app into SPA.
 
 ## Contract Version Policy
@@ -106,6 +112,7 @@ frontend/lib/graph-model.js            (graph validation)
 | `loadGraph(contract)` | method | Alias for `data` setter |
 | `contract-validation-error` | event | Fired when schema validation fails |
 | `node-selected` | event | Fired when user selects a node |
+| `observability-metric` | event | Fired on render/error metrics (`name`, `value`, `source`, `timestamp`, `metadata`) |
 
 ### `<parser-island>`
 
@@ -114,6 +121,28 @@ frontend/lib/graph-model.js            (graph validation)
 | `parse(input)` | method | Validate + parse; returns ParserResult |
 | `parse-success` | event | Fired on valid parse result |
 | `parse-error` | event | Fired on validation or parse failure |
+| `observability-metric` | event | Fired on parse/error metrics (`name`, `value`, `source`, `timestamp`, `metadata`) |
+
+## Frontend Observability Contract
+
+Capability-island metrics are emitted as bubbling DOM events:
+
+```json
+{
+  "name": "graph.render_duration_ms",
+  "value": 12.41,
+  "source": "architecture-graph",
+  "timestamp": "2026-03-13T10:22:11.300Z",
+  "metadata": {
+    "nodeCount": 7,
+    "edgeCount": 5
+  }
+}
+```
+
+Collection pattern:
+- Shell page listens once at document level: `document.addEventListener('observability-metric', handler)`.
+- Handler forwards to backend collector endpoint or log pipeline.
 
 ## Offline Layer
 - IndexedDB stores projects, graph snapshots, and imported source files.

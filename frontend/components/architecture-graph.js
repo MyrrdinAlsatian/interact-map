@@ -35,6 +35,9 @@ class ArchitectureGraph extends HTMLElement {
     if (graphModel && graphModel.schemaVersion !== undefined) {
       const validation = validateGraphContract(graphModel);
       if (!validation.valid) {
+        this.#emitMetric('graph.contract_validation_error_count', validation.errors.length, {
+          schemaVersion: graphModel.schemaVersion ?? null,
+        });
         this.dispatchEvent(new CustomEvent('contract-validation-error', { detail: { errors: validation.errors }, bubbles: true }));
         return;
       }
@@ -141,10 +144,31 @@ class ArchitectureGraph extends HTMLElement {
     if (!this.#graph) {
       return;
     }
+    const start = performance.now();
     const x6Graph = toX6Graph(this.#graphModel);
     this.#graph.clearCells();
     this.#graph.fromJSON(x6Graph);
     this.#graph.centerContent();
+    const durationMs = Number((performance.now() - start).toFixed(2));
+    this.#emitMetric('graph.render_duration_ms', durationMs, {
+      nodeCount: this.#graphModel.nodes.length,
+      edgeCount: this.#graphModel.edges.length,
+    });
+  }
+
+  #emitMetric(name, value, metadata = {}) {
+    this.dispatchEvent(
+      new CustomEvent('observability-metric', {
+        detail: {
+          name,
+          value,
+          source: 'architecture-graph',
+          timestamp: new Date().toISOString(),
+          metadata,
+        },
+        bubbles: true,
+      })
+    );
   }
 }
 

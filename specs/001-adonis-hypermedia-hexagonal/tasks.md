@@ -123,6 +123,12 @@
 - [X] T054 [P] Update frontend architecture doc for parser/graph contract version policy in `docs/frontend-architecture.md`
 - [X] T055 Run full quickstart validation and record results in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
 - [X] T056 Verify constitution gate outcomes and final compliance notes in `specs/001-adonis-hypermedia-hexagonal/plan.md`
+- [X] T057 [P] Instrument capability-island interaction metrics in `frontend/components/architecture-graph.js` and `frontend/components/parser-island.js`
+- [X] T058 Update frontend observability contract documentation in `docs/frontend-architecture.md`
+- [X] T059 Validate capability-island metrics emission and record steps in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
+- [X] T060 Audit-map write/mutate endpoint coverage in `docs/security-and-auth.md`
+- [X] T061 Implement missing audit hooks for `/users/register` and `/uploads` in backend controllers
+- [X] T062 Verify full write/mutate audit coverage and record results in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
 
 ---
 

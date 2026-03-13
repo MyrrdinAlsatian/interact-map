@@ -1,4 +1,8 @@
 node_modules
 build
+dist
 coverage
 .adonisjs
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

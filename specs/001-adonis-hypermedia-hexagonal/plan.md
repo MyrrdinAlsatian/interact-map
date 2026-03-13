@@ -105,10 +105,11 @@ index.html
 
 ## Final Compliance Notes
 
-- Task execution status: all tasks T001-T056 are implemented and tracked in `tasks.md`.
+- Task execution status: all tasks T001-T062 are implemented and tracked in `tasks.md`.
 - RBAC policy implemented with explicit role hierarchy (`viewer`, `analyst`, `architect`, `admin`) and route-level enforcement through `requireRole(minimumRole)`.
 - Audit policy implemented for write/mutate operations via `ObservabilityRepository.appendAuditLog(...)`, with admin-gated retrieval endpoint.
 - Observability baseline implemented with latency and error counters exposed by `/observability/metrics`.
+- Capability-island observability events implemented for graph/parser interaction metrics (`observability-metric`).
 
 ## Complexity Tracking
 

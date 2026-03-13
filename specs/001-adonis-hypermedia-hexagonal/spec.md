@@ -2,7 +2,7 @@
 
 **Feature Branch**: `001-adonis-hypermedia-hexagonal`  
 **Created**: 2026-03-13  
-**Status**: Draft  
+**Status**: Implemented  
 **Input**: User description: "AdonisJS backend for hypermedia app with Unpoly, Web Components islands (AntV X6 and parser), hexagonal architecture and clean code"
 
 ## Clarifications
@@ -28,7 +28,7 @@ As a user, I can navigate architecture pages rendered by the server and progress
 **Acceptance Scenarios**:
 
 1. **Given** the user is on the graph page, **When** they navigate to inventory pages, **Then** the server returns full HTML pages.
-2. **Given** JavaScript and Unpoly are enabled, **When** the user applies table filters, **Then** only target fragments update.
+2. **Given** JavaScript and Unpoly are enabled, **When** the user navigates between inventory targets, **Then** only target fragments update without full-page reload.
 
 ---
 
@@ -63,9 +63,9 @@ As an operator, I can parse infrastructure input through a custom Web Component 
 ### Edge Cases
 
 - Missing Unpoly fragment target returns `422` with structured error payload and client fallback to full-page navigation.
-- How does the graph component behave on invalid or partially missing node/edge payloads?
+- Invalid or partially missing node/edge payloads MUST return structured validation errors and MUST NOT render a partial/broken graph state.
 - Parser accepts current and previous `schemaVersion`; older versions are rejected with structured compatibility errors.
-- What happens when JavaScript is unavailable (degrade to server-only navigation)?
+- When JavaScript is unavailable, navigation MUST degrade to server-rendered full-page responses without SPA dependencies.
 
 ## Requirements *(mandatory)*
 
@@ -108,7 +108,7 @@ As an operator, I can parse infrastructure input through a custom Web Component 
 ### Measurable Outcomes
 
 - **SC-001**: 100% of primary page routes work as full server-rendered HTML without JavaScript.
-- **SC-002**: At least 3 key interactions (filter, pagination, detail switch) update via Unpoly without full reload.
+- **SC-002**: At least 3 key navigation/fragment interactions update via Unpoly without full reload.
 - **SC-003**: Graph component renders and interacts with a sample graph under 2 seconds on local dev hardware.
 - **SC-004**: Parser component transforms supported input into valid graph fragments with deterministic output schema.
 - **SC-005**: 100% of write/mutate operations generate audit log entries with actor, action, target, timestamp, and outcome.

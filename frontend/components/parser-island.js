@@ -32,10 +32,20 @@ class ParserIsland extends HTMLElement {
    * @returns {{ schemaVersion: string, nodes: object[], edges: object[], errors: object[], warnings: object[] }}
    */
   parse(input) {
+    const start = performance.now();
+
     // Validate envelope first
     const validation = validateParserInput(input);
     if (!validation.valid) {
       const result = { schemaVersion: input?.schemaVersion ?? '', nodes: [], edges: [], errors: validation.errors, warnings: validation.warnings };
+      this.#emitMetric('parser.contract_validation_error_count', validation.errors.length, {
+        sourceType: input?.sourceType ?? null,
+        schemaVersion: input?.schemaVersion ?? null,
+      });
+      this.#emitMetric('parser.parse_duration_ms', Number((performance.now() - start).toFixed(2)), {
+        sourceType: input?.sourceType ?? null,
+        outcome: 'failure',
+      });
       this.dispatchEvent(new CustomEvent('parse-error', { detail: { errors: validation.errors, warnings: validation.warnings }, bubbles: true }));
       this.#renderErrors(validation.errors, validation.warnings);
       return result;
@@ -64,9 +74,21 @@ class ParserIsland extends HTMLElement {
     }
 
     if (result.errors && result.errors.length > 0) {
+      this.#emitMetric('parser.contract_validation_error_count', result.errors.length, {
+        sourceType: input.sourceType,
+        schemaVersion: input.schemaVersion,
+      });
+      this.#emitMetric('parser.parse_duration_ms', Number((performance.now() - start).toFixed(2)), {
+        sourceType: input.sourceType,
+        outcome: 'failure',
+      });
       this.dispatchEvent(new CustomEvent('parse-error', { detail: { errors: result.errors, warnings: result.warnings ?? [] }, bubbles: true }));
       this.#renderErrors(result.errors, result.warnings ?? []);
     } else {
+      this.#emitMetric('parser.parse_duration_ms', Number((performance.now() - start).toFixed(2)), {
+        sourceType: input.sourceType,
+        outcome: 'success',
+      });
       this.dispatchEvent(new CustomEvent('parse-success', { detail: result, bubbles: true }));
       this.#renderSuccess(result);
     }
@@ -120,6 +142,21 @@ class ParserIsland extends HTMLElement {
       const warnText = warnings?.length > 0 ? `\n\nWarnings:\n${JSON.stringify(warnings, null, 2)}` : '';
       output.textContent = `✗ Errors:\n${JSON.stringify(errors, null, 2)}${warnText}`;
     }
+  }
+
+  #emitMetric(name, value, metadata = {}) {
+    this.dispatchEvent(
+      new CustomEvent('observability-metric', {
+        detail: {
+          name,
+          value,
+          source: 'parser-island',
+          timestamp: new Date().toISOString(),
+          metadata,
+        },
+        bubbles: true,
+      })
+    );
   }
 }
 

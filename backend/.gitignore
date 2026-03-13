@@ -1,6 +1,11 @@
 node_modules/
 build/
+dist/
 .tmp/
 .env
+.env*
 coverage/
 .adonisjs/
+*.log
+.DS_Store
+Thumbs.db

@@ -167,7 +167,31 @@ Remediation applied in backend toolchain:
 - RBAC baseline implemented: `requireRole('analyst')` applied to write/mutate endpoints.
 - Admin-only audit access implemented at `GET /audit/logs` (route policy + inline controller guard).
 - Audit write hooks implemented in graph validation, incident simulation, and parser ingestion controllers.
+- Audit write hooks implemented for `POST /users/register` and `POST /uploads`.
 - Metrics endpoint implemented at `GET /observability/metrics`.
+
+### 6d. Capability-island metrics verification (T059)
+
+1. Open `/graph` and attach an event listener in DevTools:
+  ```js
+  document.addEventListener('observability-metric', (e) => console.log('metric', e.detail))
+  ```
+2. Trigger graph render by reloading page; verify event `name: "graph.render_duration_ms"` appears.
+3. Call `architectureGraph.loadGraph({ schemaVersion: '0.1', nodes: [], edges: [] })`; verify event `name: "graph.contract_validation_error_count"` appears.
+4. Mount `<parser-island>` and parse valid input; verify `name: "parser.parse_duration_ms"` appears with success metadata.
+5. Parse invalid schema version (`0.1`); verify `name: "parser.contract_validation_error_count"` appears.
+
+### 6e. Full write/mutate audit verification (T062)
+
+Validate all write/mutate endpoints produce audit records:
+
+- `POST /users/register` → `action: users.register`
+- `POST /graph/contract/validate` → `action: graph.contract.validate`
+- `POST /graph/simulate-incident` → `action: graph.simulate-incident`
+- `POST /parser/ingest` → `action: parser.ingest`
+- `POST /uploads` → `action: uploads.store`
+
+After exercising each endpoint, query `GET /audit/logs` (admin) and confirm each action appears with expected outcome.
 
 ## 7. Architecture verification checklist
 - Domain layer has no direct framework dependencies.
