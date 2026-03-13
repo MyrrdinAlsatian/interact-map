@@ -95,6 +95,14 @@ index.html
 - Documentation: PASS. Design artifacts are present and synchronized.
 - Simplicity: PASS. No additional architectural layers beyond declared hexagonal boundaries.
 
+## Clarification Alignment Verification
+
+- FR-009 alignment verified: role model and route policy clarified to `viewer` / `editor` / `security` / `admin` and propagated to data model, security blueprint, and task coverage.
+- FR-011 alignment verified: missing-fragment behavior standardized to `422` followed by full-page `GET` to originating target URL.
+- FR-012 alignment verified: metric trigger semantics explicitly defined for `request_latency_ms`, `fragment_error_count`, and `parse_error_count`.
+- FR-014 alignment verified: schema window pinned to `current` and `current-1`; `current-2` and older rejected.
+- FR-015 alignment verified: accessibility baseline and keyboard-focused checks incorporated in implementation and quickstart verification.
+
 ## Complexity Tracking
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |

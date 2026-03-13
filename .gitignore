@@ -1,0 +1,13 @@
+backend/node_modules/
+backend/dist/
+backend/build/
+backend/coverage/
+backend/.adonisjs/
+
+.env
+.env*
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db

@@ -75,7 +75,7 @@
 - **Fields**:
   - `id` (string, required, unique)
   - `actorId` (string, required)
-  - `actorRole` (enum: `viewer | analyst | architect | admin`, required)
+  - `actorRole` (enum: `viewer | security | editor | admin`, required)
   - `action` (string, required)
   - `resourceType` (string, required)
   - `resourceId` (string, required)
@@ -92,6 +92,24 @@
 - ParserInput is transformed into ParserResult, which is merged into GraphContract.
 - PageFragmentResponse wraps server fragment output for Unpoly interactions.
 - Write/mutate use cases emit AuditLogEntry records.
+
+## 9) UserRolePolicy
+- **Roles**: `viewer`, `security`, `editor`, `admin`
+- **Policy rules**:
+  - `viewer`: authenticated read access only
+  - `editor`: all viewer permissions + standard writes/imports (`/parser/ingest`, graph mutation-oriented actions)
+  - `security`: all viewer permissions + security/audit oversight (including audit and observability review endpoints)
+  - `admin`: full privileged administration operations
+
+### Endpoint access matrix (Feature 001 baseline)
+
+| Endpoint group | viewer | editor | security | admin |
+|---|---|---|---|---|
+| Inventory/graph read pages (`GET /applications`, `/services`, `/servers`, `/containers`, `/interactions`, `/graph`) | Yes | Yes | Yes | Yes |
+| Contract validation and parser ingestion (`POST /graph/contract/validate`, `POST /parser/ingest`) | No | Yes | Yes | Yes |
+| Incident simulation (`POST /graph/simulate-incident`) | No | Yes | Yes | Yes |
+| Observability review (`GET /observability/metrics`) | No | No | Yes | Yes |
+| Audit logs (`GET /audit/logs`) | No | No | Yes | Yes |
 
 ## State Transitions
 1. **Requested**: authenticated user requests page, fragment, or parse operation.

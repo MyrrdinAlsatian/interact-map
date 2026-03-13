@@ -24,6 +24,7 @@ class ArchitectureGraph extends HTMLElement {
   #graph;
   #graphModel = { nodes: [], edges: [] };
   #container;
+  #selectedNodeIndex = 0;
 
   connectedCallback() {
     this.#renderShell();
@@ -116,8 +117,12 @@ class ArchitectureGraph extends HTMLElement {
   #renderShell() {
     this.style.display = 'block';
     this.style.minHeight = this.getAttribute('height') || '520px';
+    this.setAttribute('tabindex', '0');
+    this.setAttribute('role', 'application');
+    this.setAttribute('aria-label', 'Architecture graph canvas');
     this.innerHTML = '<div part="canvas" style="width:100%;height:100%;border:1px solid #dee2e6;border-radius:12px"></div>';
     this.#container = this.querySelector('div');
+    this.addEventListener('keydown', (event) => this.#onKeyboard(event));
   }
 
   #mountX6() {
@@ -148,12 +153,60 @@ class ArchitectureGraph extends HTMLElement {
     const x6Graph = toX6Graph(this.#graphModel);
     this.#graph.clearCells();
     this.#graph.fromJSON(x6Graph);
+    this.#selectedNodeIndex = 0;
     this.#graph.centerContent();
     const durationMs = Number((performance.now() - start).toFixed(2));
     this.#emitMetric('graph.render_duration_ms', durationMs, {
       nodeCount: this.#graphModel.nodes.length,
       edgeCount: this.#graphModel.edges.length,
     });
+  }
+
+  #onKeyboard(event) {
+    if (!this.#graph) {
+      return;
+    }
+    if (event.key === '+' || event.key === '=') {
+      event.preventDefault();
+      this.#graph.zoom(0.1);
+      return;
+    }
+    if (event.key === '-') {
+      event.preventDefault();
+      this.#graph.zoom(-0.1);
+      return;
+    }
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.#graph.translate(0, 24);
+      return;
+    }
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.#graph.translate(0, -24);
+      return;
+    }
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      this.#graph.translate(24, 0);
+      return;
+    }
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      this.#graph.translate(-24, 0);
+      return;
+    }
+    if (event.key === 'Enter') {
+      const nodes = this.#graphModel?.nodes ?? [];
+      if (!nodes.length) {
+        return;
+      }
+      event.preventDefault();
+      const node = nodes[this.#selectedNodeIndex % nodes.length];
+      this.focusNode(node.id);
+      this.highlightDependencies(node.id);
+      this.#selectedNodeIndex = (this.#selectedNodeIndex + 1) % nodes.length;
+    }
   }
 
   #emitMetric(name, value, metadata = {}) {

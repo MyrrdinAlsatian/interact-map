@@ -30,19 +30,19 @@ Role hierarchy implemented in `backend/src/infrastructure/adonis/kernel.ts`:
 | Role | Level | Write permissions |
 |------|-------|-------------------|
 | `viewer` | 0 | Read only |
-| `analyst` | 1 | Incident simulation, parser ingestion, contract validation |
-| `architect` | 2 | All analyst operations + topology edits |
-| `admin` | 3 | All operations + audit log access |
+| `editor` | 1 | Standard writes/imports (incident simulation, parser ingestion, contract validation) |
+| `security` | 2 | Security and observability oversight, audit review |
+| `admin` | 3 | All operations + privileged administration |
 
 Role guard: `requireRole(minimumRole)` factory from `auth_middleware.ts`. Returns 403 if user level < required level.
 
 **Route RBAC policy summary:**
 - `GET /applications`, `/services`, `/servers`, `/containers`, `/interactions`, `/graph` — `viewer+`
-- `POST /graph/contract/validate` — `analyst+`
-- `POST /graph/simulate-incident` — `analyst+`
-- `POST /parser/ingest` — `analyst+`
-- `GET /audit/logs` — `admin` (inline check in `AuditLogsController`)
-- `GET /observability/metrics` — `viewer+` (any authenticated)
+- `POST /graph/contract/validate` — `editor+`
+- `POST /graph/simulate-incident` — `editor+`
+- `POST /parser/ingest` — `editor+`
+- `GET /audit/logs` — `security+`
+- `GET /observability/metrics` — `security+`
 
 ## Audit Requirements (Feature 001)
 
@@ -52,7 +52,7 @@ All write/mutate operations emit an `AuditLogEntry` via `ObservabilityRepository
 {
   id: string         // UUID
   actorId: string    // auth user id
-  actorRole: string  // 'viewer' | 'analyst' | 'architect' | 'admin'
+  actorRole: string  // 'viewer' | 'security' | 'editor' | 'admin'
   action: string     // e.g. 'graph.simulate-incident'
   resourceType: string
   resourceId: string

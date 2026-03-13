@@ -58,7 +58,7 @@
 - [X] T024 [US1] Implement containers page template in `backend/resources/views/containers/index.edge`
 - [X] T025 [US1] Implement interactions page template in `backend/resources/views/interactions/index.edge`
 - [X] T026 [US1] Update US1 manual verification steps for no-JS and fragment fallback behavior in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
-- [ ] T063 [US1] Add semantic landmarks, readable contrast hooks, and keyboard-reachable primary navigation behavior in `backend/resources/views/layout.edge` and `backend/resources/views/partials/inventory_table.edge`
+- [X] T063 [US1] Add semantic landmarks, readable contrast hooks, and keyboard-reachable primary navigation behavior in `backend/resources/views/layout.edge` and `backend/resources/views/partials/inventory_table.edge`
 
 **Checkpoint**: US1 works independently with server-first navigation and Unpoly fallback behavior.
 
@@ -83,7 +83,7 @@
 - [X] T035 [US2] Align graph contract endpoint semantics for US2 in `specs/001-adonis-hypermedia-hexagonal/contracts/http-endpoints.yaml`
 - [X] T036 [US2] Update graph sample fixture for interaction verification in `examples/project-dataset.json`
 - [X] T037 [US2] Execute and document US2 independent verification checklist in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
-- [ ] T064 [US2] Add keyboard-reachable controls and accessible labeling for graph interactions in `frontend/components/architecture-graph.js` and `backend/resources/views/graph/index.edge`
+- [X] T064 [US2] Add keyboard-reachable controls and accessible labeling for graph interactions in `frontend/components/architecture-graph.js` and `backend/resources/views/graph/index.edge`
 
 **Checkpoint**: US2 graph island is independently functional and contract-compliant.
 
@@ -108,7 +108,7 @@
 - [X] T046 [US3] Add parser fixtures for valid, malformed, and older-version cases in `examples/parser-fixtures.json`
 - [X] T047 [US3] Align parser-island contract and error semantics in `specs/001-adonis-hypermedia-hexagonal/contracts/web-components.md`
 - [X] T048 [US3] Execute and document US3 independent verification checklist in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
-- [ ] T065 [US3] Add keyboard-reachable controls and accessible status/error announcements in `frontend/components/parser-island.js`
+- [X] T065 [US3] Add keyboard-reachable controls and accessible status/error announcements in `frontend/components/parser-island.js`
 
 **Checkpoint**: US3 parser island independently produces normalized graph fragments and structured errors.
 
@@ -132,9 +132,9 @@
 - [X] T060 Audit-map write/mutate endpoint coverage in `docs/security-and-auth.md`
 - [X] T061 Implement missing audit hooks for `/users/register` and `/uploads` in backend controllers
 - [X] T062 Verify full write/mutate audit coverage and record results in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
-- [ ] T066 [P] Document the clarified `viewer` / `security` / `editor` / `admin` role matrix and endpoint access policy in `specs/001-adonis-hypermedia-hexagonal/data-model.md` and `docs/security-and-auth.md`
-- [ ] T067 [P] Update quickstart verification for explicit `422` full-page GET fallback, metric trigger semantics, schema-version window, and accessibility checks in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
-- [ ] T068 Verify clarified FR-009, FR-011, FR-012, FR-014, and FR-015 alignment in `specs/001-adonis-hypermedia-hexagonal/plan.md` and `specs/001-adonis-hypermedia-hexagonal/tasks.md`
+- [X] T066 [P] Document the clarified `viewer` / `security` / `editor` / `admin` role matrix and endpoint access policy in `specs/001-adonis-hypermedia-hexagonal/data-model.md` and `docs/security-and-auth.md`
+- [X] T067 [P] Update quickstart verification for explicit `422` full-page GET fallback, metric trigger semantics, schema-version window, and accessibility checks in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
+- [X] T068 Verify clarified FR-009, FR-011, FR-012, FR-014, and FR-015 alignment in `specs/001-adonis-hypermedia-hexagonal/plan.md` and `specs/001-adonis-hypermedia-hexagonal/tasks.md`
 
 ---
 

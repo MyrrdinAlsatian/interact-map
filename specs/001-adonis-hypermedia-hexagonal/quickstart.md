@@ -46,10 +46,17 @@ npm run dev
     "fallbackNavigation": "full_page"
   }
   ```
-- Verify Unpoly falls back to a full-page navigation (or the raw 422 JSON is returned if Unpoly is not active).
+- Verify client behavior: after receiving `422`, the browser performs a full-page `GET` to the originating target URL.
+- If Unpoly is not active, verify the raw `422` JSON is returned and no fragment HTML is rendered.
 
 ### 4d. Known fragment resolution
 - Request `GET http://localhost:3333/fragments/inventory-applications` → returns HTTP 200 with valid HTML partial.
+
+### 4e. Accessibility baseline checks (FR-015)
+- Use keyboard-only navigation on `/applications`: Tab order reaches all primary nav links, and Enter activates navigation.
+- Verify skip link is visible on focus and moves focus to `#main-content`.
+- Verify visible focus ring appears on links, inputs, selects, buttons, and textarea controls.
+- Verify inventory and graph pages expose semantic landmarks (`header`, `nav`, `main`, labeled regions).
 
 ## 5. Verify capability islands and contract policy
 
@@ -65,7 +72,7 @@ npm run dev
 #### 5b. Schema version acceptance/rejection
 - Call `POST /graph/contract/validate` with `{ "schemaVersion": "1.0", "nodes": [...], "edges": [], "errors": [] }` → expect HTTP 200 `{ valid: true }`.
 - Repeat with `schemaVersion: "0.9"` → expect HTTP 200 (previous version accepted).
-- Repeat with `schemaVersion: "0.1"` → expect HTTP 422 with `ContractError` code `VERSION_UNSUPPORTED`.
+- Repeat with `schemaVersion: "0.8"` (current-2) → expect HTTP 422 with `ContractError` code `VERSION_UNSUPPORTED`.
 
 #### 5c. Component fires `contract-validation-error` for invalid contracts
 - In browser console: `document.getElementById('architectureGraph').loadGraph({ schemaVersion: '0.1', nodes: [], edges: [] })`.
@@ -164,8 +171,8 @@ Remediation applied in backend toolchain:
 ### 6c. Auth/RBAC/Audit and observability verification checklist
 
 - Auth baseline implemented: public routes are `GET /health` and `POST /users/register`; all other routes are authenticated.
-- RBAC baseline implemented: `requireRole('analyst')` applied to write/mutate endpoints.
-- Admin-only audit access implemented at `GET /audit/logs` (route policy + inline controller guard).
+- RBAC baseline implemented: `editor` role gates standard writes/imports, `security` role gates audit/observability oversight, `admin` retains privileged operations.
+- Audit access implemented at `GET /audit/logs` for `security+` role policy.
 - Audit write hooks implemented in graph validation, incident simulation, and parser ingestion controllers.
 - Audit write hooks implemented for `POST /users/register` and `POST /uploads`.
 - Metrics endpoint implemented at `GET /observability/metrics`.
@@ -180,6 +187,11 @@ Remediation applied in backend toolchain:
 3. Call `architectureGraph.loadGraph({ schemaVersion: '0.1', nodes: [], edges: [] })`; verify event `name: "graph.contract_validation_error_count"` appears.
 4. Mount `<parser-island>` and parse valid input; verify `name: "parser.parse_duration_ms"` appears with success metadata.
 5. Parse invalid schema version (`0.1`); verify `name: "parser.contract_validation_error_count"` appears.
+
+Expected metric trigger semantics:
+- `request_latency_ms`: emitted for every HTTP response, value in milliseconds.
+- `fragment_error_count`: increments for each missing-fragment `422` response.
+- `parse_error_count`: increments for each parser validation failure.
 
 ### 6e. Full write/mutate audit verification (T062)
 

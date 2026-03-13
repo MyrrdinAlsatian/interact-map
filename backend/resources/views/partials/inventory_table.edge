@@ -1,9 +1,11 @@
 @layout('layout', { title: pageTitle })
 
 @slot('content')
-  <h2 class="page-title" id="inventory-{{ pageTitle | lower }}">{{ pageTitle }}</h2>
+  <section aria-labelledby="inventory-{{ pageTitle | lower }}">
+    <h2 class="page-title" id="inventory-{{ pageTitle | lower }}">{{ pageTitle }}</h2>
 
-  <div id="inventory-table" up-target="#inventory-table">
-    @include('partials/inventory_rows')
-  </div>
+    <div id="inventory-table" up-target="#inventory-table" tabindex="-1" aria-live="polite">
+      @include('partials/inventory_rows')
+    </div>
+  </section>
 @endslot

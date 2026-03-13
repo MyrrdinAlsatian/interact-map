@@ -97,6 +97,8 @@ class ParserIsland extends HTMLElement {
   }
 
   #renderShell() {
+    this.setAttribute('role', 'region');
+    this.setAttribute('aria-label', 'Parser island');
     this.innerHTML = `
       <div class="parser-island" style="padding:12px;border:1px solid #dee2e6;border-radius:8px;background:#fff;">
         <h3 style="margin:0 0 10px;font-size:1rem;">Parser Island</h3>
@@ -113,9 +115,10 @@ class ParserIsland extends HTMLElement {
           <option value="0.1">0.1 (unsupported — test error handling)</option>
         </select>
         <label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:4px;">Payload</label>
-        <textarea id="payload" rows="8" style="width:100%;padding:8px;border:1px solid #ced4da;border-radius:6px;font-family:monospace;font-size:.82rem;box-sizing:border-box;" placeholder="Paste docker-compose YAML or docker inspect JSON here..."></textarea>
+        <textarea id="payload" rows="8" aria-describedby="parserHint" style="width:100%;padding:8px;border:1px solid #ced4da;border-radius:6px;font-family:monospace;font-size:.82rem;box-sizing:border-box;" placeholder="Paste docker-compose YAML or docker inspect JSON here..."></textarea>
+        <p id="parserHint" style="margin:6px 0 0;font-size:.78rem;color:#495057;">Keyboard shortcut: Ctrl+Enter (or Cmd+Enter) to parse payload.</p>
         <button id="parseBtn" type="button" style="margin-top:8px;padding:7px 14px;background:#0b7285;color:#fff;border:none;border-radius:6px;cursor:pointer;">Parse</button>
-        <pre id="parserOutput" aria-live="polite" style="margin-top:12px;padding:12px;background:#f1f3f5;border-radius:6px;font-size:.82rem;white-space:pre-wrap;"></pre>
+        <pre id="parserOutput" role="status" aria-live="polite" style="margin-top:12px;padding:12px;background:#f1f3f5;border-radius:6px;font-size:.82rem;white-space:pre-wrap;"></pre>
       </div>
     `;
 
@@ -125,12 +128,21 @@ class ParserIsland extends HTMLElement {
       const payload = this.querySelector('#payload').value;
       this.parse({ sourceType, schemaVersion, payload });
     });
+
+    this.querySelector('#payload').addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        event.preventDefault();
+        this.querySelector('#parseBtn').click();
+      }
+    });
   }
 
   #renderSuccess(result) {
     const output = this.querySelector('#parserOutput');
     if (output) {
       output.style.borderLeft = '4px solid #2b8a3e';
+      output.setAttribute('role', 'status');
+      output.setAttribute('aria-live', 'polite');
       output.textContent = `✓ Parsed successfully — ${result.nodes.length} nodes, ${result.edges.length} edges\n\n${JSON.stringify(result, null, 2)}`;
     }
   }
@@ -139,6 +151,8 @@ class ParserIsland extends HTMLElement {
     const output = this.querySelector('#parserOutput');
     if (output) {
       output.style.borderLeft = '4px solid #e03131';
+      output.setAttribute('role', 'alert');
+      output.setAttribute('aria-live', 'assertive');
       const warnText = warnings?.length > 0 ? `\n\nWarnings:\n${JSON.stringify(warnings, null, 2)}` : '';
       output.textContent = `✗ Errors:\n${JSON.stringify(errors, null, 2)}${warnText}`;
     }
