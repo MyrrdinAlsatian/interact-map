@@ -14,7 +14,7 @@
 - [X] T002 [P] Align backend runtime and aliases for feature modules in `backend/adonisrc.ts`
 - [X] T003 [P] Align TypeScript compiler and path mapping for new domain/infrastructure files in `backend/tsconfig.json`
 - [X] T004 [P] Add implementation boundary notes for this feature in `backend/ARCHITECTURE.md`
-- [X] T005 [P] Align root demo navigation links with server-rendered routes in `index.html`
+- [X] T005 [P] Align root demo navigation links with server-rendered routes in `index.html` (supports FR-003 server-first baseline navigation consistency)
 
 ---
 

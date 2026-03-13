@@ -11,9 +11,7 @@
 
 - Q: What baseline access-control model should apply to pages and APIs? → A: Authentication required; read access for all authenticated users, write/mutate actions restricted by role.
 - Q: Which contract strategy should backend and capability islands use for graph/parser payloads? → A: Versioned JSON contract (`schemaVersion`, `nodes[]`, `edges[]`, `errors[]`) validated on both backend and frontend.
-- Q: How should the system handle Unpoly requests that target a missing fragment? → A: Return structured fragment error (`422` + error payload) and trigger fallback to full-page navigation.
 - Q: What baseline observability should the system provide? → A: Structured JSON logs + core metrics (`request_latency_ms`, `fragment_error_count`, `parse_error_count`) and audit logging for write/mutate actions.
-- Q: What schema-version compatibility policy should parser and graph contract support? → A: Accept only `current` and `current-1`; reject `current-2` and older versions with structured compatibility error.
 - Q: What accessibility baseline should this feature require? → A: Semantic HTML, readable contrast, and keyboard-reachable primary interactions for server-rendered pages and capability islands.
 - Q: Which RBAC roles should define baseline access policy? → A: `viewer`, `security`, `editor`, and `admin`, with authenticated reads for all roles, standard writes/imports for `editor`, security/audit oversight for `security`, and full privileged operations for `admin`.
 - Q: What exact client fallback should occur after a `422` missing-fragment response? → A: The client performs a full-page `GET` to the originating target URL.
@@ -117,5 +115,5 @@ As an operator, I can parse infrastructure input through a custom Web Component 
 - **SC-001**: 100% of primary page routes work as full server-rendered HTML without JavaScript.
 - **SC-002**: The `applications`, `services`, and `servers` inventory fragment interactions update via Unpoly without full reload.
 - **SC-003**: Graph component renders and interacts with a sample graph under 2 seconds on a Linux x86-64 developer workstation (>=8 GB RAM) using a modern Chromium-based browser.
-- **SC-004**: Parser component transforms supported input into valid graph fragments with deterministic output schema.
+- **SC-004**: Parser component transforms supported input into valid graph fragments with deterministic output schema, including stable node ordering by `id`, stable edge ordering by `id`, and stable error ordering by `code`.
 - **SC-005**: 100% of write/mutate operations generate audit log entries with actor, action, target, timestamp, and outcome.
