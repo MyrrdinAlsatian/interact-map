@@ -15,15 +15,37 @@
 
 ## Capability Islands
 - `architecture-graph`
-  - Input: framework-agnostic graph JSON (`nodes`, `edges`).
+  - Input: `GraphContract` (`schemaVersion`, `nodes`, `edges`, `errors`).
+  - `set data(value)` — triggers `validateGraphContract(value)` before rendering.
+  - On validation failure, fires `contract-validation-error` event (`detail.errors: ContractError[]`) and aborts render.
   - Features: zoom, pan, selection, dependency highlight, incident impact overlays.
+- `parser-island`
+  - `parse(input: ParserInput)` — validates input, runs selected parser, returns `ParserResult`.
+  - Dispatches `parse-success` (`detail: ParserResult`) or `parse-error` (`detail: { errors: ContractError[] }`).
+  - Renders own UI shell: textarea, source type select, parse button, output display.
 - Future islands can be added without converting app into SPA.
 
+## Contract Version Policy
+
+Both frontend libraries and backend use cases enforce the same schema version policy:
+
+| Version | Status | Treatment |
+|---------|--------|-----------|
+| `"1.0"` | Current | Valid, no warnings |
+| `"0.9"` | Previous | Valid with `ContractError` severity `warning` code `VERSION_PREVIOUS` |
+| Any other / missing | Unsupported | Rejected — `ContractError` severity `error` code `VERSION_UNSUPPORTED` |
+
+`SUPPORTED_SCHEMA_VERSIONS = ['1.0', '0.9']` is the canonical list, defined in both:
+- `backend/src/domain/contracts/dto/graph_contract_dto.ts`
+- `frontend/lib/graph-model.js` and `frontend/lib/parser-contract.js`
+
 ## Data Contracts
-Graph model (framework-agnostic):
+
+Graph contract (feature 001 schema):
 
 ```json
 {
+  "schemaVersion": "1.0",
   "nodes": [
     {
       "id": "node-id",
@@ -41,9 +63,57 @@ Graph model (framework-agnostic):
       "dependencyType": "required|optional|async|cache",
       "protocol": "http|tcp|..."
     }
-  ]
+  ],
+  "errors": []
 }
 ```
+
+Parser result contract:
+
+```json
+{
+  "schemaVersion": "1.0",
+  "sourceType": "docker-compose|docker-inspect|docker-ps",
+  "nodes": [],
+  "edges": [],
+  "errors": [],
+  "warnings": []
+}
+```
+
+## Import Chain
+
+```
+frontend/lib/parser-contract.js        (shared validator + builder)
+   ↳ frontend/lib/docker-compose-parser.js
+   ↳ frontend/lib/docker-inspect-parser.js
+   ↳ frontend/lib/docker-ps-parser.js
+       ↳ frontend/components/parser-island.js  (Web Component consumer)
+
+frontend/lib/graph-model.js            (graph validation)
+   ↳ frontend/components/architecture-graph.js  (Web Component consumer)
+   ↳ frontend/lib/x6-adapter.js                 (rendering adapter)
+   ↳ frontend/lib/incident-impact.js            (traversal)
+```
+
+## Component API Summary
+
+### `<architecture-graph>`
+
+| API | Type | Description |
+|-----|------|-------------|
+| `set data(contract)` | setter | Validate + render GraphContract |
+| `loadGraph(contract)` | method | Alias for `data` setter |
+| `contract-validation-error` | event | Fired when schema validation fails |
+| `node-selected` | event | Fired when user selects a node |
+
+### `<parser-island>`
+
+| API | Type | Description |
+|-----|------|-------------|
+| `parse(input)` | method | Validate + parse; returns ParserResult |
+| `parse-success` | event | Fired on valid parse result |
+| `parse-error` | event | Fired on validation or parse failure |
 
 ## Offline Layer
 - IndexedDB stores projects, graph snapshots, and imported source files.

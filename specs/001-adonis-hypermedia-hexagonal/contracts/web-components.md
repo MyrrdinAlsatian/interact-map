@@ -2,51 +2,84 @@
 
 ## architecture-graph
 
+**Element**: `<architecture-graph>`
+**File**: `frontend/components/architecture-graph.js`
+
 ### Input contract
-- Property: `data` (`GraphContract`)
-- Method: `loadGraph(contract: GraphContract)`
+- Property: `data` (`GraphContract`) — sets and validates on assignment
+- Method: `loadGraph(contract: GraphContract)` — delegates to `data` setter
 
 `GraphContract` shape:
 
 ```json
 {
   "schemaVersion": "1.0",
-  "nodes": [],
-  "edges": [],
+  "nodes": [{ "id": "string", "type": "application|service|container|server|external", "label": "string", "metadata": {} }],
+  "edges": [{ "id": "string", "source": "string", "target": "string", "criticality": "critical|high|medium|low", "dependencyType": "required|optional|async|cache", "protocol": "string" }],
   "errors": []
 }
 ```
 
+**Schema version policy**: `'1.0'` (current) and `'0.9'` (previous) accepted. Older versions dispatch `contract-validation-error` and abort rendering — no exception is thrown.
+
 ### Interaction contract
-- Method: `focusNode(nodeId: string)`
-- Method: `highlightDependencies(nodeId: string)`
-- Method: `simulateIncident(nodeId: string, mode?: 'bfs' | 'dfs')`
+- Method: `focusNode(nodeId: string)` — centers and selects node
+- Method: `highlightDependencies(nodeId: string)` — visually emphasizes connected edges
+- Method: `simulateIncident(nodeId: string, mode?: 'bfs' | 'dfs') → IncidentSimulationResult` — runs BFS/DFS and highlights affected cells
 
-### Output contract
-- Event: `incident-simulated`
-  - `detail.failedNodeId: string`
-  - `detail.traversal: 'bfs' | 'dfs'`
-  - `detail.impactedNodes: string[]`
-  - `detail.impactedEdges: string[]`
+### Output events
+| Event | When | `detail` shape |
+|---|---|---|
+| `contract-validation-error` | Invalid or unsupported contract passed to `loadGraph` | `{ errors: ContractError[] }` |
+| `incident-simulated` | After `simulateIncident()` completes | `{ failedNodeId, traversal, impactedNodes: string[], impactedEdges: string[] }` |
 
-## parser-island (custom parser)
+---
+
+## parser-island
+
+**Element**: `<parser-island>`
+**File**: `frontend/components/parser-island.js`
 
 ### Input contract
-- Property: `sourceType: string`
-- Method: `parse(payload: unknown, schemaVersion: string)`
+- Method: `parse(input: ParserInput) → ParserResult`
+  - `input.sourceType` — `'docker-compose' | 'docker-inspect' | 'docker-ps'`
+  - `input.schemaVersion` — version string
+  - `input.payload` — raw input string/object
 
 ### Output contract
-- Success: `{ schemaVersion, nodes: GraphNode[], edges: GraphEdge[], errors: [], warnings: [] }`
-- Failure: `{ schemaVersion, nodes: [], edges: [], errors: ParseError[], warnings: ParseWarning[] }`
+- **Success**: `{ schemaVersion, nodes: GraphNode[], edges: GraphEdge[], errors: [], warnings: ContractError[] }`
+- **Failure**: `{ schemaVersion, nodes: [], edges: [], errors: ContractError[], warnings: ContractError[] }`
 
-### Compatibility policy
-- Supported `schemaVersion`: current and previous.
-- Older versions must produce structured compatibility errors (no unhandled exceptions).
+**Important**: `parse()` NEVER throws — all structural and version errors are returned in `errors[]`.
 
-### Error contract
-- `ParseError = { code: string, message: string, path?: string, severity: 'error' | 'warning' }`
-- Missing fragment/invalid contract errors are surfaced with structured payloads compatible with server `422` envelopes.
+### Schema version compatibility policy
+| Version | Behavior |
+|---|---|
+| `'1.0'` (current) | Fully supported |
+| `'0.9'` (previous) | Supported; `VERSION_PREVIOUS` warning emitted in `warnings[]` |
+| Anything older | `VERSION_UNSUPPORTED` error in `errors[]`; empty `nodes[]` and `edges[]` returned |
+
+### Output events
+| Event | When | `detail` shape |
+|---|---|---|
+| `parse-success` | Parsing produced valid normalized result | `ParserResult` |
+| `parse-error` | Validation or normalization failed | `{ errors: ContractError[], warnings: ContractError[] }` |
+
+### Error format (`ContractError`)
+```json
+{
+  "code": "VERSION_UNSUPPORTED",
+  "message": "Human-readable description",
+  "path": "schemaVersion",
+  "severity": "error | warning"
+}
+```
+
+---
 
 ## Compatibility constraints
-- Components must be framework-agnostic and mountable in server-rendered HTML.
-- Components must not require SPA router state.
+- Both components are framework-agnostic Custom Elements v1. No SPA framework required.
+- Components must be mountable in server-rendered HTML without a JavaScript bundler.
+- Components must degrade gracefully: if not defined (JS disabled), their inner HTML content (or absence) does not break page layout.
+- `ContractError` codes are stable identifiers — client error handlers may switch/match on `code`.
+

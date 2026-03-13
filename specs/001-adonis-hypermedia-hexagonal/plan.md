@@ -95,6 +95,21 @@ index.html
 - Documentation: PASS. Design artifacts are present and synchronized.
 - Simplicity: PASS. No additional architectural layers beyond declared hexagonal boundaries.
 
+## Post-Implementation Constitution Check
+
+- Scope-first: PASS. Implementation delivered server-rendered inventory navigation (US1), graph capability island with incident simulation and contract validation (US2), and parser capability island with structured ingestion flow (US3).
+- Standards baseline: PASS. Primary navigation remains server-rendered HTML; Unpoly is progressive enhancement; capability islands are isolated Web Components.
+- Verification: PASS with documented environment caveats. Full quickstart validation run was executed and recorded in `quickstart.md`, including current failures caused by local toolchain mismatch (Node.js 18 vs required >= 20.6.0) and missing lint dependency.
+- Documentation: PASS. Design and operational documentation were updated in `docs/security-and-auth.md`, `docs/system-architecture-overview.md`, and `docs/frontend-architecture.md`, with quickstart validation evidence appended.
+- Simplicity: PASS. Hexagonal boundaries are preserved (`domain` remains framework-agnostic; framework concerns remain in `infrastructure`) and shared contract validation is centralized.
+
+## Final Compliance Notes
+
+- Task execution status: all tasks T001-T056 are implemented and tracked in `tasks.md`.
+- RBAC policy implemented with explicit role hierarchy (`viewer`, `analyst`, `architect`, `admin`) and route-level enforcement through `requireRole(minimumRole)`.
+- Audit policy implemented for write/mutate operations via `ObservabilityRepository.appendAuditLog(...)`, with admin-gated retrieval endpoint.
+- Observability baseline implemented with latency and error counters exposed by `/observability/metrics`.
+
 ## Complexity Tracking
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |

@@ -10,11 +10,11 @@
 
 **Purpose**: Align repository scaffolding with the approved implementation plan and contracts.
 
-- [ ] T001 Align backend scripts and dependencies for feature scope in `backend/package.json`
-- [ ] T002 [P] Align backend runtime and aliases for feature modules in `backend/adonisrc.ts`
-- [ ] T003 [P] Align TypeScript compiler and path mapping for new domain/infrastructure files in `backend/tsconfig.json`
-- [ ] T004 [P] Add implementation boundary notes for this feature in `backend/ARCHITECTURE.md`
-- [ ] T005 [P] Align root demo navigation links with server-rendered routes in `index.html`
+- [X] T001 Align backend scripts and dependencies for feature scope in `backend/package.json`
+- [X] T002 [P] Align backend runtime and aliases for feature modules in `backend/adonisrc.ts`
+- [X] T003 [P] Align TypeScript compiler and path mapping for new domain/infrastructure files in `backend/tsconfig.json`
+- [X] T004 [P] Add implementation boundary notes for this feature in `backend/ARCHITECTURE.md`
+- [X] T005 [P] Align root demo navigation links with server-rendered routes in `index.html`
 
 ---
 
@@ -24,16 +24,16 @@
 
 **⚠️ CRITICAL**: User story work begins only after this phase is complete.
 
-- [ ] T006 Define canonical graph contract and error types in `backend/src/domain/contracts/dto/graph_contract_dto.ts`
-- [ ] T007 [P] Define parser input/result contract DTOs with schema version fields in `backend/src/domain/contracts/dto/parser_contract_dto.ts`
-- [ ] T008 [P] Implement contract schema-version validation use case in `backend/src/domain/usecases/validate_contract_version_usecase.ts`
-- [ ] T009 [P] Implement graph contract structural validation use case in `backend/src/domain/usecases/validate_graph_contract_usecase.ts`
-- [ ] T010 Implement authentication + role guard middleware chain for read/write boundaries in `backend/src/infrastructure/adonis/kernel.ts`
-- [ ] T011 [P] Implement shared authorization helpers for role-gated actions in `backend/src/infrastructure/middleware/auth_middleware.ts`
-- [ ] T012 [P] Add structured logger configuration for request and feature events in `backend/config/logger.ts`
-- [ ] T013 Implement metrics and audit service contracts in `backend/src/domain/contracts/repositories/observability_repository.ts`
-- [ ] T014 Implement infrastructure observability repository (metrics + audit append) in `backend/src/infrastructure/repositories/observability_repository.ts`
-- [ ] T015 Register baseline feature routes and shared middleware usage in `backend/src/infrastructure/adonis/routes.ts`
+- [X] T006 Define canonical graph contract and error types in `backend/src/domain/contracts/dto/graph_contract_dto.ts`
+- [X] T007 [P] Define parser input/result contract DTOs with schema version fields in `backend/src/domain/contracts/dto/parser_contract_dto.ts`
+- [X] T008 [P] Implement contract schema-version validation use case in `backend/src/domain/usecases/validate_contract_version_usecase.ts`
+- [X] T009 [P] Implement graph contract structural validation use case in `backend/src/domain/usecases/validate_graph_contract_usecase.ts`
+- [X] T010 Implement authentication + role guard middleware chain for read/write boundaries in `backend/src/infrastructure/adonis/kernel.ts`
+- [X] T011 [P] Implement shared authorization helpers for role-gated actions in `backend/src/infrastructure/middleware/auth_middleware.ts`
+- [X] T012 [P] Add structured logger configuration for request and feature events in `backend/config/logger.ts`
+- [X] T013 Implement metrics and audit service contracts in `backend/src/domain/contracts/repositories/observability_repository.ts`
+- [X] T014 Implement infrastructure observability repository (metrics + audit append) in `backend/src/infrastructure/repositories/observability_repository.ts`
+- [X] T015 Register baseline feature routes and shared middleware usage in `backend/src/infrastructure/adonis/routes.ts`
 
 **Checkpoint**: Contract validation, auth/RBAC baseline, and observability/audit infrastructure are ready.
 
@@ -47,17 +47,17 @@
 
 ### Implementation for User Story 1
 
-- [ ] T016 [US1] Implement inventory page controller actions for server-rendered navigation in `backend/src/infrastructure/controllers/inventory_controller.ts`
-- [ ] T017 [P] [US1] Implement fragment resolver controller with `422` error envelope handling in `backend/src/infrastructure/controllers/fragments_controller.ts`
-- [ ] T018 [US1] Wire inventory and fragment endpoints with read-auth requirements in `backend/src/infrastructure/adonis/routes.ts`
-- [ ] T019 [P] [US1] Create shared hypermedia layout template with Unpoly target containers in `backend/resources/views/layout.edge`
-- [ ] T020 [P] [US1] Create reusable inventory fragment partial used by Unpoly updates in `backend/resources/views/partials/inventory_table.edge`
-- [ ] T021 [US1] Implement applications page template in `backend/resources/views/applications/index.edge`
-- [ ] T022 [US1] Implement services page template in `backend/resources/views/services/index.edge`
-- [ ] T023 [US1] Implement servers page template in `backend/resources/views/servers/index.edge`
-- [ ] T024 [US1] Implement containers page template in `backend/resources/views/containers/index.edge`
-- [ ] T025 [US1] Implement interactions page template in `backend/resources/views/interactions/index.edge`
-- [ ] T026 [US1] Update US1 manual verification steps for no-JS and fragment fallback behavior in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
+- [X] T016 [US1] Implement inventory page controller actions for server-rendered navigation in `backend/src/infrastructure/controllers/inventory_controller.ts`
+- [X] T017 [P] [US1] Implement fragment resolver controller with `422` error envelope handling in `backend/src/infrastructure/controllers/fragments_controller.ts`
+- [X] T018 [US1] Wire inventory and fragment endpoints with read-auth requirements in `backend/src/infrastructure/adonis/routes.ts`
+- [X] T019 [P] [US1] Create shared hypermedia layout template with Unpoly target containers in `backend/resources/views/layout.edge`
+- [X] T020 [P] [US1] Create reusable inventory fragment partial used by Unpoly updates in `backend/resources/views/partials/inventory_table.edge`
+- [X] T021 [US1] Implement applications page template in `backend/resources/views/applications/index.edge`
+- [X] T022 [US1] Implement services page template in `backend/resources/views/services/index.edge`
+- [X] T023 [US1] Implement servers page template in `backend/resources/views/servers/index.edge`
+- [X] T024 [US1] Implement containers page template in `backend/resources/views/containers/index.edge`
+- [X] T025 [US1] Implement interactions page template in `backend/resources/views/interactions/index.edge`
+- [X] T026 [US1] Update US1 manual verification steps for no-JS and fragment fallback behavior in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
 
 **Checkpoint**: US1 works independently with server-first navigation and Unpoly fallback behavior.
 
@@ -71,17 +71,17 @@
 
 ### Implementation for User Story 2
 
-- [ ] T027 [US2] Implement canonical graph contract validator used by graph island in `frontend/lib/graph-model.js`
-- [ ] T028 [P] [US2] Implement X6 adapter conversion from canonical graph contract in `frontend/lib/x6-adapter.js`
-- [ ] T029 [P] [US2] Implement incident traversal and impact projection utility in `frontend/lib/incident-impact.js`
-- [ ] T030 [US2] Implement architecture graph Web Component APIs/events in `frontend/components/architecture-graph.js`
-- [ ] T031 [US2] Implement graph page controller for server-rendered shell + contract payload injection in `backend/src/infrastructure/controllers/graph_controller.ts`
-- [ ] T032 [P] [US2] Implement graph page server template mounting the graph island in `backend/resources/views/graph/index.edge`
-- [ ] T033 [US2] Implement role-gated incident simulation endpoint in `backend/src/infrastructure/controllers/graph_simulation_controller.ts`
-- [ ] T034 [US2] Wire graph page and simulation routes with RBAC checks in `backend/src/infrastructure/adonis/routes.ts`
-- [ ] T035 [US2] Align graph contract endpoint semantics for US2 in `specs/001-adonis-hypermedia-hexagonal/contracts/http-endpoints.yaml`
-- [ ] T036 [US2] Update graph sample fixture for interaction verification in `examples/project-dataset.json`
-- [ ] T037 [US2] Execute and document US2 independent verification checklist in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
+- [X] T027 [US2] Implement canonical graph contract validator used by graph island in `frontend/lib/graph-model.js`
+- [X] T028 [P] [US2] Implement X6 adapter conversion from canonical graph contract in `frontend/lib/x6-adapter.js`
+- [X] T029 [P] [US2] Implement incident traversal and impact projection utility in `frontend/lib/incident-impact.js`
+- [X] T030 [US2] Implement architecture graph Web Component APIs/events in `frontend/components/architecture-graph.js`
+- [X] T031 [US2] Implement graph page controller for server-rendered shell + contract payload injection in `backend/src/infrastructure/controllers/graph_controller.ts`
+- [X] T032 [P] [US2] Implement graph page server template mounting the graph island in `backend/resources/views/graph/index.edge`
+- [X] T033 [US2] Implement role-gated incident simulation endpoint in `backend/src/infrastructure/controllers/graph_simulation_controller.ts`
+- [X] T034 [US2] Wire graph page and simulation routes with RBAC checks in `backend/src/infrastructure/adonis/routes.ts`
+- [X] T035 [US2] Align graph contract endpoint semantics for US2 in `specs/001-adonis-hypermedia-hexagonal/contracts/http-endpoints.yaml`
+- [X] T036 [US2] Update graph sample fixture for interaction verification in `examples/project-dataset.json`
+- [X] T037 [US2] Execute and document US2 independent verification checklist in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
 
 **Checkpoint**: US2 graph island is independently functional and contract-compliant.
 
@@ -95,17 +95,17 @@
 
 ### Implementation for User Story 3
 
-- [ ] T038 [US3] Implement parser contract validation utility with version policy enforcement in `frontend/lib/parser-contract.js`
-- [ ] T039 [P] [US3] Implement docker-compose normalization parser in `frontend/lib/docker-compose-parser.js`
-- [ ] T040 [P] [US3] Implement docker-inspect normalization parser in `frontend/lib/docker-inspect-parser.js`
-- [ ] T041 [P] [US3] Implement docker-ps normalization parser in `frontend/lib/docker-ps-parser.js`
-- [ ] T042 [US3] Implement parser capability island API and structured error output in `frontend/components/parser-island.js`
-- [ ] T043 [US3] Implement parser result ingestion use case in `backend/src/domain/usecases/import_parser_result_usecase.ts`
-- [ ] T044 [US3] Implement parser ingestion controller with compatibility error mapping in `backend/src/infrastructure/controllers/parser_controller.ts`
-- [ ] T045 [US3] Wire parser ingestion route with authenticated read/write policy in `backend/src/infrastructure/adonis/routes.ts`
-- [ ] T046 [US3] Add parser fixtures for valid, malformed, and older-version cases in `examples/parser-fixtures.json`
-- [ ] T047 [US3] Align parser-island contract and error semantics in `specs/001-adonis-hypermedia-hexagonal/contracts/web-components.md`
-- [ ] T048 [US3] Execute and document US3 independent verification checklist in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
+- [X] T038 [US3] Implement parser contract validation utility with version policy enforcement in `frontend/lib/parser-contract.js`
+- [X] T039 [P] [US3] Implement docker-compose normalization parser in `frontend/lib/docker-compose-parser.js`
+- [X] T040 [P] [US3] Implement docker-inspect normalization parser in `frontend/lib/docker-inspect-parser.js`
+- [X] T041 [P] [US3] Implement docker-ps normalization parser in `frontend/lib/docker-ps-parser.js`
+- [X] T042 [US3] Implement parser capability island API and structured error output in `frontend/components/parser-island.js`
+- [X] T043 [US3] Implement parser result ingestion use case in `backend/src/domain/usecases/import_parser_result_usecase.ts`
+- [X] T044 [US3] Implement parser ingestion controller with compatibility error mapping in `backend/src/infrastructure/controllers/parser_controller.ts`
+- [X] T045 [US3] Wire parser ingestion route with authenticated read/write policy in `backend/src/infrastructure/adonis/routes.ts`
+- [X] T046 [US3] Add parser fixtures for valid, malformed, and older-version cases in `examples/parser-fixtures.json`
+- [X] T047 [US3] Align parser-island contract and error semantics in `specs/001-adonis-hypermedia-hexagonal/contracts/web-components.md`
+- [X] T048 [US3] Execute and document US3 independent verification checklist in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
 
 **Checkpoint**: US3 parser island independently produces normalized graph fragments and structured errors.
 
@@ -115,14 +115,14 @@
 
 **Purpose**: Finalize cross-story quality, observability, documentation, and constitution compliance.
 
-- [ ] T049 Implement `/observability/metrics` response controller using core counters in `backend/src/infrastructure/controllers/metrics_controller.ts`
-- [ ] T050 Implement `/audit/logs` query controller and admin gating in `backend/src/infrastructure/controllers/audit_logs_controller.ts`
-- [ ] T051 Wire metrics and audit routes with role policies in `backend/src/infrastructure/adonis/routes.ts`
-- [ ] T052 [P] Update architecture and security docs with auth/RBAC/audit decisions in `docs/security-and-auth.md`
-- [ ] T053 [P] Update system architecture overview for capability-island + observability flows in `docs/system-architecture-overview.md`
-- [ ] T054 [P] Update frontend architecture doc for parser/graph contract version policy in `docs/frontend-architecture.md`
-- [ ] T055 Run full quickstart validation and record results in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
-- [ ] T056 Verify constitution gate outcomes and final compliance notes in `specs/001-adonis-hypermedia-hexagonal/plan.md`
+- [X] T049 Implement `/observability/metrics` response controller using core counters in `backend/src/infrastructure/controllers/metrics_controller.ts`
+- [X] T050 Implement `/audit/logs` query controller and admin gating in `backend/src/infrastructure/controllers/audit_logs_controller.ts`
+- [X] T051 Wire metrics and audit routes with role policies in `backend/src/infrastructure/adonis/routes.ts`
+- [X] T052 [P] Update architecture and security docs with auth/RBAC/audit decisions in `docs/security-and-auth.md`
+- [X] T053 [P] Update system architecture overview for capability-island + observability flows in `docs/system-architecture-overview.md`
+- [X] T054 [P] Update frontend architecture doc for parser/graph contract version policy in `docs/frontend-architecture.md`
+- [X] T055 Run full quickstart validation and record results in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
+- [X] T056 Verify constitution gate outcomes and final compliance notes in `specs/001-adonis-hypermedia-hexagonal/plan.md`
 
 ---
 

@@ -36,11 +36,118 @@ The platform documents applications, services, infrastructure, and runtime depen
 - Incident simulation: pick failing node → run impact traversal (BFS/DFS) → highlight impacted edges/nodes.
 - Offline analysis: import Docker sources client-side → build and explore graph in browser → export JSON project bundle.
 
+## Server-Rendered Baseline + Unpoly Fragment Flow
+
+```
+Browser                        AdonisJS Server
+  |                                  |
+  |-- GET /applications -----------> |
+  |                                  |--> InventoryController.applications()
+  |                                  |     recordLatency(start)
+  |                                  |     view('applications/index')
+  |<-- 200 text/html (full page) --- |
+  |
+  |-- (Unpoly) GET /fragments/inventory-applications
+  |   headers: X-Up-Target, X-Up-Version
+  |-----------------------------------------> FragmentsController.show()
+  |                                              validate target
+  |                                              render partial
+  |<-- 200 text/html (fragment only) --------- |
+  |
+  |-- (unknown target) GET /fragments/bad
+  |-----------------------------------------> FragmentsController.show()
+  |                                              incrementFragmentError()
+  |<-- 422 JSON ErrorEnvelope ---------------- |
+  |   { fallbackNavigation: 'full_page' }
+```
+
+## Capability-Island + Observability Flow
+
+```
+Browser                                     AdonisJS Server
+  |                                               |
+  |-- GET /graph ------------------------------>  |
+  |                                               |--> GraphController.index()
+  |                                               |     loads project-dataset.json
+  |                                               |     injects GraphContract as JSON
+  |<-- 200 text/html (graph shell + data) ------- |
+  |
+  |  [<architecture-graph> Web Component]
+  |    validateGraphContract(data)  <-- schema version policy
+  |    X6 adapter renders nodes/edges
+  |
+  |-- POST /graph/simulate-incident (analyst+) -> |
+  |   { startNodeId, traversalMode }              |--> GraphSimulationController.simulate()
+  |                                               |     BFS/DFS traversal
+  |                                               |     appendAuditLog(...)
+  |<-- 200 IncidentSimulationResult ------------- |
+  |
+  |-- POST /parser/ingest (analyst+) -----------> |
+  |   ParserResult payload                        |--> ParserController.ingest()
+  |                                               |     ImportParserResultUseCase
+  |                                               |     appendAuditLog(...)
+  |<-- 200 merged GraphContract  ---------------- |
+  |  or 422 ErrorEnvelope (validation errors)
+  |
+  |-- GET /observability/metrics (any auth) ----> |
+  |<-- 200 CoreMetrics JSON ------------------- |
+  |
+  |-- GET /audit/logs (admin only) ------------>  |
+  |<-- 200 AuditLogEntry[] newest first -------- |
+```
+
+## Hexagonal Boundary Diagram
+
+```
+┌─────────────────────────────────────────────────┐
+│                    Domain Layer                  │
+│  (no framework imports, no side-effects)         │
+│                                                  │
+│  ┌──────────────┐  ┌────────────────────────┐   │
+│  │  Entities    │  │  UseCases              │   │
+│  │  user.ts     │  │  validate_contract...  │   │
+│  │              │  │  validate_graph...     │   │
+│  │              │  │  import_parser...      │   │
+│  └──────────────┘  └────────────────────────┘   │
+│                                                  │
+│  ┌──────────────────────────────────────────┐   │
+│  │           Contracts (Interfaces)          │   │
+│  │  dto/graph_contract_dto.ts               │   │
+│  │  dto/parser_contract_dto.ts              │   │
+│  │  repositories/user_repository.ts         │   │
+│  │  repositories/observability_repository.ts│   │
+│  └──────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────┘
+              ↑ implements ↑
+┌─────────────────────────────────────────────────┐
+│               Infrastructure Layer              │
+│                                                  │
+│  ┌────────────────┐  ┌───────────────────────┐  │
+│  │  Controllers   │  │  Repositories         │  │
+│  │  (HTTP in)     │  │  (in-memory/DB out)   │  │
+│  └────────────────┘  └───────────────────────┘  │
+│  ┌────────────────────────────────────────────┐  │
+│  │  Adonis Adapters: routes, kernel, env       │  │
+│  └────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────┘
+              ↑ drives ↑
+┌─────────────────────────────────────────────────┐
+│              Browser / Frontend Layer            │
+│                                                  │
+│  Server-rendered HTML (Edge templates)           │
+│  Unpoly (fragment updates, 422 fallback)         │
+│  Web Components: architecture-graph, parser-island│
+│  Shared: graph-model.js, parser-contract.js      │
+└─────────────────────────────────────────────────┘
+```
+
 ## Security and Access
 - Encryption at rest and in transit required on backend and client-side project payloads.
 - AES-256 envelope encryption model with key rotation policy.
-- RBAC enforced on project/resources (viewer, analyst, architect, admin).
-- SSO target for production, local username/password for development.
+- RBAC enforced via `ROLE_HIERARCHY` (viewer=0, analyst=1, architect=2, admin=3).
+- `requireRole(minimumRole)` middleware factory applied per route group.
+- All write/mutate operations emit `AuditLogEntry` via `ObservabilityRepository.appendAuditLog()`.
+- Audit log access: admin-only via `GET /audit/logs`.
 
 ## Progressive Enhancement Rules
 - Baseline UX must function without JavaScript for navigation and inventory reading.
