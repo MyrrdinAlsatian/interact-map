@@ -4,51 +4,21 @@
     "rootDir": "./",
     "outDir": "./build",
     "paths": {
-      "#entity/*": [
-        "./src/domain/models/*.js"
-      ],
-      "#domain/*": [
-        "./src/domain/*.js"
-      ],
-      "#infrastructure/*": [
-        "./src/infrastructure/*.js"
-      ],
-      "#controllers/*": [
-        "./src/infrastructure/controllers/*.js"
-      ],
-      "#exceptions/*": [
-        "./src/infrastructure/exceptions/*.js"
-      ],
-      "#listeners/*": [
-        "./src/infrastructure/listeners/*.js"
-      ],
-      "#events/*": [
-        "./src/infrastructure/events/*.js"
-      ],
-      "#middleware/*": [
-        "./src/infrastructure/middleware/*.js"
-      ],
-      "#providers/*": [
-        "./providers/*.js"
-      ],
-      "#services/*": [
-        "./services/*.js"
-      ],
-      "#policies/*": [
-        "./policies/*.js"
-      ],
-      "#abilities/*": [
-        "./abilities/*.js"
-      ],
-      "#database/*": [
-        "./database/*.js"
-      ],
-      "#tests/*": [
-        "./tests/*.js"
-      ],
-      "#config/*": [
-        "./config/*.js"
-      ]
+      "#entity/*": ["./src/domain/models/*.js"],
+      "#domain/*": ["./src/domain/*.js"],
+      "#infrastructure/*": ["./src/infrastructure/*.js"],
+      "#controllers/*": ["./src/infrastructure/controllers/*.js"],
+      "#exceptions/*": ["./src/infrastructure/exceptions/*.js"],
+      "#listeners/*": ["./src/infrastructure/listeners/*.js"],
+      "#events/*": ["./src/infrastructure/events/*.js"],
+      "#middleware/*": ["./src/infrastructure/middleware/*.js"],
+      "#providers/*": ["./providers/*.js"],
+      "#services/*": ["./services/*.js"],
+      "#policies/*": ["./policies/*.js"],
+      "#abilities/*": ["./abilities/*.js"],
+      "#database/*": ["./database/*.js"],
+      "#tests/*": ["./tests/*.js"],
+      "#config/*": ["./config/*.js"]
     }
   }
 }

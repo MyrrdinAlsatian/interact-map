@@ -4,7 +4,7 @@ import { InMemoryUserRepository } from '#infrastructure/repositories/inmemory_us
 
 test('InMemoryUserRepository creates user', async () => {
   const repository = new InMemoryUserRepository()
-  const user = await repository.create({
+  const user = await repository.register({
     email: 'test@example.com',
     displayName: 'Test',
     password: 'password',

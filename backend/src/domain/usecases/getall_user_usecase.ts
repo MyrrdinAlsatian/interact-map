@@ -1,9 +1,9 @@
-import type { UserRepository } from '#domain/contracts/repositories/user_repository'
+import type { UserRepositoryContract } from '#domain/contracts/repositories/user_repository'
 
 export class GetAllUserUseCase {
-  #repository: UserRepository
+  #repository: UserRepositoryContract
 
-  constructor(repository: UserRepository) {
+  constructor(repository: UserRepositoryContract) {
     this.#repository = repository
   }
 

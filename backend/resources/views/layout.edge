@@ -3,37 +3,154 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ title ?? 'Interact Map' }}</title>
-    <script src="https://unpkg.com/unpoly@3.8.0/unpoly.min.js"></script>
+    <title>
+      {{ title ?? 'Interact Map' }}
+    </title>
+    <script src="https://unpkg.com/unpoly@3.8.0/unpoly.min.js">
+
+    </script>
     <link rel="stylesheet" href="https://unpkg.com/unpoly@3.8.0/unpoly.min.css" />
     <style>
-      *, *::before, *::after { box-sizing: border-box; }
-      body { font-family: system-ui, sans-serif; margin: 0; background: #f8f9fa; color: #212529; }
-      .skip-link { position: absolute; left: 8px; top: -40px; background: #0b7285; color: #fff; padding: 8px 10px; border-radius: 6px; text-decoration: none; z-index: 10; }
-      .skip-link:focus { top: 8px; }
-      header { background: #fff; border-bottom: 1px solid #dee2e6; padding: 14px 18px; display: flex; align-items: center; gap: 24px; }
-      header h1 { margin: 0; font-size: 1.1rem; }
-      nav a { margin-right: 10px; color: #0b5cab; text-decoration: none; }
-      nav a:hover { text-decoration: underline; }
-      a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #0b7285; outline-offset: 2px; }
-      main { padding: 18px; max-width: 1200px; margin: 0 auto; }
-      .page-title { font-size: 1.4rem; margin: 0 0 16px; }
-      table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
-      th { background: #f1f3f5; text-align: left; padding: 10px 14px; font-size: .85rem; color: #495057; }
-      td { padding: 10px 14px; border-top: 1px solid #e9ecef; font-size: .9rem; }
-      tr:hover td { background: #f8f9fa; }
-      .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: .78rem; font-weight: 600; }
-      .badge-application { background: #d0ebff; color: #1971c2; }
-      .badge-service     { background: #c3fae8; color: #0b7285; }
-      .badge-server      { background: #e5dbff; color: #5f3dc4; }
-      .badge-container   { background: #d3f9d8; color: #2b8a3e; }
-      .badge-external    { background: #f1f3f5; color: #495057; }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 0;
+        background: #f8f9fa;
+        color: #212529;
+      }
+      
+      .skip-link {
+        position: absolute;
+        left: 8px;
+        top: -40px;
+        background: #0b7285;
+        color: #fff;
+        padding: 8px 10px;
+        border-radius: 6px;
+        text-decoration: none;
+        z-index: 10;
+      }
+      
+      .skip-link:focus {
+        top: 8px;
+      }
+      
+      header {
+        background: #fff;
+        border-bottom: 1px solid #dee2e6;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+      
+      header h1 {
+        margin: 0;
+        font-size: 1.1rem;
+      }
+      
+      nav a {
+        margin-right: 10px;
+        color: #0b5cab;
+        text-decoration: none;
+      }
+      
+      nav a:hover {
+        text-decoration: underline;
+      }
+      
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid #0b7285;
+        outline-offset: 2px;
+      }
+      
+      main {
+        padding: 18px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      
+      .page-title {
+        font-size: 1.4rem;
+        margin: 0 0 16px;
+      }
+      
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,.08);
+      }
+      
+      th {
+        background: #f1f3f5;
+        text-align: left;
+        padding: 10px 14px;
+        font-size: .85rem;
+        color: #495057;
+      }
+      
+      td {
+        padding: 10px 14px;
+        border-top: 1px solid #e9ecef;
+        font-size: .9rem;
+      }
+      
+      tr:hover td {
+        background: #f8f9fa;
+      }
+      
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: .78rem;
+        font-weight: 600;
+      }
+      
+      .badge-application {
+        background: #d0ebff;
+        color: #1971c2;
+      }
+      
+      .badge-service {
+        background: #c3fae8;
+        color: #0b7285;
+      }
+      
+      .badge-server {
+        background: #e5dbff;
+        color: #5f3dc4;
+      }
+      
+      .badge-container {
+        background: #d3f9d8;
+        color: #2b8a3e;
+      }
+      
+      .badge-external {
+        background: #f1f3f5;
+        color: #495057;
+      }
     </style>
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <header role="banner">
-      <h1>Interact Map</h1>
+      <h1>
+        Interact Map
+      </h1>
       <nav aria-label="Primary navigation">
         <a href="/applications" up-follow>Applications</a>
         <a href="/services" up-follow>Services</a>

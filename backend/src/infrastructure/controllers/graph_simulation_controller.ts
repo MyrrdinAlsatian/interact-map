@@ -16,7 +16,11 @@ import { resolve } from 'node:path'
 export default class GraphSimulationController {
   async simulate({ request, response, auth }: { request: any; response: any; auth: any }) {
     const start = Date.now()
-    const { projectId, failedNodeId, traversal = 'bfs' } = request.all() as {
+    const {
+      projectId,
+      failedNodeId,
+      traversal = 'bfs',
+    } = request.all() as {
       projectId: string
       failedNodeId: string
       traversal?: TraversalMode
@@ -38,10 +42,19 @@ export default class GraphSimulationController {
       const datasetPath = resolve(process.cwd(), '../examples/project-dataset.json')
       const raw = await readFile(datasetPath, 'utf-8')
       const dataset = JSON.parse(raw) as { graph: GraphContract }
-      graph = { schemaVersion: '1.0', nodes: dataset.graph.nodes, edges: dataset.graph.edges, errors: [] }
+      graph = {
+        schemaVersion: '1.0',
+        nodes: dataset.graph.nodes,
+        edges: dataset.graph.edges,
+        errors: [],
+      }
     } catch {
       return response.status(422).json({
-        error: { code: 'PROJECT_NOT_FOUND', message: `No graph found for project "${projectId}".`, severity: 'error' },
+        error: {
+          code: 'PROJECT_NOT_FOUND',
+          message: `No graph found for project "${projectId}".`,
+          severity: 'error',
+        },
       })
     }
 

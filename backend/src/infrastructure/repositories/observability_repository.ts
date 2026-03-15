@@ -27,7 +27,9 @@ class InMemoryObservabilityRepository implements ObservabilityRepository {
   getMetrics(): CoreMetrics {
     const avg =
       this.latencySamples.length > 0
-        ? Math.round(this.latencySamples.reduce((sum, v) => sum + v, 0) / this.latencySamples.length)
+        ? Math.round(
+            this.latencySamples.reduce((sum, v) => sum + v, 0) / this.latencySamples.length
+          )
         : 0
     return {
       request_latency_ms: avg,
@@ -52,4 +54,5 @@ class InMemoryObservabilityRepository implements ObservabilityRepository {
 }
 
 // Module-level singleton so metrics/audit data persists for the process lifetime.
-export const observabilityRepository: ObservabilityRepository = new InMemoryObservabilityRepository()
+export const observabilityRepository: ObservabilityRepository =
+  new InMemoryObservabilityRepository()

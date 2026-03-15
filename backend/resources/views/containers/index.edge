@@ -1,8 +1,10 @@
 @layout('layout', { title: 'Containers' })
 
-@slot('content')
-  <h2 class="page-title">Containers</h2>
-  <div id="inventory-table" up-target="#inventory-table">
-    @include('partials/inventory_rows')
-  </div>
-@endslot
+  @slot('content')
+    <h2 class="page-title">
+      Containers
+    </h2>
+    <div id="inventory-table" up-target="#inventory-table">
+      @include('partials/inventory_rows')
+    </div>
+  @endslot

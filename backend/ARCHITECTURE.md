@@ -25,18 +25,18 @@ AdonisJS-specific adapters. Holds:
 
 ## Feature Boundaries (001-adonis-hypermedia-hexagonal)
 
-| Concern | Layer | File(s) |
-|---------|-------|---------|
-| Graph contract types | Domain | `contracts/dto/graph_contract_dto.ts` |
-| Parser contract types | Domain | `contracts/dto/parser_contract_dto.ts` |
-| Contract version validation | Domain | `usecases/validate_contract_version_usecase.ts` |
-| Graph structural validation | Domain | `usecases/validate_graph_contract_usecase.ts` |
-| Parser result ingestion | Domain | `usecases/import_parser_result_usecase.ts` |
-| Observability interfaces | Domain | `contracts/repositories/observability_repository.ts` |
-| Metrics + audit storage | Infrastructure | `repositories/observability_repository.ts` |
-| Auth + RBAC middleware | Infrastructure | `middleware/auth_middleware.ts`, `adonis/kernel.ts` |
-| HTTP controllers | Infrastructure | `controllers/inventory_controller.ts`, `fragments_controller.ts`, `graph_controller.ts`, `graph_simulation_controller.ts`, `parser_controller.ts`, `metrics_controller.ts`, `audit_logs_controller.ts` |
-| Server-rendered views | Resources | `resources/views/` (Edge templates) |
+| Concern                     | Layer          | File(s)                                                                                                                                                                                                |
+| --------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Graph contract types        | Domain         | `contracts/dto/graph_contract_dto.ts`                                                                                                                                                                  |
+| Parser contract types       | Domain         | `contracts/dto/parser_contract_dto.ts`                                                                                                                                                                 |
+| Contract version validation | Domain         | `usecases/validate_contract_version_usecase.ts`                                                                                                                                                        |
+| Graph structural validation | Domain         | `usecases/validate_graph_contract_usecase.ts`                                                                                                                                                          |
+| Parser result ingestion     | Domain         | `usecases/import_parser_result_usecase.ts`                                                                                                                                                             |
+| Observability interfaces    | Domain         | `contracts/repositories/observability_repository.ts`                                                                                                                                                   |
+| Metrics + audit storage     | Infrastructure | `repositories/observability_repository.ts`                                                                                                                                                             |
+| Auth + RBAC middleware      | Infrastructure | `middleware/auth_middleware.ts`, `adonis/kernel.ts`                                                                                                                                                    |
+| HTTP controllers            | Infrastructure | `controllers/inventory_controller.ts`, `fragments_controller.ts`, `graph_controller.ts`, `graph_simulation_controller.ts`, `parser_controller.ts`, `metrics_controller.ts`, `audit_logs_controller.ts` |
+| Server-rendered views       | Resources      | `resources/views/` (Edge templates)                                                                                                                                                                    |
 
 ## Frontend Capability Islands (`../frontend/`)
 

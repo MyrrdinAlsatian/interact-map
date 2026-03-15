@@ -1,22 +1,36 @@
-  @if(items.length === 0)
-    <p style="color:#868e96;padding:12px 0;">No items found.</p>
-  @else
-    <table>
-      <thead>
+@if(items.length === 0)
+  <p style="color:#868e96;padding:12px 0;">
+    No items found.
+  </p>
+@else
+  <table>
+    <thead>
+      <tr>
+        <th>
+          ID
+        </th>
+        <th>
+          Label
+        </th>
+        <th>
+          Type
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @each(item in items)
         <tr>
-          <th>ID</th>
-          <th>Label</th>
-          <th>Type</th>
+          <td>
+            {{ item.id }}
+          </td>
+          <td>
+            {{ item.label }}
+          </td>
+          <td>
+            <span class="badge badge-{{ item.type }}">{{ item.type }}</span>
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        @each(item in items)
-          <tr>
-            <td>{{ item.id }}</td>
-            <td>{{ item.label }}</td>
-            <td><span class="badge badge-{{ item.type }}">{{ item.type }}</span></td>
-          </tr>
-        @endeach
-      </tbody>
-    </table>
-  @endif
+      @endeach
+    </tbody>
+  </table>
+@endif
