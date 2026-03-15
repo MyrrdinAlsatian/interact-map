@@ -1,7 +1,8 @@
 import { Graph } from 'https://cdn.jsdelivr.net/npm/@antv/x6@2.18.1/+esm';
-import { validateGraphModel, validateGraphContract } from '../lib/graph-model';
-import { toX6Graph, getCriticalityColor } from '../lib/x6-adapter';
-import { analyzeIncidentImpact } from '../lib/incident-impact';
+import { AntVDagreLayout } from "https://cdn.jsdelivr.net/npm/@antv/layout@1.2.14-beta.8/+esm";
+import { validateGraphModel, validateGraphContract } from '../lib/graph-model.js';
+import { toX6Graph, getCriticalityColor } from '../lib/x6-adapter.js';
+import { analyzeIncidentImpact } from '../lib/incident-impact.js';
 
 /**
  * architecture-graph — X6-backed graph capability island.
@@ -20,7 +21,7 @@ import { analyzeIncidentImpact } from '../lib/incident-impact';
  * Older versions dispatch 'contract-validation-error' and do NOT render.
  */
 
-class ArchitectureGraph extends HTMLElement {
+export class ArchitectureGraph extends HTMLElement {
   #graph;
   #graphModel = { nodes: [], edges: [] };
   #container;
@@ -120,18 +121,22 @@ class ArchitectureGraph extends HTMLElement {
     this.setAttribute('tabindex', '0');
     this.setAttribute('role', 'application');
     this.setAttribute('aria-label', 'Architecture graph canvas');
-    this.innerHTML = '<div part="canvas" style="width:100%;height:100%;border:1px solid #dee2e6;border-radius:12px"></div>';
+    this.innerHTML = '<div part="canvas" style="width:100%;height:560px;border:1px solid #dee2e6;border-radius:12px"></div>';
     this.#container = this.querySelector('div');
     this.addEventListener('keydown', (event) => this.#onKeyboard(event));
   }
 
   #mountX6() {
+    const update = () => {
+      const edgeView = graph.findViewByCell(edge);
+      edgeView.update()
+    }
     this.#graph = new Graph({
       container: this.#container,
       panning: true,
       mousewheel: {
         enabled: true,
-        modifiers: ['ctrl', 'meta'],
+        modifiers: ["ctrl", "meta"],
         minScale: 0.2,
         maxScale: 3,
       },
@@ -142,6 +147,27 @@ class ArchitectureGraph extends HTMLElement {
       grid: {
         visible: true,
       },
+      connecting: {
+        router: {
+          name: "orth",
+        },
+        connector: {
+          name: "rounded",
+          args: {
+            radius: 12,
+          },
+        },
+        anchor: "center",
+        connectionPoint: "anchor",
+      },
+      highlighting: {
+        default: {
+          name: "stroke",
+          args: {
+            padding: 4,
+          },
+        },
+      },
     });
   }
 
@@ -151,6 +177,7 @@ class ArchitectureGraph extends HTMLElement {
     }
     const start = performance.now();
     const x6Graph = toX6Graph(this.#graphModel);
+    this.#applyAutoLayout(x6Graph);
     this.#graph.clearCells();
     this.#graph.fromJSON(x6Graph);
     this.#selectedNodeIndex = 0;
@@ -222,6 +249,37 @@ class ArchitectureGraph extends HTMLElement {
         bubbles: true,
       })
     );
+  }
+
+  #applyAutoLayout(x6Graph) {
+    const nodes = x6Graph.cells.filter((c) => c.shape !== "edge");
+    const edges = x6Graph.cells.filter((c) => c.shape === "edge");
+
+    const layout = new AntVDagreLayout({
+      rankdir: "TB",
+      nodesep: 50,
+      ranksep: 50,
+    });
+
+    const result = layout.layout({
+      nodes: nodes.map((n) => ({
+        id: n.id,
+        width: n.width || 160,
+        height: n.height || 60,
+      })),
+      edges: edges.map((e) => ({
+        source: e.source.cell || e.source,
+        target: e.target.cell || e.target,
+      })),
+    });
+
+    result.nodes.forEach((node) => {
+      const cell = nodes.find((c) => c.id === node.id);
+      if (cell) {
+        cell.x = node.x;
+        cell.y = node.y;
+      }
+    });
   }
 }
 

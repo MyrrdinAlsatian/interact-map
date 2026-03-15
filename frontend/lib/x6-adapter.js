@@ -50,12 +50,25 @@ export function toX6Graph(graphModel) {
     id: edge.id,
     source: edge.source,
     target: edge.target,
+    router: {
+      name: "metro",
+      args: {
+        startDirections: ["bottom"],
+        endDirections: ["top"],
+      },
+    },
+    connector: {
+      name: "rounded",
+      args: {
+        radius: 12,
+      },
+    },
     attrs: {
       line: {
         stroke: criticalityColors[edge.criticality] || criticalityColors.low,
-        strokeWidth: 2,
+        strokeWidth: 3,
         targetMarker: {
-          name: 'classic',
+          name: "classic",
           size: 8,
         },
       },
@@ -64,8 +77,8 @@ export function toX6Graph(graphModel) {
       {
         attrs: {
           label: {
-            text: `${edge.dependencyType || 'required'} • ${edge.criticality}`,
-            fill: '#495057',
+            text: `${edge.dependencyType || "required"} • ${edge.criticality}`,
+            fill: "#495057",
             fontSize: 10,
           },
         },

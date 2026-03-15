@@ -79,9 +79,9 @@
         <pre id="output" aria-live="polite"></pre>
       </section>
     </main>
-
+    <script type="module" src="./frontend/components/architecture-graph.js" />
     <script type="module">
-      import './frontend/components/architecture-graph';
+      {# import './frontend/components/architecture-graph'; #}
 
       const graphElement = document.getElementById('architectureGraph');
       const output = document.getElementById('output');
@@ -93,6 +93,18 @@
         const mode = document.getElementById('modeSelect').value;
         const result = graphElement.simulateIncident(nodeId, mode);
         output.textContent = JSON.stringify(result, null, 2);
+      });
+    </script>
+
+    <script>
+      up.on('up:fragment:inserted', async () => {
+        const graphElement = document.getElementById('architectureGraph');
+        if (!graphElement) return;
+
+        const dataset = await fetch('./examples/project-dataset.json')
+          .then((r) => r.json());
+
+        graphElement.loadGraph(dataset.graph);
       });
     </script>
   </body>

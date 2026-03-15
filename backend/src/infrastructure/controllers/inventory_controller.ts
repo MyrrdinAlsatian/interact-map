@@ -10,15 +10,22 @@ import { observabilityRepository } from '#repositories/observability_repository'
 export default class InventoryController {
   async applications({ view, response }: { view: any; response: any }) {
     const start = Date.now()
-    const html = await view.render('applications/index', {
+    return {
       pageTitle: 'Applications',
       items: [
         { id: 'sample-app-1', label: 'Web Frontend', type: 'application' },
         { id: 'sample-app-2', label: 'Orders API', type: 'application' },
       ],
-    })
-    observabilityRepository.recordLatency(Date.now() - start)
-    return response.ok(html).header('Content-Type', 'text/html; charset=utf-8')
+    }
+    // const html = await view.render('applications/index', {
+    //   pageTitle: 'Applications',
+    //   items: [
+    //     { id: 'sample-app-1', label: 'Web Frontend', type: 'application' },
+    //     { id: 'sample-app-2', label: 'Orders API', type: 'application' },
+    //   ],
+    // })
+    // observabilityRepository.recordLatency(Date.now() - start)
+    // return response.ok(html).header('Content-Type', 'text/html; charset=utf-8')
   }
 
   async services({ view, response }: { view: any; response: any }) {
