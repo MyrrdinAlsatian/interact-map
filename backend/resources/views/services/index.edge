@@ -1,10 +1,56 @@
 @layout('layout', { title: 'Services' })
 
 @section('content')
-    <h2 class="page-title">
-      Services
-    </h2>
-    <div id="inventory-table" up-target="#inventory-table">
-      @include('partials/inventory_rows')
+  <div class="page-title"><i class="fas fa-cogs"></i> Services</div>
+  <p class="page-subtitle">Microservices and backend services</p>
+
+  <div class="card">
+    <div class="card-title">
+      <i class="fas fa-list"></i> Service Registry
+      <span style="margin-left: auto; font-size: 0.85rem; font-weight: normal; color: var(--text-secondary);">18 services</span>
     </div>
-@endsection
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Type</th>
+          <th>Instances</th>
+          <th>Latency</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>api-gateway</strong></td>
+          <td><span class="badge badge-online">● Online</span></td>
+          <td><span class="badge badge-service">Core</span></td>
+          <td>2</td>
+          <td><span style="color: var(--success);">45ms</span></td>
+        </tr>
+        <tr>
+          <td><strong>auth-service</strong></td>
+          <td><span class="badge badge-online">● Online</span></td>
+          <td><span class="badge badge-service">Auth</span></td>
+          <td>3</td>
+          <td><span style="color: var(--success);">120ms</span></td>
+        </tr>
+        <tr>
+          <td><strong>user-service</strong></td>
+          <td><span class="badge badge-online">● Online</span></td>
+          <td><span class="badge badge-service">Business</span></td>
+          <td>2</td>
+          <td><span style="color: var(--success);">89ms</span></td>
+        </tr>
+        <tr>
+          <td><strong>database-service</strong></td>
+          <td><span class="badge badge-online">● Online</span></td>
+          <td><span class="badge badge-service">Data</span></td>
+          <td>1</td>
+          <td><span style="color: var(--warning);">340ms</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  @include('partials/inventory_table')

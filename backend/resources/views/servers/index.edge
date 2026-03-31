@@ -1,10 +1,49 @@
 @layout('layout', { title: 'Servers' })
 
 @section('content')
-    <h2 class="page-title">
-      Servers
-    </h2>
-    <div id="inventory-table" up-target="#inventory-table">
-      @include('partials/inventory_rows')
+  <div class="page-title"><i class="fas fa-server"></i> Servers</div>
+  <p class="page-subtitle">Physical and virtual infrastructure</p>
+
+  <div class="card">
+    <div class="card-title">
+      <i class="fas fa-list"></i> Server Infrastructure
+      <span style="margin-left: auto; font-size: 0.85rem; font-weight: normal; color: var(--text-secondary);">8 servers</span>
     </div>
-@endsection
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Hostname</th>
+          <th>Status</th>
+          <th>OS</th>
+          <th>CPU Usage</th>
+          <th>Memory</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>prod-vm-01</strong></td>
+          <td><span class="badge badge-online">● Online</span></td>
+          <td>Ubuntu 22.04</td>
+          <td><span style="color: var(--success);">34%</span></td>
+          <td>12/32 GB</td>
+        </tr>
+        <tr>
+          <td><strong>prod-vm-02</strong></td>
+          <td><span class="badge badge-online">● Online</span></td>
+          <td>Ubuntu 22.04</td>
+          <td><span style="color: var(--success);">51%</span></td>
+          <td>18/32 GB</td>
+        </tr>
+        <tr>
+          <td><strong>db-primary</strong></td>
+          <td><span class="badge badge-online">● Online</span></td>
+          <td>Ubuntu 20.04</td>
+          <td><span style="color: var(--warning);">78%</span></td>
+          <td>28/64 GB</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  @include('partials/inventory_table')

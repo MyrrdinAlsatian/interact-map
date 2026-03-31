@@ -2,6 +2,7 @@ import router from '@adonisjs/core/services/router'
 import HealthChecksController from '#infrastructure/controllers/health_checks_controller'
 import UsersController from '#infrastructure/controllers/users_controller'
 import GetAllUserController from '#infrastructure/controllers/getall_user_controller'
+import DashboardController from '#infrastructure/controllers/dashboard_controller'
 import InventoryController from '#infrastructure/controllers/inventory_controller'
 import FragmentsController from '#infrastructure/controllers/fragments_controller'
 import GraphController from '#infrastructure/controllers/graph_controller'
@@ -9,11 +10,7 @@ import MetricsController from '#infrastructure/controllers/metrics_controller'
 import AuditLogsController from '#infrastructure/controllers/audit_logs_controller'
 import UploadsController from '#infrastructure/controllers/uploads_controller'
 
-router.get('/', async () => {
-  return {
-    hello: 'world',
-  }
-})
+router.get('/', [DashboardController, 'index'])
 
 // ─── Public routes ────────────────────────────────────────────────────────────
 

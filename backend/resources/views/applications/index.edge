@@ -1,10 +1,70 @@
 @layout('layout', { title: 'Applications' })
 
 @section('content')
-    <h2 class="page-title">
-      Applications
-    </h2>
-    <div id="inventory-table" up-target="#inventory-table">
-      @include('partials/inventory_rows')
+  <div class="page-title"><i class="fas fa-cube"></i> Applications</div>
+  <p class="page-subtitle">Manage and monitor all deployed applications</p>
+
+  <div class="card">
+    <div class="card-title">
+      <i class="fas fa-list"></i> Application Inventory
+      <span style="margin-left: auto; font-size: 0.85rem; font-weight: normal; color: var(--text-secondary);">12 applications</span>
     </div>
-@endsection
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Version</th>
+          <th>Services</th>
+          <th>Uptime</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>web-frontend</strong></td>
+          <td><span class="badge badge-online">● Online</span></td>
+          <td>2.4.1</td>
+          <td>3</td>
+          <td><span style="color: var(--success);">99.9%</span></td>
+        </tr>
+        <tr>
+          <td><strong>orders-api</strong></td>
+          <td><span class="badge badge-online">● Online</span></td>
+          <td>1.8.0</td>
+          <td>2</td>
+          <td><span style="color: var(--success);">99.8%</span></td>
+        </tr>
+        <tr>
+          <td><strong>user-service</strong></td>
+          <td><span class="badge badge-online">● Online</span></td>
+          <td>3.1.2</td>
+          <td>4</td>
+          <td><span style="color: var(--success);">100%</span></td>
+        </tr>
+        <tr>
+          <td><strong>analytics-platform</strong></td>
+          <td><span class="badge badge-online">● Online</span></td>
+          <td>1.5.0</td>
+          <td>2</td>
+          <td><span style="color: var(--success);">99.7%</span></td>
+        </tr>
+        <tr>
+          <td><strong>notification-hub</strong></td>
+          <td><span class="badge badge-online">● Online</span></td>
+          <td>2.0.3</td>
+          <td>2</td>
+          <td><span style="color: var(--warning);">98.5%</span></td>
+        </tr>
+        <tr>
+          <td><strong>payment-gateway</strong></td>
+          <td><span class="badge badge-offline">● Offline</span></td>
+          <td>1.3.1</td>
+          <td>1</td>
+          <td><span style="color: var(--danger);">45.2%</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  @include('partials/inventory_table')

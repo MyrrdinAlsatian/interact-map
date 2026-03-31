@@ -1,10 +1,49 @@
 @layout('layout', { title: 'Containers' })
 
 @section('content')
-    <h2 class="page-title">
-      Containers
-    </h2>
-    <div id="inventory-table" up-target="#inventory-table">
-      @include('partials/inventory_rows')
+  <div class="page-title"><i class="fas fa-box"></i> Containers</div>
+  <p class="page-subtitle">Docker and containerized workloads</p>
+
+  <div class="card">
+    <div class="card-title">
+      <i class="fas fa-list"></i> Container Fleet
+      <span style="margin-left: auto; font-size: 0.85rem; font-weight: normal; color: var(--text-secondary);">42 containers</span>
     </div>
-@endsection
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Container ID</th>
+          <th>Status</th>
+          <th>Image</th>
+          <th>CPU</th>
+          <th>Memory</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>orders-api-prod-1</strong></td>
+          <td><span class="badge badge-online">● Running</span></td>
+          <td>orders-api:2.1.0</td>
+          <td>0.23</td>
+          <td>245 MB</td>
+        </tr>
+        <tr>
+          <td><strong>orders-api-prod-2</strong></td>
+          <td><span class="badge badge-online">● Running</span></td>
+          <td>orders-api:2.1.0</td>
+          <td>0.19</td>
+          <td>238 MB</td>
+        </tr>
+        <tr>
+          <td><strong>frontend-prod-1</strong></td>
+          <td><span class="badge badge-online">● Running</span></td>
+          <td>frontend:1.4.2</td>
+          <td>0.05</td>
+          <td>156 MB</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  @include('partials/inventory_table')

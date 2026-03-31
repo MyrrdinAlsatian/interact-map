@@ -1,13 +1,49 @@
 @layout('layout', { title: 'Interactions' })
 
 @section('content')
-    <h2 class="page-title">
-      Interactions
-    </h2>
-    <p style="color:#868e96;margin:0 0 16px;">
-      Dependency edges between inventory nodes.
-    </p>
-    <div id="inventory-table" up-target="#inventory-table">
-      @include('partials/inventory_rows')
+  <div class="page-title"><i class="fas fa-arrows-alt"></i> Interactions</div>
+  <p class="page-subtitle">Service dependencies and communication flows</p>
+
+  <div class="card">
+    <div class="card-title">
+      <i class="fas fa-network-wired"></i> Dependency Graph
     </div>
-@endsection
+    <p style="color: var(--text-secondary); margin: 16px 0 0;">Showing 156 connections between services</p>
+    
+    <table style="margin-top: 16px;">
+      <thead>
+        <tr>
+          <th>From Service</th>
+          <th>To Service</th>
+          <th>Type</th>
+          <th>Calls/min</th>
+          <th>Error Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>web-frontend</strong></td>
+          <td><strong>api-gateway</strong></td>
+          <td><span class="badge badge-app">HTTP</span></td>
+          <td>2.4M</td>
+          <td><span style="color: var(--success);">0.02%</span></td>
+        </tr>
+        <tr>
+          <td><strong>api-gateway</strong></td>
+          <td><strong>auth-service</strong></td>
+          <td><span class="badge badge-app">gRPC</span></td>
+          <td>1.8M</td>
+          <td><span style="color: var(--success);">0.01%</span></td>
+        </tr>
+        <tr>
+          <td><strong>orders-api</strong></td>
+          <td><strong>database-service</strong></td>
+          <td><span class="badge badge-app">SQL</span></td>
+          <td>890K</td>
+          <td><span style="color: var(--success);">0.00%</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  @include('partials/inventory_table')

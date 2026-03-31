@@ -1,0 +1,135 @@
+@layout('layout', { title: 'Dashboard' })
+
+@section('content')
+  <div class="page-title"><i class="fas fa-tachometer-alt"></i> Dashboard</div>
+  <p class="page-subtitle">Real-time infrastructure monitoring and status overview</p>
+
+  <!-- STATS GRID -->
+  <div class="grid grid-3" style="margin-bottom: 32px;">
+    <div class="stat-card">
+      <div class="stat-value">24</div>
+      <div class="stat-label"><i class="fas fa-cube"></i> Applications</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">18</div>
+      <div class="stat-label"><i class="fas fa-cogs"></i> Services</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">8</div>
+      <div class="stat-label"><i class="fas fa-server"></i> Servers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">42</div>
+      <div class="stat-label"><i class="fas fa-box"></i> Containers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">156</div>
+      <div class="stat-label"><i class="fas fa-arrows-alt"></i> Interactions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">99.8%</div>
+      <div class="stat-label"><i class="fas fa-heartbeat"></i> Uptime</div>
+    </div>
+  </div>
+
+  <!-- INFO CARDS -->
+  <div class="grid grid-2">
+    <!-- SYSTEM STATUS -->
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-heartbeat"></i> System Status
+      </div>
+      <table>
+        <tbody>
+          <tr>
+            <td><strong>API Gateway</strong></td>
+            <td style="text-align: right;"><span class="badge badge-online">● Online</span></td>
+          </tr>
+          <tr>
+            <td><strong>Database</strong></td>
+            <td style="text-align: right;"><span class="badge badge-online">● Online</span></td>
+          </tr>
+          <tr>
+            <td><strong>Cache Layer</strong></td>
+            <td style="text-align: right;"><span class="badge badge-online">● Online</span></td>
+          </tr>
+          <tr>
+            <td><strong>Message Queue</strong></td>
+            <td style="text-align: right;"><span class="badge badge-online">● Online</span></td>
+          </tr>
+          <tr>
+            <td><strong>Monitoring</strong></td>
+            <td style="text-align: right;"><span class="badge badge-online">● Online</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RECENT ACTIVITY -->
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-history"></i> Recent Activity
+      </div>
+      <div style="font-size: 0.9rem; line-height: 2;">
+        <div style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+          <span style="color: var(--success);">✓</span> Application <strong>web-frontend</strong> deployed
+          <div style="font-size: 0.8rem; color: var(--text-secondary);">2 minutes ago</div>
+        </div>
+        <div style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+          <span style="color: var(--warning);">⚠</span> Service <strong>api-auth</strong> CPU usage high
+          <div style="font-size: 0.8rem; color: var(--text-secondary);">15 minutes ago</div>
+        </div>
+        <div style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+          <span style="color: var(--success);">✓</span> Container pool scaled to 12 replicas
+          <div style="font-size: 0.8rem; color: var(--text-secondary);">1 hour ago</div>
+        </div>
+        <div style="padding: 8px 0;">
+          <span style="color: var(--success);">✓</span> Database backup completed
+          <div style="font-size: 0.8rem; color: var(--text-secondary);">3 hours ago</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP APPLICATIONS -->
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-chart-bar"></i> Top Applications (by traffic)
+      </div>
+      <table style="margin-top: 12px;">
+        <tbody>
+          <tr>
+            <td><strong>web-frontend</strong></td>
+            <td style="text-align: right; color: var(--success);">↑ 2.4M req/min</td>
+          </tr>
+          <tr>
+            <td><strong>orders-api</strong></td>
+            <td style="text-align: right; color: var(--success);">↑ 1.8M req/min</td>
+          </tr>
+          <tr>
+            <td><strong>user-service</strong></td>
+            <td style="text-align: right; color: var(--text-secondary);">→ 890K req/min</td>
+          </tr>
+          <tr>
+            <td><strong>analytics</strong></td>
+            <td style="text-align: right; color: var(--text-secondary);">→ 420K req/min</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- NETWORK DIAGRAM QUICK LINK -->
+    <div class="card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+      <i class="fas fa-project-diagram" style="font-size: 3rem; color: var(--primary); margin-bottom: 16px;"></i>
+      <h3 style="margin-bottom: 8px;">View Architecture</h3>
+      <p style="color: var(--text-secondary); margin-bottom: 16px;">Visualize your complete infrastructure topology</p>
+      <a href="/graph" up-follow class="btn"><i class="fas fa-arrow-right"></i> Open Graph</a>
+    </div>
+  </div>
+
+  <script>
+    // Auto-update stats (optional)
+    setInterval(() => {
+      // You can add real-time updates here
+    }, 5000);
+  </script>
+@endsection
