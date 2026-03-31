@@ -1,6 +1,6 @@
 @layout('layout', { title: pageTitle })
 
-  @slot('content')
+@section('content')
     <section aria-labelledby="inventory-{{ pageTitle | lower }}">
       <h2 class="page-title" id="inventory-{{ pageTitle | lower }}">
         {{ pageTitle }}
@@ -10,4 +10,4 @@
         @include('partials/inventory_rows')
       </div>
     </section>
-  @endslot
+@endsection

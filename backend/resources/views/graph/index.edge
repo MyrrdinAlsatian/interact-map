@@ -1,6 +1,6 @@
 @layout('layout', { title: 'Architecture Graph' })
 
-@slot('content')
+@section('content')
   <h2 class="page-title" id="graph-page-title">Architecture Graph</h2>
   <p id="graphHelp" style="margin-top:-8px;margin-bottom:12px;color:#495057;font-size:.9rem;">
     Keyboard tips: Tab to controls, Enter to simulate, use + / - to zoom graph, and arrow keys to pan when graph is focused.
@@ -47,4 +47,4 @@
       output.textContent = JSON.stringify(result, null, 2);
     });
   </script>
-@endslot
+@endsection

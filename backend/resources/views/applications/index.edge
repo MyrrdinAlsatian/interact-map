@@ -1,10 +1,10 @@
 @layout('layout', { title: 'Applications' })
 
-  @slot('content')
+@section('content')
     <h2 class="page-title">
       Applications
     </h2>
     <div id="inventory-table" up-target="#inventory-table">
       @include('partials/inventory_rows')
     </div>
-  @endslot
+@endsection

@@ -1,6 +1,6 @@
 @layout('layout', { title: 'Interactions' })
 
-  @slot('content')
+@section('content')
     <h2 class="page-title">
       Interactions
     </h2>
@@ -10,4 +10,4 @@
     <div id="inventory-table" up-target="#inventory-table">
       @include('partials/inventory_rows')
     </div>
-  @endslot
+@endsection
