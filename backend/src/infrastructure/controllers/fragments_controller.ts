@@ -1,4 +1,5 @@
 import { observabilityRepository } from '#repositories/observability_repository'
+import type { HttpContext } from '@adonisjs/core/http'
 
 /**
  * FragmentsController — resolves named server-rendered fragments for Unpoly requests.
@@ -26,7 +27,7 @@ function isSupportedTarget(target: string): target is SupportedTarget {
 }
 
 export default class FragmentsController {
-  async resolve({ params, view, response }: { params: any; view: any; response: any }) {
+  async resolve({ params, view, response }: HttpContext & { params: any; view: any }) {
     const target: string = params.target
 
     if (!isSupportedTarget(target)) {
@@ -46,7 +47,8 @@ export default class FragmentsController {
     try {
       const html = await view.render(`partials/${target.replace(/-/g, '_')}`, { target })
       observabilityRepository.recordLatency(Date.now() - start)
-      return response.ok(html).header('Content-Type', 'text/html; charset=utf-8')
+      response.header('Content-Type', 'text/html; charset=utf-8')
+      return response.ok(html)
     } catch {
       observabilityRepository.incrementFragmentError()
       return response.status(422).json({

@@ -1,4 +1,13 @@
 import router from '@adonisjs/core/services/router'
+import HealthChecksController from '#infrastructure/controllers/health_checks_controller'
+import UsersController from '#infrastructure/controllers/users_controller'
+import GetAllUserController from '#infrastructure/controllers/getall_user_controller'
+import InventoryController from '#infrastructure/controllers/inventory_controller'
+import FragmentsController from '#infrastructure/controllers/fragments_controller'
+import GraphController from '#infrastructure/controllers/graph_controller'
+import MetricsController from '#infrastructure/controllers/metrics_controller'
+import AuditLogsController from '#infrastructure/controllers/audit_logs_controller'
+import UploadsController from '#infrastructure/controllers/uploads_controller'
 
 router.get('/', async () => {
   return {
@@ -7,20 +16,13 @@ router.get('/', async () => {
 })
 
 // ─── Public routes ────────────────────────────────────────────────────────────
-const HealthChecksController = () => import('#infrastructure/controllers/health_checks_controller')
-const UsersController = () => import('#infrastructure/controllers/users_controller')
-const GetAllUserController = () => import('#infrastructure/controllers/getall_user_controller')
-const InventoryController = () => import('#infrastructure/controllers/inventory_controller')
-const FragmentsController = () => import('#infrastructure/controllers/fragments_controller')
-const GraphController = () => import('#infrastructure/controllers/graph_controller')
-const GraphSimulationController = () => import('#infrastructure/controllers/graph_simulation_controller')
-const MetricsController = () => import('#infrastructure/controllers/metrics_controller')
-const AuditLogsController = () => import('#infrastructure/controllers/audit_logs_controller')
-const ParserController = () => import('#infrastructure/controllers/parser_controller')
-const UploadsController = () => import('#infrastructure/controllers/uploads_controller')
 
 router.get('/health', [HealthChecksController, 'handle'])
 router.post('/users/register', [UsersController, 'register'])
+
+const inventoryController = new InventoryController()
+const fragmentsController = new FragmentsController()
+const graphController = new GraphController()
 
 // ─── Authenticated read routes ────────────────────────────────────────────────
 router.group(() => {
@@ -28,17 +30,17 @@ router.group(() => {
   router.get('/users/all', [GetAllUserController, 'handle'])
 
   // Inventory navigation (US1)
-  router.get('/applications', [InventoryController, 'applications'])
-  router.get('/services', [InventoryController, 'services'])
-  router.get('/servers', [InventoryController, 'servers'])
-  router.get('/containers', [InventoryController, 'containers'])
-  router.get('/interactions', [InventoryController, 'interactions'])
+  router.get('/applications', (ctx) => inventoryController.applications(ctx as any))
+  router.get('/services', (ctx) => inventoryController.services(ctx as any))
+  router.get('/servers', (ctx) => inventoryController.servers(ctx as any))
+  router.get('/containers', (ctx) => inventoryController.containers(ctx as any))
+  router.get('/interactions', (ctx) => inventoryController.interactions(ctx as any))
 
   // Hypermedia fragment resolver (US1)
-  router.get('/fragments/:target', [FragmentsController, 'resolve'])
+  router.get('/fragments/:target', (ctx) => fragmentsController.resolve(ctx as any))
 
   // Graph capability island page (US2)
-  router.get('/graph', [GraphController, 'index'])
+  router.get('/graph', (ctx) => graphController.index(ctx as any))
 
   // Observability (admin read — role guard applied inside controller)
   router.get('/observability/metrics', [MetricsController, 'index'])

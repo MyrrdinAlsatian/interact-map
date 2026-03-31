@@ -1,6 +1,7 @@
 import type { GraphContract } from '#domain/contracts/dto/graph_contract_dto'
 import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_contract_usecase'
 import { observabilityRepository } from '#repositories/observability_repository'
+import type { HttpContext } from '@adonisjs/core/http'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
@@ -13,7 +14,7 @@ const validateContract = new ValidateGraphContractUseCase()
  * POST /graph/contract/validate — validates a submitted GraphContract payload.
  */
 export default class GraphController {
-  async index({ view, response }: { view: any; response: any }) {
+  async index({ view, response }: HttpContext & { view: any }) {
     const start = Date.now()
 
     // Load sample graph contract for initial page render
@@ -38,10 +39,11 @@ export default class GraphController {
     })
 
     observabilityRepository.recordLatency(Date.now() - start)
-    return response.ok(html).header('Content-Type', 'text/html; charset=utf-8')
+    response.header('Content-Type', 'text/html; charset=utf-8')
+    return response.ok(html)
   }
 
-  async validate({ request, response, auth }: { request: any; response: any; auth: any }) {
+  async validate({ request, response, auth }: HttpContext & { auth: any }) {
     const start = Date.now()
     const payload = request.all()
 
@@ -49,8 +51,8 @@ export default class GraphController {
 
     if (!result.valid) {
       observabilityRepository.appendAuditLog({
-        actorId: auth?.user?.id ?? 'anonymous',
-        actorRole: auth?.user?.role ?? 'viewer',
+        actorId: String(auth?.user?.id ?? 'anonymous'),
+        actorRole: 'viewer',
         action: 'graph.contract.validate',
         resourceType: 'GraphContract',
         resourceId: 'submitted',
@@ -69,8 +71,8 @@ export default class GraphController {
     }
 
     observabilityRepository.appendAuditLog({
-      actorId: auth?.user?.id ?? 'anonymous',
-      actorRole: auth?.user?.role ?? 'viewer',
+      actorId: String(auth?.user?.id ?? 'anonymous'),
+      actorRole: 'viewer',
       action: 'graph.contract.validate',
       resourceType: 'GraphContract',
       resourceId: String(payload['schemaVersion'] ?? 'unknown'),

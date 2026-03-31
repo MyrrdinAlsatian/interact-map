@@ -7,6 +7,8 @@
     "npm": ">=10.0.0"
   },
   "imports": {
+    "#generated/*": "./.adonisjs/server/*.js",
+    "#transformers/*": "./app/transformers/*.js",
     "#entity/*": "./src/domain/models/*.js",
     "#domain/*": "./src/domain/*.js",
     "#usecases/*": "./src/domain/usecases/*.js",
@@ -39,8 +41,8 @@
   "dependencies": {
     "@adonisjs/auth": "9.5.1",
     "@adonisjs/core": "6.19.1",
-    "@adonisjs/lucid": "21.8.1",
     "@adonisjs/cors": "2.2.1",
+    "@adonisjs/lucid": "21.8.1",
     "@adonisjs/session": "7.5.1",
     "@tuyau/core": "0.4.2",
     "@vinejs/vine": "4.1.0",
@@ -57,18 +59,19 @@
     "@japa/assert": "4.1.1",
     "@japa/plugin-adonisjs": "4.0.0",
     "@japa/runner": "4.4.0",
-    "@swc/core": "1.15.3",
+    "@poppinss/ts-exec": "1.4.4",
     "@tuyau/utils": "0.0.9",
     "@types/luxon": "3.7.1",
     "@types/node": "^22.19.15",
     "@typescript-eslint/parser": "^8.44.0",
-    "pino-pretty": "13.1.2",
-    "hot-hook": "0.4.0",
-    "prettier": "3.6.2",
-    "ts-node-maintained": "10.9.6",
     "eslint": "^9.35.0",
+    "hot-hook": "0.4.0",
+    "pino-pretty": "13.1.2",
+    "prettier": "3.6.2",
+    "ts-node": "10.9.2",
     "tsx": "^4.20.5",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "youch": "4.1.1"
   },
   "hotHook": {
     "boundaries": [
