@@ -1,0 +1,5 @@
+{
+  "supportedSchemaVersions": ["1.0", "0.9"],
+  "validNodeTypes": ["application", "service", "container", "server", "external"],
+  "validCriticalityLevels": ["critical", "high", "medium", "low"]
+}
