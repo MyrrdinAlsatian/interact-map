@@ -2,11 +2,21 @@ import type { ParserResult } from '#domain/contracts/dto/parser_contract_dto'
 import type { GraphContract, ContractError } from '#domain/contracts/dto/graph_contract_dto'
 import { ValidateContractVersionUseCase } from '#domain/usecases/validate_contract_version_usecase'
 import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_contract_usecase'
+import type { ContractVersionValidationResult } from '#domain/usecases/validate_contract_version_usecase'
+import type { GraphContractValidationResult } from '#domain/usecases/validate_graph_contract_usecase'
 
 export interface ImportParserResultOutput {
   merged: GraphContract
   errors: ContractError[]
   warnings: ContractError[]
+}
+
+export interface ContractVersionValidator {
+  execute(schemaVersion: string): ContractVersionValidationResult
+}
+
+export interface GraphContractValidator {
+  execute(contract: unknown): GraphContractValidationResult
 }
 
 /**
@@ -20,8 +30,10 @@ export interface ImportParserResultOutput {
  * 5. Any structural violations are returned as errors (not thrown).
  */
 export class ImportParserResultUseCase {
-  private readonly versionValidator = new ValidateContractVersionUseCase()
-  private readonly contractValidator = new ValidateGraphContractUseCase()
+  constructor(
+    private readonly versionValidator: ContractVersionValidator = new ValidateContractVersionUseCase(),
+    private readonly contractValidator: GraphContractValidator = new ValidateGraphContractUseCase()
+  ) {}
 
   execute(parserResult: ParserResult, base: GraphContract): ImportParserResultOutput {
     const warnings: ContractError[] = [...parserResult.warnings]

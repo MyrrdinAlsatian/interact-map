@@ -1,4 +1,4 @@
-import { SUPPORTED_SCHEMA_VERSIONS } from '#domain/contracts/dto/graph_contract_dto'
+import { SUPPORTED_SCHEMA_VERSIONS } from '#domain/contracts/graph_contract_metadata'
 import type { ContractError } from '#domain/contracts/dto/graph_contract_dto'
 
 export interface ContractVersionValidationResult {

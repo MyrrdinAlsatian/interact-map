@@ -1,8 +1,6 @@
 import type { ContractError } from '#domain/contracts/dto/graph_contract_dto'
 import { ValidateContractVersionUseCase } from '#domain/usecases/validate_contract_version_usecase'
-
-const VALID_NODE_TYPES = ['application', 'service', 'container', 'server', 'external'] as const
-const VALID_CRITICALITY = ['critical', 'high', 'medium', 'low'] as const
+import { VALID_NODE_TYPES, VALID_CRITICALITY } from '#domain/contracts/graph_contract_metadata'
 
 export interface GraphContractValidationResult {
   valid: boolean
