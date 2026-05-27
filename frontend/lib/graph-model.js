@@ -1,6 +1,4 @@
-export const NODE_TYPES = ['application', 'service', 'server', 'container', 'external'];
-export const CRITICALITY_LEVELS = ['critical', 'high', 'medium', 'low'];
-export const SUPPORTED_SCHEMA_VERSIONS = ['1.0', '0.9'];
+import { NODE_TYPES, CRITICALITY_LEVELS, SUPPORTED_SCHEMA_VERSIONS } from './graph-contract-metadata.js';
 
 /**
  * Validates a canonical GraphContract payload (schemaVersion, nodes[], edges[]).
