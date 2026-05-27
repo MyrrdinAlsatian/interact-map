@@ -32,6 +32,8 @@ export class ImportParserResultUseCase {
       return { merged: base, errors: versionCheck.errors, warnings }
     }
 
+    const fatalWarnings = parserResult.warnings.filter((warning) => warning.severity === 'error')
+
     // If ParserResult itself contains errors, refuse merge
     if (parserResult.errors.length > 0) {
       return {
@@ -42,6 +44,22 @@ export class ImportParserResultUseCase {
             message: `Cannot merge parser result with ${parserResult.errors.length} error(s). Fix parser errors first.`,
             severity: 'error',
           },
+          ...fatalWarnings,
+        ],
+        warnings,
+      }
+    }
+
+    if (fatalWarnings.length > 0) {
+      return {
+        merged: base,
+        errors: [
+          {
+            code: 'PARSER_RESULT_INVALID',
+            message: `Cannot merge parser result with ${fatalWarnings.length} warning(s) of severity error.`,
+            severity: 'error',
+          },
+          ...fatalWarnings,
         ],
         warnings,
       }
