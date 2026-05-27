@@ -36,7 +36,8 @@
     "lint:eslint": "eslint .",
     "lint:prettier": "prettier --check .",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "generate:graph-contract-metadata": "node scripts/generate-graph-contract-metadata.js"
   },
   "dependencies": {
     "@adonisjs/auth": "9.5.1",
