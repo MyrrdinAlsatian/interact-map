@@ -76,13 +76,13 @@ Browser                                     AdonisJS Server
   |    validateGraphContract(data)  <-- schema version policy
   |    X6 adapter renders nodes/edges
   |
-  |-- POST /graph/simulate-incident (analyst+) -> |
+  |-- POST /graph/simulate-incident (security+) -> |
   |   { startNodeId, traversalMode }              |--> GraphSimulationController.simulate()
   |                                               |     BFS/DFS traversal
   |                                               |     appendAuditLog(...)
   |<-- 200 IncidentSimulationResult ------------- |
   |
-  |-- POST /parser/ingest (analyst+) -----------> |
+  |-- POST /parser/ingest (security+) -----------> |
   |   ParserResult payload                        |--> ParserController.ingest()
   |                                               |     ImportParserResultUseCase
   |                                               |     appendAuditLog(...)
@@ -144,7 +144,7 @@ Browser                                     AdonisJS Server
 ## Security and Access
 - Encryption at rest and in transit required on backend and client-side project payloads.
 - AES-256 envelope encryption model with key rotation policy.
-- RBAC enforced via `ROLE_HIERARCHY` (viewer=0, analyst=1, architect=2, admin=3).
+- RBAC enforced via `ROLE_HIERARCHY` (viewer=0, security=1, editor=2, admin=3).
 - `requireRole(minimumRole)` middleware factory applied per route group.
 - All write/mutate operations emit `AuditLogEntry` via `ObservabilityRepository.appendAuditLog()`.
 - Audit log access: admin-only via `GET /audit/logs`.

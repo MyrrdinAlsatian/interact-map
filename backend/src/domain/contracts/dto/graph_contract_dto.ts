@@ -2,7 +2,7 @@ export type NodeType = 'application' | 'service' | 'container' | 'server' | 'ext
 export type CriticalityLevel = 'critical' | 'high' | 'medium' | 'low'
 export type DependencyType = 'required' | 'optional' | 'async' | 'cache'
 export type ErrorSeverity = 'error' | 'warning'
-export type ActorRole = 'viewer' | 'analyst' | 'architect' | 'admin'
+export type ActorRole = 'viewer' | 'security' | 'editor' | 'admin'
 export type AuditOutcome = 'success' | 'denied' | 'failure'
 export type TraversalMode = 'bfs' | 'dfs'
 

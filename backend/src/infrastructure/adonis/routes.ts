@@ -46,15 +46,15 @@ router.group(() => {
 
 // // ─── Role-gated write routes ──────────────────────────────────────────────────
 // router.group(() => {
-//   // Graph contract validation (US2, analyst+)
+//   // Graph contract validation (US2, security+)
 //   router.post('/graph/contract/validate', [GraphController, 'validate'])
 
-//   // Incident simulation (US2, analyst+)
+//   // Incident simulation (US2, security+)
 //   router.post('/graph/simulate-incident', [GraphSimulationController, 'simulate'])
 
-//   // Parser ingestion (US3, analyst+)
+//   // Parser ingestion (US3, security+)
 //   router.post('/parser/ingest', [ParserController, 'ingest'])
-// }).middleware(['auth', 'requireRole:analyst'])
+// }).middleware(['auth', 'requireRole:security'])
 
 // ─── Legacy / uploads ────────────────────────────────────────────────────────
 router.post('/uploads', [UploadsController, 'store'])

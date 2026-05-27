@@ -87,7 +87,7 @@ npm run dev
 - `architecture-graph.simulateIncident('app-orders', 'bfs')` → impacted downstream nodes highlighted in orange, failed node in red.
 - `architecture-graph.simulateIncident('app-orders', 'dfs')` → same result (different traversal order).
 - Verify `incident-simulated` event contains `{ failedNodeId, traversal, impactedNodes, impactedEdges }`.
-- Call `POST /graph/simulate-incident` with `{ "projectId": "acme", "failedNodeId": "app-orders", "traversal": "bfs" }` as an analyst-role user → expect HTTP 200.
+- Call `POST /graph/simulate-incident` with `{ "projectId": "acme", "failedNodeId": "app-orders", "traversal": "bfs" }` as an security-role user → expect HTTP 200.
 - Repeat as a viewer-role user → expect HTTP 403.
 
 ---

@@ -33,7 +33,7 @@ export default class AuthMiddleware {
 
 // /**
 //  * Factory that creates a named middleware enforcing a minimum role level.
-//  * Usage in routes: .use(requireRole('analyst'))
+//  * Usage in routes: .use(requireRole('security'))
 //  *
 //  * Responds 401 if not authenticated, 403 if authenticated but insufficient role.
 //  */

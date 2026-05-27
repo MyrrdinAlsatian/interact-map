@@ -8,7 +8,7 @@ import { resolve } from 'node:path'
  *
  * POST /graph/simulate-incident
  * Required body: { projectId: string, failedNodeId: string, traversal?: 'bfs' | 'dfs' }
- * Required role: analyst or higher (enforced by requireRole middleware in routes.ts)
+ * Required role: security or higher (enforced by requireRole middleware in routes.ts)
  *
  * Performs BFS/DFS traversal on the project's graph and returns impacted nodes/edges.
  * Emits an audit log entry for every simulation attempt.
@@ -93,7 +93,7 @@ export default class GraphSimulationController {
 
     observabilityRepository.appendAuditLog({
       actorId: auth?.user?.id ?? 'anonymous',
-      actorRole: auth?.user?.role ?? 'analyst',
+      actorRole: auth?.user?.role ?? 'security',
       action: 'graph.simulate-incident',
       resourceType: 'GraphContract',
       resourceId: projectId,

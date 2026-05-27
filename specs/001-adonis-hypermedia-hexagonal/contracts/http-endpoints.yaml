@@ -67,7 +67,7 @@ paths:
   /graph/simulate-incident:
     post:
       summary: Simulate graph impact from a failing node
-      description: Requires authenticated user with role `analyst` or higher.
+      description: Requires authenticated user with role `security` or higher.
       requestBody:
         required: true
         content:
@@ -209,7 +209,7 @@ components:
       properties:
         id: { type: string }
         actorId: { type: string }
-        actorRole: { type: string, enum: [viewer, analyst, architect, admin] }
+        actorRole: { type: string, enum: [viewer, security, editor, admin] }
         action: { type: string }
         resourceType: { type: string }
         resourceId: { type: string }
