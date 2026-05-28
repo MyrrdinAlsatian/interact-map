@@ -42,6 +42,7 @@ Enforcement:
 - Pratiques du projet (TLDR pour/contre): `docs/project-practices-tldr.md`
 - Matrice de decision des pratiques: `docs/project-practices-decision-matrix.md`
 - Playbook pour futurs projets: `docs/future-projects-playbook.md`
+- Guide de refonte d'un projet existant: `docs/refactoring-guide.md`
 
 ### Backend — AdonisJS Hexagonal
 
