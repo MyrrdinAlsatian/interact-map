@@ -38,6 +38,7 @@ Enforcement:
 - Latest import report: `shared/latest-import-report.json`
 - Example dataset: `examples/project-dataset.json`
 - HTTP fixture (REST Client): `examples/interact-map.http`
+- Problemes rencontres + solutions: `docs/problems-and-solutions.md`
 
 ### Backend — AdonisJS Hexagonal
 
