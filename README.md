@@ -41,6 +41,7 @@ Enforcement:
 - Problemes rencontres + solutions: `docs/problems-and-solutions.md`
 - Pratiques du projet (TLDR pour/contre): `docs/project-practices-tldr.md`
 - Matrice de decision des pratiques: `docs/project-practices-decision-matrix.md`
+- Playbook pour futurs projets: `docs/future-projects-playbook.md`
 
 ### Backend — AdonisJS Hexagonal
 
