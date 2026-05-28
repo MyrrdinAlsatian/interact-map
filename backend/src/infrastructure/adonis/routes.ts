@@ -6,6 +6,7 @@ import DashboardController from '#infrastructure/controllers/dashboard_controlle
 import InventoryController from '#infrastructure/controllers/inventory_controller'
 import FragmentsController from '#infrastructure/controllers/fragments_controller'
 import GraphController from '#infrastructure/controllers/graph_controller'
+import GraphSimulationController from '#infrastructure/controllers/graph_simulation_controller'
 import MetricsController from '#infrastructure/controllers/metrics_controller'
 import AuditLogsController from '#infrastructure/controllers/audit_logs_controller'
 import UploadsController from '#infrastructure/controllers/uploads_controller'
@@ -23,6 +24,7 @@ router.post('/users/register', [UsersController, 'register'])
 const inventoryController = new InventoryController()
 const fragmentsController = new FragmentsController()
 const graphController = new GraphController()
+const graphSimulationController = new GraphSimulationController()
 const parserController = new ParserController()
 const nodeController = new NodeController()
 const importReportController = new ImportReportController()
@@ -52,22 +54,17 @@ router.group(() => {
   router.post('/nodes/:id/restore', (ctx) => nodeController.restore(ctx as any))
   router.post('/nodes/:id/purge', (ctx) => nodeController.purge(ctx as any))
 
+  // Graph API actions
+  router.post('/graph/contract/validate', (ctx) => graphController.validate(ctx as any))
+  router.post('/graph/simulate-incident', (ctx) => graphSimulationController.simulate(ctx as any))
+
   // Parser ingestion (US3) — active JSON merge+persist flow
   router.post('/parser/ingest', (ctx) => parserController.ingest(ctx as any))
 
   // Observability (admin read — role guard applied inside controller)
   router.get('/observability/metrics', [MetricsController, 'index'])
   router.get('/audit/logs', [AuditLogsController, 'index'])
-})
-
-// // ─── Role-gated write routes ──────────────────────────────────────────────────
-// router.group(() => {
-//   // Graph contract validation (US2, security+)
-//   router.post('/graph/contract/validate', [GraphController, 'validate'])
-
-//   // Incident simulation (US2, security+)
-//   router.post('/graph/simulate-incident', [GraphSimulationController, 'simulate'])
-// }).middleware(['auth', 'requireRole:security'])
+}).middleware(['auth'])
 
 // ─── Legacy / uploads ────────────────────────────────────────────────────────
-router.post('/uploads', [UploadsController, 'store'])
+router.post('/uploads', [UploadsController, 'store']).middleware(['auth'])

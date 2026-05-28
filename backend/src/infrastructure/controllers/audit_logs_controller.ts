@@ -1,5 +1,5 @@
 import { observabilityRepository } from '#repositories/observability_repository'
-// import { ROLE_HIERARCHY } from '#infrastructure/adonis/kernel'
+import { hasRequiredRole } from '#infrastructure/middleware/auth_middleware'
 
 /**
  * AuditLogsController — read-only access to audit log entries.
@@ -10,18 +10,12 @@ import { observabilityRepository } from '#repositories/observability_repository'
  * Returns: AuditLogEntry[] (append-only; newest-first)
  */
 export default class AuditLogsController {
-  async index({ response }: { response: any; auth: any }) {
-  // async index({ response, auth }: { response: any; auth: any }) {
-    // Inline role check for admin — belt-and-suspenders beyond requireRole middleware
-    // const userRole: string = auth?.user?.role ?? 'viewer'
-    // const userLevel = ROLE_HIERARCHY[userRole] ?? -1
-    // const adminLevel = ROLE_HIERARCHY['admin'] ?? 3
-
-    // if (userLevel < adminLevel) {
-    //   return response.forbidden({
-    //     message: `Role "${userRole}" does not have permission to view audit logs. Required: "admin".`,
-    //   })
-    // }
+  async index({ response, auth }: { response: any; auth: any }) {
+    if (!hasRequiredRole(auth?.user?.role, 'security')) {
+      return response.forbidden({
+        message: 'Insufficient role. Required: security or higher.',
+      })
+    }
 
     const entries = observabilityRepository.queryAuditLogs()
     return response.ok([...entries].reverse())

@@ -1,7 +1,7 @@
 # Quickstart
 
 ## Prerequisites
-- Node.js 20+
+- Node.js 24+
 - npm 10+
 - PostgreSQL (for runtime integration phase)
 
@@ -87,7 +87,7 @@ npm run dev
 - `architecture-graph.simulateIncident('app-orders', 'bfs')` → impacted downstream nodes highlighted in orange, failed node in red.
 - `architecture-graph.simulateIncident('app-orders', 'dfs')` → same result (different traversal order).
 - Verify `incident-simulated` event contains `{ failedNodeId, traversal, impactedNodes, impactedEdges }`.
-- Call `POST /graph/simulate-incident` with `{ "projectId": "acme", "failedNodeId": "app-orders", "traversal": "bfs" }` as an security-role user → expect HTTP 200.
+- Call `POST /graph/simulate-incident` with `{ "projectId": "acme", "failedNodeId": "app-orders", "traversal": "bfs" }` as an editor-role user → expect HTTP 200.
 - Repeat as a viewer-role user → expect HTTP 403.
 
 ---
@@ -203,7 +203,7 @@ Validate all write/mutate endpoints produce audit records:
 - `POST /parser/ingest` → `action: parser.ingest`
 - `POST /uploads` → `action: uploads.store`
 
-After exercising each endpoint, query `GET /audit/logs` (admin) and confirm each action appears with expected outcome.
+After exercising each endpoint, query `GET /audit/logs` (security+) and confirm each action appears with expected outcome.
 
 ## 7. Architecture verification checklist
 - Domain layer has no direct framework dependencies.

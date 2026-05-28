@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 import type { Authenticators } from '@adonisjs/auth/types'
+import type { ActorRole } from '#domain/contracts/dto/graph_contract_dto'
 
 // import { ROLE_HIERARCHY } from '#infrastructure/adonis/kernel'
 // import type { ActorRole } from '#domain/contracts/dto/graph_contract_dto'
@@ -18,6 +19,20 @@ export default class AuthMiddleware {
     await ctx.auth.authenticateUsing(options.guards, { loginRoute: this.redirectTo })
     return next()
   }
+}
+
+export const ROLE_HIERARCHY: Record<ActorRole, number> = {
+  viewer: 0,
+  editor: 1,
+  security: 2,
+  admin: 3,
+}
+
+export function hasRequiredRole(userRole: unknown, minimumRole: ActorRole): boolean {
+  const role = (typeof userRole === 'string' ? userRole : 'viewer') as ActorRole
+  const userLevel = ROLE_HIERARCHY[role] ?? -1
+  const requiredLevel = ROLE_HIERARCHY[minimumRole]
+  return userLevel >= requiredLevel
 }
 
 // /**

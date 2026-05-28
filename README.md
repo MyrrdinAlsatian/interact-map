@@ -63,11 +63,11 @@ Enforcement:
 | `POST /nodes/:id/restore` | viewer+ | Restore an archived node |
 | `POST /nodes/:id/purge` | viewer+ | Permanently remove node and its edges |
 | `POST /uploads` | viewer+ | Parse + merge + persist (multipart or JSON body) |
-| `POST /parser/ingest` | viewer+ | Ingest a pre-built `ParserResult` |
+| `POST /parser/ingest` | editor+ | Ingest a pre-built `ParserResult` |
 | `GET /imports/latest` | viewer+ | Latest import diff page |
 | `GET /fragments/:target` | viewer+ | Unpoly fragment resolver |
 | `GET /observability/metrics` | security+ | Core metrics |
-| `GET /audit/logs` | admin | Audit log |
+| `GET /audit/logs` | security+ | Audit log |
 
 ### Upload / Ingest Parameters
 

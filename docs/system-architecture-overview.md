@@ -122,7 +122,7 @@ Browser                                     AdonisJS Server
   |                                               |     GraphStoreService.archiveNodeById|...|purgeNodeById()
   |<-- 302 redirect to category page ------------ |
   |
-  |-- GET /observability/metrics (any auth) ----> |
+        |-- GET /observability/metrics (security+) ----> |
   |<-- 200 CoreMetrics JSON ------------------- |
   |
   |-- GET /audit/logs (admin only) ------------>  |
