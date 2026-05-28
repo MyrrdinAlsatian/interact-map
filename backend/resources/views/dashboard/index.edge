@@ -7,30 +7,12 @@
 
   <!-- STATS GRID -->
   <div class="grid grid-3" style="margin-bottom: 32px;">
-    <div class="stat-card">
-      <div class="stat-value">24</div>
-      <div class="stat-label"><i class="fas fa-cube"></i> Applications</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">18</div>
-      <div class="stat-label"><i class="fas fa-cogs"></i> Services</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">8</div>
-      <div class="stat-label"><i class="fas fa-server"></i> Servers</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">42</div>
-      <div class="stat-label"><i class="fas fa-box"></i> Containers</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">156</div>
-      <div class="stat-label"><i class="fas fa-arrows-alt"></i> Interactions</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">99.8%</div>
-      <div class="stat-label"><i class="fas fa-heartbeat"></i> Uptime</div>
-    </div>
+      @each(stat in stats)
+        <div class="stat-card">
+          <div class="stat-value">{{ stat.value }}</div>
+          <div class="stat-label"><i class="fas {{ stat.icon }}"></i> {{ stat.label }}</div>
+        </div>
+      @endeach
   </div>
 
   <!-- INFO CARDS -->
@@ -72,22 +54,12 @@
         <i class="fas fa-history"></i> Recent Activity
       </div>
       <div style="font-size: 0.9rem; line-height: 2;">
-        <div style="padding: 8px 0; border-bottom: 1px solid var(--border);">
-          <span style="color: var(--success);">✓</span> Application <strong>web-frontend</strong> deployed
-          <div style="font-size: 0.8rem; color: var(--text-secondary);">2 minutes ago</div>
-        </div>
-        <div style="padding: 8px 0; border-bottom: 1px solid var(--border);">
-          <span style="color: var(--warning);">⚠</span> Service <strong>api-auth</strong> CPU usage high
-          <div style="font-size: 0.8rem; color: var(--text-secondary);">15 minutes ago</div>
-        </div>
-        <div style="padding: 8px 0; border-bottom: 1px solid var(--border);">
-          <span style="color: var(--success);">✓</span> Container pool scaled to 12 replicas
-          <div style="font-size: 0.8rem; color: var(--text-secondary);">1 hour ago</div>
-        </div>
-        <div style="padding: 8px 0;">
-          <span style="color: var(--success);">✓</span> Database backup completed
-          <div style="font-size: 0.8rem; color: var(--text-secondary);">3 hours ago</div>
-        </div>
+          @each(activity in recentActivity)
+            <div style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+              <span style="color: var(--{{ activity.tone === 'warning' ? 'warning' : 'success' }});">{{ activity.tone === 'warning' ? '⚠' : '✓' }}</span> {{ activity.title }}
+              <div style="font-size: 0.8rem; color: var(--text-secondary);">{{ activity.detail }}</div>
+            </div>
+          @endeach
       </div>
     </div>
 
@@ -98,22 +70,12 @@
       </div>
       <table style="margin-top: 12px;">
         <tbody>
-          <tr>
-            <td><strong>web-frontend</strong></td>
-            <td style="text-align: right; color: var(--success);">↑ 2.4M req/min</td>
-          </tr>
-          <tr>
-            <td><strong>orders-api</strong></td>
-            <td style="text-align: right; color: var(--success);">↑ 1.8M req/min</td>
-          </tr>
-          <tr>
-            <td><strong>user-service</strong></td>
-            <td style="text-align: right; color: var(--text-secondary);">→ 890K req/min</td>
-          </tr>
-          <tr>
-            <td><strong>analytics</strong></td>
-            <td style="text-align: right; color: var(--text-secondary);">→ 420K req/min</td>
-          </tr>
+            @each(application in topApplications)
+              <tr>
+                <td><strong>{{ application.label }}</strong></td>
+                <td style="text-align: right; color: var(--{{ application.tone === 'success' ? 'success' : 'text-secondary' }});">{{ application.trend }}</td>
+              </tr>
+            @endeach
         </tbody>
       </table>
     </div>
