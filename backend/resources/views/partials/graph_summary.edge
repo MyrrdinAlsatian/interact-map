@@ -1,0 +1,37 @@
+<section aria-labelledby="graph-summary-title">
+  <h2 id="graph-summary-title" class="page-title">Graph Summary</h2>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div class="card-title">
+      <i class="fas fa-chart-pie"></i> Current Topology Snapshot
+    </div>
+    <table>
+      <tbody>
+        <tr>
+          <td><strong>Total nodes</strong></td>
+          <td style="text-align: right;">{{ nodeCount }}</td>
+        </tr>
+        <tr>
+          <td><strong>Total interactions</strong></td>
+          <td style="text-align: right;">{{ edgeCount }}</td>
+        </tr>
+        <tr>
+          <td><strong>Applications</strong></td>
+          <td style="text-align: right;">{{ applications }}</td>
+        </tr>
+        <tr>
+          <td><strong>Services</strong></td>
+          <td style="text-align: right;">{{ services }}</td>
+        </tr>
+        <tr>
+          <td><strong>Servers</strong></td>
+          <td style="text-align: right;">{{ servers }}</td>
+        </tr>
+        <tr>
+          <td><strong>Containers</strong></td>
+          <td style="text-align: right;">{{ containers }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
