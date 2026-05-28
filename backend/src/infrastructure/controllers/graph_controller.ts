@@ -1,6 +1,7 @@
 import type { GraphContract } from '#domain/contracts/dto/graph_contract_dto'
 import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_contract_usecase'
 import { observabilityRepository } from '#repositories/observability_repository'
+import { getGraphSummaryViewModel } from '#infrastructure/services/inventory_data_service'
 import type { HttpContext } from '@adonisjs/core/http'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
@@ -33,9 +34,12 @@ export default class GraphController {
       // Sample data not required — page renders without pre-loaded contract
     }
 
+    const summary = await getGraphSummaryViewModel()
+
     const html = await view.render('graph/index', {
       pageTitle: 'Architecture Graph',
       initialContract: sampleContract ? JSON.stringify(sampleContract) : null,
+      summary,
     })
 
     observabilityRepository.recordLatency(Date.now() - start)

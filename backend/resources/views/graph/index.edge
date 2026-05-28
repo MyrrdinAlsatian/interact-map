@@ -5,6 +5,34 @@
   <div class="page-title"><i class="fas fa-project-diagram"></i> Architecture Graph</div>
   <p class="page-subtitle">Real-time infrastructure topology and dependencies</p>
 
+  <!-- SUMMARY STRIP -->
+  <div class="grid grid-3" style="margin-bottom: 24px;">
+    <div class="stat-card">
+      <div class="stat-value">{{ summary.nodeCount }}</div>
+      <div class="stat-label"><i class="fas fa-circle-nodes"></i> Nodes</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ summary.edgeCount }}</div>
+      <div class="stat-label"><i class="fas fa-arrows-alt"></i> Dependencies</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ summary.applications }}</div>
+      <div class="stat-label"><i class="fas fa-cube"></i> Applications</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ summary.services }}</div>
+      <div class="stat-label"><i class="fas fa-cogs"></i> Services</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ summary.servers }}</div>
+      <div class="stat-label"><i class="fas fa-server"></i> Servers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ summary.containers }}</div>
+      <div class="stat-label"><i class="fas fa-box"></i> Containers</div>
+    </div>
+  </div>
+
   <div class="card">
     <h2 id="graph-page-title" class="card-title">Infrastructure Visualization</h2>
     <p id="graphHelp" style="margin: 0 0 16px; color: var(--text-secondary); font-size: 0.9rem;">
