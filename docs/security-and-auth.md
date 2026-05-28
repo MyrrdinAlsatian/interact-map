@@ -38,6 +38,10 @@ Role guard: `requireRole(minimumRole)` factory from `auth_middleware.ts`. Return
 
 **Route RBAC policy summary:**
 - `GET /applications`, `/services`, `/servers`, `/containers`, `/interactions`, `/graph` — `viewer+`
+- `GET /nodes/:id` — `viewer+`
+- `POST /nodes/:id/archive`, `/restore`, `/purge` — `viewer+`
+- `GET /imports/latest` — `viewer+`
+- `POST /uploads` — `viewer+`
 - `POST /graph/contract/validate` — `editor+`
 - `POST /graph/simulate-incident` — `editor+`
 - `POST /parser/ingest` — `editor+`
@@ -77,7 +81,12 @@ Operations that emit audit entries:
 | `POST /graph/contract/validate` | `GraphController.validate` | `graph.contract.validate` | success + failure |
 | `POST /graph/simulate-incident` | `GraphSimulationController.simulate` | `graph.simulate-incident` | success |
 | `POST /parser/ingest` | `ParserController.ingest` | `parser.ingest` | success + failure |
+| `POST /parser/ingest` (dry-run) | `ParserController.ingest` | `parser.preview` | success |
 | `POST /uploads` | `UploadsController.store` | `uploads.store` | success |
+| `POST /uploads` (dry-run) | `UploadsController.store` | `uploads.preview` | success |
+| `POST /nodes/:id/archive` | `NodeController.archive` | `node.archive` | success + failure |
+| `POST /nodes/:id/restore` | `NodeController.restore` | `node.restore` | success + failure |
+| `POST /nodes/:id/purge` | `NodeController.purge` | `node.purge` | success + failure |
 
 Audit log is append-only. Query via `GET /audit/logs` (admin only).
 

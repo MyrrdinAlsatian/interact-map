@@ -16,17 +16,22 @@ The platform documents applications, services, infrastructure, and runtime depen
    - AdonisJS routes/controllers render HTML views.
    - Inventory pages (applications, services, servers, containers, interactions) remain server-rendered.
    - Unpoly progressively enhances filters, pagination, and partial updates.
+   - Dashboard includes import form (file upload or raw payload), merge strategy selector, dry-run toggle, and latest diff summary widget.
 2. Capability Islands (browser)
    - `architecture-graph` Web Component renders and interacts with graph data using X6.
    - Parsing modules import Docker files client-side.
    - Offline store persists projects and graph snapshots in IndexedDB.
 3. Application Layer
    - Use cases orchestrate domain operations (import, map, analyze, export).
+   - `ImportParserResultUseCase` supports `MergeStrategy`: `skip`, `update`, `archive-missing`.
 4. Domain Layer
    - Framework-agnostic entities and domain services.
    - Canonical graph model independent from visualization engine.
 5. Infrastructure Layer
-   - PostgreSQL persistence adapters.
+   - JSON file persistence (`shared/current-graph.json`, `shared/latest-import-report.json`).
+   - `GraphStoreService`: load/persist graph, archive/restore/purge nodes, create import report with field-level diff.
+   - `UploadParserService`: server-side Docker file parsers (docker-compose YAML, docker-inspect JSON, docker-ps JSON).
+   - `InventoryDataService`: builds view models for all inventory pages, node detail, dashboard with search and archive state.
    - AES-256 crypto services and key management integration.
    - Authentication integration adapters (SSO in production, local account in development).
 
@@ -35,6 +40,8 @@ The platform documents applications, services, infrastructure, and runtime depen
 - Visualization: load graph model from backend or local cache → convert through X6 adapter → render interactive graph.
 - Incident simulation: pick failing node → run impact traversal (BFS/DFS) → highlight impacted edges/nodes.
 - Offline analysis: import Docker sources client-side → build and explore graph in browser → export JSON project bundle.
+- Infrastructure import: upload Docker source file or POST `ParserResult` → parse on backend → validate schema version → merge into current graph (with chosen `MergeStrategy`) → persist updated graph and `GraphImportReport` → view fine-grained diff at `/imports/latest`.
+- Node lifecycle: nodes can be soft-archived (`POST /nodes/:id/archive`) or hard-purged (`POST /nodes/:id/purge`); archived nodes remain in the graph with a distinct visual state and can be restored via `POST /nodes/:id/restore`.
 
 ## Server-Rendered Baseline + Unpoly Fragment Flow
 
@@ -82,18 +89,80 @@ Browser                                     AdonisJS Server
   |                                               |     appendAuditLog(...)
   |<-- 200 IncidentSimulationResult ------------- |
   |
-  |-- POST /parser/ingest (security+) -----------> |
-  |   ParserResult payload                        |--> ParserController.ingest()
+  |-- POST /parser/ingest (editor+) ------------> |
+  |   { parserResult, mergeStrategy?, dryRun? }   |--> ParserController.ingest()
   |                                               |     ImportParserResultUseCase
+  |                                               |     GraphStoreService.createImportReport()
+  |                                               |     [if !dryRun] persist graph + report
   |                                               |     appendAuditLog(...)
-  |<-- 200 merged GraphContract  ---------------- |
+  |<-- 200 { merged, previewReport, dryRun } ---- |
   |  or 422 ErrorEnvelope (validation errors)
+  |
+  |-- POST /uploads (editor+) ----------------->  |
+  |   multipart file | payload body               |--> UploadsController.store()
+  |   + sourceType?, mergeStrategy?, dryRun?      |     UploadParserService.parse()
+  |                                               |     ValidateGraphContractUseCase
+  |                                               |     ImportParserResultUseCase
+  |                                               |     GraphStoreService.createImportReport()
+  |                                               |     [if !dryRun] persist graph + report
+  |<-- 200 { merged, previewReport, dryRun } ---- |
+  |
+  |-- GET /imports/latest (viewer+) ----------->  |
+  |                                               |--> ImportReportController.show()
+  |                                               |     GraphStoreService.loadLatestImportReport()
+  |<-- 200 text/html (diff view) ---------------- |
+  |
+  |-- GET /nodes/:id (viewer+) --------------->   |
+  |                                               |--> NodeController.show()
+  |                                               |     InventoryDataService.getNodeDetailViewModel()
+  |<-- 200 text/html (node detail) -------------- |
+  |
+  |-- POST /nodes/:id/archive|restore|purge ----> |
+  |                                               |--> NodeController.archive|restore|purge()
+  |                                               |     GraphStoreService.archiveNodeById|...|purgeNodeById()
+  |<-- 302 redirect to category page ------------ |
   |
   |-- GET /observability/metrics (any auth) ----> |
   |<-- 200 CoreMetrics JSON ------------------- |
   |
   |-- GET /audit/logs (admin only) ------------>  |
   |<-- 200 AuditLogEntry[] newest first -------- |
+```
+
+## Import Pipeline — JSON Persistence
+
+```
+POST /uploads or POST /parser/ingest
+        │
+        ▼
+UploadParserService.parse()          ← only for /uploads (file/payload)
+        │  docker-compose YAML → ParserResult
+        │  docker-inspect JSON → ParserResult
+        │  docker-ps     JSON → ParserResult
+        ▼
+ValidateGraphContractUseCase         ← schema version + structural validation
+ValidateContractVersionUseCase
+        │  errors[] → 422 immediately
+        ▼
+GraphStoreService.loadCurrentGraphContract()   ← reads shared/current-graph.json
+        │
+        ▼
+ImportParserResultUseCase(parserResult, base, { mergeStrategy })
+        │  skip           → base wins on collision
+        │  update         → incoming wins on collision
+        │  archive-missing → update + archive absent base nodes
+        ▼
+GraphStoreService.createImportReport({ base, incoming, merged, ... })
+        │  addedNodeIds / addedEdgeIds
+        │  skippedNodeIds / skippedEdgeIds
+        │  modifiedNodes[]  with per-field changes[] { path, before, after, applied }
+        │  archivedNodeIds
+        ▼
+[dryRun=false] GraphStoreService.persistCurrentGraphContract()
+               GraphStoreService.persistLatestImportReport()
+        │
+        ▼
+Response: { status, merged, previewReport, dryRun, persisted, mergeStrategy }
 ```
 
 ## Hexagonal Boundary Diagram

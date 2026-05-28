@@ -6,12 +6,15 @@
 - Web Components encapsulate complex interactions as capability islands.
 
 ## Pages
-- `/applications`
-- `/services`
-- `/servers`
-- `/containers`
-- `/interactions`
-- `/graph`
+- `/` — Dashboard: import form (file or inline payload, merge strategy, dry-run), latest diff summary widget
+- `/applications` — Application inventory with search (`?q=`), archived badges, archive/restore/purge actions
+- `/services` — Service inventory (same features)
+- `/servers` — Server inventory (same features)
+- `/containers` — Container inventory (same features)
+- `/interactions` — Edge inventory
+- `/graph` — Architecture graph capability island
+- `/nodes/:id` — Node detail page: metadata table, inbound/outbound dependencies, related interactions, lifecycle actions (archive, restore, purge)
+- `/imports/latest` — Latest import diff page: stat cards, per-node/edge field-level changes table (path, before, after, applied)
 
 ## Capability Islands
 - `architecture-graph`
@@ -86,6 +89,21 @@ Parser result contract:
   "warnings": []
 }
 ```
+
+## CSS Utility Classes (layout.edge)
+
+| Class | Purpose |
+|---|---|
+| `.btn-secondary` | Secondary action button |
+| `.btn-warning` | Warning / archive action button |
+| `.btn-danger` | Danger / purge action button |
+| `.input` | Text input field |
+| `.form-row` | Horizontal form field row |
+| `.form-row-stack` | Vertical (stacked) form field row |
+| `.field-label` | Label for a form field |
+| `.action-row` | Row for action buttons |
+| `.list-unstyled` | List without default bullets |
+| `.diff-block` | Block container for import diff tables |
 
 ## Import Chain
 
