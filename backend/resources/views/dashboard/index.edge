@@ -26,8 +26,20 @@
             <input type="text" name="schemaVersion" value="1.0" class="input" />
           </label>
           <label>
+            <span class="field-label">Merge strategy</span>
+            <select name="mergeStrategy" class="input">
+              <option value="skip">skip (keep existing)</option>
+              <option value="update">update (overwrite existing)</option>
+              <option value="archive-missing">archive-missing (overwrite + archive absent)</option>
+            </select>
+          </label>
+          <label>
             <span class="field-label">Upload file</span>
             <input type="file" name="file" class="input" />
+          </label>
+          <label style="display: flex; gap: 8px; align-items: center;">
+            <input type="checkbox" name="dryRun" value="true" />
+            <span class="field-label" style="margin: 0;">Dry-run (preview only, no persistence)</span>
           </label>
         </div>
         <div class="action-row" style="margin-top: 12px;">
@@ -43,6 +55,8 @@
       @if(latestImport)
         <p style="color: var(--text-secondary); margin-bottom: 12px;">
           {{ latestImport.sourceType }} imported at {{ latestImport.timestamp }}
+          <br />
+          strategy: <strong>{{ latestImport.mergeStrategy }}</strong>
         </p>
         <div class="grid grid-2">
           <div>
@@ -68,6 +82,10 @@
           <div>
             <div class="stat-value" style="font-size: 1.6rem;">{{ latestImport.modifiedEdges.length }}</div>
             <div class="stat-label">Modified edges</div>
+          </div>
+          <div>
+            <div class="stat-value" style="font-size: 1.6rem;">{{ latestImport.archivedNodeIds.length }}</div>
+            <div class="stat-label">Archived nodes</div>
           </div>
         </div>
         <div class="action-row" style="margin-top: 16px;">

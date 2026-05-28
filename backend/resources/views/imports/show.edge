@@ -36,6 +36,10 @@
         <div class="stat-value">{{ report.modifiedEdges.length }}</div>
         <div class="stat-label">Modified edges</div>
       </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ report.archivedNodeIds.length }}</div>
+        <div class="stat-label">Archived nodes</div>
+      </div>
     </div>
 
     <div class="card">
@@ -44,6 +48,7 @@
         <tbody>
           <tr><td><strong>Timestamp</strong></td><td>{{ report.timestamp }}</td></tr>
           <tr><td><strong>Source type</strong></td><td>{{ report.sourceType }}</td></tr>
+          <tr><td><strong>Merge strategy</strong></td><td>{{ report.mergeStrategy }}</td></tr>
           <tr><td><strong>File</strong></td><td>{{ report.fileName ?? 'n/a' }}</td></tr>
           <tr><td><strong>Total nodes</strong></td><td>{{ report.totalNodes }}</td></tr>
           <tr><td><strong>Total edges</strong></td><td>{{ report.totalEdges }}</td></tr>
@@ -103,6 +108,19 @@
           </ul>
         @endif
       </div>
+
+      <div class="card">
+        <div class="card-title"><i class="fas fa-box-archive"></i> Archived nodes</div>
+        @if(report.archivedNodeIds.length === 0)
+          <p style="color: var(--text-secondary);">No node archived by this import.</p>
+        @else
+          <ul class="list-unstyled">
+            @each(item in report.archivedNodeIds)
+              <li><a href="/nodes/{{ encodeURIComponent(item) }}" up-follow>{{ item }}</a></li>
+            @endeach
+          </ul>
+        @endif
+      </div>
     </div>
 
     <div class="grid grid-2" style="margin-top: 24px;">
@@ -114,6 +132,31 @@
           @each(diff in report.modifiedNodes)
             <div style="padding: 12px 0; border-bottom: 1px solid var(--border);">
               <div style="margin-bottom: 8px;"><strong><a href="/nodes/{{ encodeURIComponent(diff.id) }}" up-follow>{{ diff.id }}</a></strong></div>
+              <div style="margin-bottom: 10px;">
+                @if(diff.applied)
+                  <span class="badge badge-online">Applied</span>
+                @else
+                  <span class="badge badge-offline">Detected only (not applied)</span>
+                @endif
+              </div>
+              <table style="margin-bottom: 10px;">
+                <thead>
+                  <tr>
+                    <th>Field</th>
+                    <th>Before</th>
+                    <th>After</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @each(change in diff.changes)
+                    <tr>
+                      <td><code>{{ change.path }}</code></td>
+                      <td><code>{{ change.before }}</code></td>
+                      <td><code>{{ change.after }}</code></td>
+                    </tr>
+                  @endeach
+                </tbody>
+              </table>
               <div class="grid grid-2">
                 <div>
                   <div class="field-label">Before</div>
@@ -137,6 +180,31 @@
           @each(diff in report.modifiedEdges)
             <div style="padding: 12px 0; border-bottom: 1px solid var(--border);">
               <div style="margin-bottom: 8px;"><strong>{{ diff.id }}</strong></div>
+              <div style="margin-bottom: 10px;">
+                @if(diff.applied)
+                  <span class="badge badge-online">Applied</span>
+                @else
+                  <span class="badge badge-offline">Detected only (not applied)</span>
+                @endif
+              </div>
+              <table style="margin-bottom: 10px;">
+                <thead>
+                  <tr>
+                    <th>Field</th>
+                    <th>Before</th>
+                    <th>After</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @each(change in diff.changes)
+                    <tr>
+                      <td><code>{{ change.path }}</code></td>
+                      <td><code>{{ change.before }}</code></td>
+                      <td><code>{{ change.after }}</code></td>
+                    </tr>
+                  @endeach
+                </tbody>
+              </table>
               <div class="grid grid-2">
                 <div>
                   <div class="field-label">Before</div>

@@ -2,7 +2,10 @@ import { observabilityRepository } from '#repositories/observability_repository'
 import { parseUploadedInfrastructureData } from '#infrastructure/services/upload_parser_service'
 import { ValidateContractVersionUseCase } from '#domain/usecases/validate_contract_version_usecase'
 import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_contract_usecase'
-import { ImportParserResultUseCase } from '#domain/usecases/import_parser_result_usecase'
+import {
+  ImportParserResultUseCase,
+  type MergeStrategy,
+} from '#domain/usecases/import_parser_result_usecase'
 import { ValidateParserResultUseCase } from '#domain/usecases/validate_parser_result_usecase'
 import {
   createImportReport,
@@ -17,6 +20,7 @@ const importParserResult = new ImportParserResultUseCase(
   new ValidateContractVersionUseCase(),
   new ValidateGraphContractUseCase()
 )
+const ALLOWED_MERGE_STRATEGIES: MergeStrategy[] = ['skip', 'update', 'archive-missing']
 
 export default class UploadsController {
   async store({ request, response, auth }: { request: any; response: any; auth?: any }) {
@@ -28,6 +32,8 @@ export default class UploadsController {
       sourceType?: string
       payload?: string
       schemaVersion?: string
+      mergeStrategy?: MergeStrategy
+      dryRun?: boolean | string
     }
 
     const uploadFile = request.file?.('file')
@@ -44,6 +50,19 @@ export default class UploadsController {
         error: {
           code: 'UPLOAD_CONTENT_MISSING',
           message: 'Provide payload text or multipart file field "file".',
+          severity: 'error',
+        },
+      })
+    }
+
+    const mergeStrategy = (body.mergeStrategy ?? 'skip') as MergeStrategy
+    const dryRun = [true, 'true', 'on', '1'].includes(body.dryRun as any)
+
+    if (!ALLOWED_MERGE_STRATEGIES.includes(mergeStrategy)) {
+      return response.status(422).json({
+        error: {
+          code: 'MERGE_STRATEGY_INVALID',
+          message: `mergeStrategy must be one of: ${ALLOWED_MERGE_STRATEGIES.join(', ')}`,
           severity: 'error',
         },
       })
@@ -81,15 +100,14 @@ export default class UploadsController {
       })
     }
 
-    const base =
-      (await loadCurrentGraphContract()) ?? {
-        schemaVersion: '1.0',
-        nodes: [],
-        edges: [],
-        errors: [],
-      }
+    const base = (await loadCurrentGraphContract()) ?? {
+      schemaVersion: '1.0',
+      nodes: [],
+      edges: [],
+      errors: [],
+    }
 
-    const output = importParserResult.execute(parserResult, base)
+    const output = importParserResult.execute(parserResult, base, { mergeStrategy })
     if (output.errors.length > 0) {
       observabilityRepository.incrementParseError()
       observabilityRepository.appendAuditLog({
@@ -114,42 +132,45 @@ export default class UploadsController {
       })
     }
 
-    try {
-      await persistCurrentGraphContract(output.merged)
-      await persistLatestImportReport(
-        createImportReport({
-          base,
-          incoming: { nodes: parserResult.nodes, edges: parserResult.edges },
-          merged: output.merged,
-          sourceType: body.sourceType ?? fileName ?? 'auto-detect',
-          fileName,
-        })
-      )
-    } catch {
-      observabilityRepository.appendAuditLog({
-        actorId,
-        actorRole,
-        action: 'uploads.store',
-        resourceType: 'Upload',
-        resourceId: fileName ?? 'inline-payload',
-        outcome: 'failure',
-      })
-      observabilityRepository.recordLatency(Date.now() - start)
+    const previewReport = createImportReport({
+      base,
+      incoming: { nodes: parserResult.nodes, edges: parserResult.edges },
+      merged: output.merged,
+      sourceType: body.sourceType ?? fileName ?? 'auto-detect',
+      mergeStrategy,
+      fileName,
+    })
 
-      return response.status(500).json({
-        error: {
-          code: 'GRAPH_PERSIST_FAILED',
-          message: 'Upload parsed and merged, but persistence to JSON failed.',
-          severity: 'error',
-        },
-        merged: output.merged,
-      })
+    if (!dryRun) {
+      try {
+        await persistCurrentGraphContract(output.merged)
+        await persistLatestImportReport(previewReport)
+      } catch {
+        observabilityRepository.appendAuditLog({
+          actorId,
+          actorRole,
+          action: 'uploads.store',
+          resourceType: 'Upload',
+          resourceId: fileName ?? 'inline-payload',
+          outcome: 'failure',
+        })
+        observabilityRepository.recordLatency(Date.now() - start)
+
+        return response.status(500).json({
+          error: {
+            code: 'GRAPH_PERSIST_FAILED',
+            message: 'Upload parsed and merged, but persistence to JSON failed.',
+            severity: 'error',
+          },
+          merged: output.merged,
+        })
+      }
     }
 
     observabilityRepository.appendAuditLog({
       actorId,
       actorRole,
-      action: 'uploads.store',
+      action: dryRun ? 'uploads.preview' : 'uploads.store',
       resourceType: 'Upload',
       resourceId: fileName ?? 'inline-payload',
       outcome: 'success',
@@ -157,15 +178,23 @@ export default class UploadsController {
         nodeCount: output.merged.nodes.length,
         edgeCount: output.merged.edges.length,
         sourceType: body.sourceType ?? 'auto-detect',
+        mergeStrategy,
+        dryRun,
       },
     })
     observabilityRepository.recordLatency(Date.now() - start)
 
     return response.ok({
       status: 'uploaded',
-      message: 'Upload parsed and merged into current graph',
+      message: dryRun
+        ? 'Dry-run preview generated. No persistence applied.'
+        : 'Upload parsed and merged into current graph',
       parserResult,
       merged: output.merged,
+      mergeStrategy,
+      dryRun,
+      persisted: !dryRun,
+      previewReport,
       warnings: output.warnings,
     })
   }

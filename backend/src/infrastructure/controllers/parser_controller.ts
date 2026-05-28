@@ -1,4 +1,7 @@
-import { ImportParserResultUseCase } from '#domain/usecases/import_parser_result_usecase'
+import {
+  ImportParserResultUseCase,
+  type MergeStrategy,
+} from '#domain/usecases/import_parser_result_usecase'
 import { ValidateParserResultUseCase } from '../../domain/usecases/validate_parser_result_usecase.js'
 import { ValidateContractVersionUseCase } from '#domain/usecases/validate_contract_version_usecase'
 import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_contract_usecase'
@@ -17,6 +20,7 @@ const importParserResult = new ImportParserResultUseCase(
   new ValidateContractVersionUseCase(),
   new ValidateGraphContractUseCase()
 )
+const ALLOWED_MERGE_STRATEGIES: MergeStrategy[] = ['skip', 'update', 'archive-missing']
 
 /**
  * ParserController — accepts a ParserResult payload and merges it into the project graph.
@@ -30,9 +34,31 @@ const importParserResult = new ImportParserResultUseCase(
 export default class ParserController {
   async ingest({ request, response, auth }: { request: any; response: any; auth: any }) {
     const start = Date.now()
-    const body = request.all() as { parserResult: ParserResult; base?: GraphContract }
+    const body = request.all() as {
+      parserResult: ParserResult
+      base?: GraphContract
+      mergeStrategy?: MergeStrategy
+      dryRun?: boolean | string
+    }
 
     const parserResult = body.parserResult
+    const mergeStrategy = (body.mergeStrategy ?? 'skip') as MergeStrategy
+    const dryRun =
+      body.dryRun === true ||
+      body.dryRun === 'true' ||
+      body.dryRun === 'on' ||
+      body.dryRun === '1'
+
+    if (!ALLOWED_MERGE_STRATEGIES.includes(mergeStrategy)) {
+      return response.status(422).json({
+        error: {
+          code: 'MERGE_STRATEGY_INVALID',
+          message: `mergeStrategy must be one of: ${ALLOWED_MERGE_STRATEGIES.join(', ')}`,
+          severity: 'error',
+        },
+      })
+    }
+
     const storedGraph = await loadCurrentGraphContract()
     const base = body.base ?? storedGraph ?? {
       schemaVersion: '1.0',
@@ -76,7 +102,7 @@ export default class ParserController {
       })
     }
 
-    const output = importParserResult.execute(parserResult, base)
+    const output = importParserResult.execute(parserResult, base, { mergeStrategy })
 
     if (output.errors.length > 0) {
       observabilityRepository.incrementParseError()
@@ -105,7 +131,7 @@ export default class ParserController {
     observabilityRepository.appendAuditLog({
       actorId: auth?.user?.id ?? 'anonymous',
       actorRole: auth?.user?.role ?? 'security',
-      action: 'parser.ingest',
+      action: dryRun ? 'parser.preview' : 'parser.ingest',
       resourceType: 'ParserResult',
       resourceId: String(parserResult.schemaVersion ?? 'unknown'),
       outcome: 'success',
@@ -113,44 +139,53 @@ export default class ParserController {
         nodeCount: output.merged.nodes.length,
         edgeCount: output.merged.edges.length,
         warnings: output.warnings.length,
+        mergeStrategy,
+        dryRun,
       },
     })
 
-    try {
-      await persistCurrentGraphContract(output.merged)
-      await persistLatestImportReport(
-        createImportReport({
-          base,
-          incoming: { nodes: parserResult.nodes, edges: parserResult.edges },
-          merged: output.merged,
-          sourceType: 'parser.ingest',
-        })
-      )
-    } catch {
-      observabilityRepository.appendAuditLog({
-        actorId: auth?.user?.id ?? 'anonymous',
-        actorRole: auth?.user?.role ?? 'security',
-        action: 'parser.persist',
-        resourceType: 'GraphContract',
-        resourceId: String(parserResult.schemaVersion ?? 'unknown'),
-        outcome: 'failure',
-      })
-      observabilityRepository.recordLatency(Date.now() - start)
+    const previewReport = createImportReport({
+      base,
+      incoming: { nodes: parserResult.nodes, edges: parserResult.edges },
+      merged: output.merged,
+      sourceType: 'parser.ingest',
+      mergeStrategy,
+    })
 
-      return response.status(500).json({
-        error: {
-          code: 'GRAPH_PERSIST_FAILED',
-          message: 'Parser result merged but could not be persisted to JSON storage.',
-          severity: 'error',
-        },
-        merged: output.merged,
-      })
+    if (!dryRun) {
+      try {
+        await persistCurrentGraphContract(output.merged)
+        await persistLatestImportReport(previewReport)
+      } catch {
+        observabilityRepository.appendAuditLog({
+          actorId: auth?.user?.id ?? 'anonymous',
+          actorRole: auth?.user?.role ?? 'security',
+          action: 'parser.persist',
+          resourceType: 'GraphContract',
+          resourceId: String(parserResult.schemaVersion ?? 'unknown'),
+          outcome: 'failure',
+        })
+        observabilityRepository.recordLatency(Date.now() - start)
+
+        return response.status(500).json({
+          error: {
+            code: 'GRAPH_PERSIST_FAILED',
+            message: 'Parser result merged but could not be persisted to JSON storage.',
+            severity: 'error',
+          },
+          merged: output.merged,
+        })
+      }
     }
 
     observabilityRepository.recordLatency(Date.now() - start)
 
     return response.ok({
       merged: output.merged,
+      mergeStrategy,
+      dryRun,
+      persisted: !dryRun,
+      previewReport,
       warnings: output.warnings,
     })
   }

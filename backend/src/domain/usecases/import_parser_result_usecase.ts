@@ -5,6 +5,12 @@ import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_co
 import type { ContractVersionValidationResult } from '#domain/usecases/validate_contract_version_usecase'
 import type { GraphContractValidationResult } from '#domain/usecases/validate_graph_contract_usecase'
 
+export type MergeStrategy = 'skip' | 'update' | 'archive-missing'
+
+export interface ImportOptions {
+  mergeStrategy?: MergeStrategy
+}
+
 export interface ImportParserResultOutput {
   merged: GraphContract
   errors: ContractError[]
@@ -35,8 +41,13 @@ export class ImportParserResultUseCase {
     private readonly contractValidator: GraphContractValidator = new ValidateGraphContractUseCase()
   ) {}
 
-  execute(parserResult: ParserResult, base: GraphContract): ImportParserResultOutput {
+  execute(
+    parserResult: ParserResult,
+    base: GraphContract,
+    options: ImportOptions = {}
+  ): ImportParserResultOutput {
     const warnings: ContractError[] = [...parserResult.warnings]
+    const mergeStrategy: MergeStrategy = options.mergeStrategy ?? 'skip'
 
     // Version check on parser result
     const versionCheck = this.versionValidator.execute(parserResult.schemaVersion)
@@ -77,18 +88,52 @@ export class ImportParserResultUseCase {
       }
     }
 
-    // Build merged contract — existing nodes take precedence on id collision
-    const existingNodeIds = new Set(base.nodes.map((n) => n.id))
-    const existingEdgeIds = new Set(base.edges.map((e) => e.id))
+    const incomingNodesById = new Map(parserResult.nodes.map((node) => [node.id, node]))
+    const incomingEdgesById = new Map(parserResult.edges.map((edge) => [edge.id, edge]))
 
-    const mergedNodes = [
-      ...base.nodes,
-      ...parserResult.nodes.filter((n) => !existingNodeIds.has(n.id)),
-    ]
-    const mergedEdges = [
-      ...base.edges,
-      ...parserResult.edges.filter((e) => !existingEdgeIds.has(e.id)),
-    ]
+    let mergedNodes =
+      mergeStrategy === 'skip'
+        ? [
+            ...base.nodes,
+            ...parserResult.nodes.filter((node) => !base.nodes.some((existing) => existing.id === node.id)),
+          ]
+        : [
+            ...base.nodes.map((node) => incomingNodesById.get(node.id) ?? node),
+            ...parserResult.nodes.filter((node) => !base.nodes.some((existing) => existing.id === node.id)),
+          ]
+
+    const mergedEdges =
+      mergeStrategy === 'skip'
+        ? [
+            ...base.edges,
+            ...parserResult.edges.filter((edge) => !base.edges.some((existing) => existing.id === edge.id)),
+          ]
+        : [
+            ...base.edges.map((edge) => incomingEdgesById.get(edge.id) ?? edge),
+            ...parserResult.edges.filter((edge) => !base.edges.some((existing) => existing.id === edge.id)),
+          ]
+
+    if (mergeStrategy === 'archive-missing') {
+      const incomingNodeIds = new Set(parserResult.nodes.map((node) => node.id))
+
+      mergedNodes = mergedNodes.map((node) => {
+        if (incomingNodeIds.has(node.id)) {
+          const metadata = { ...(node.metadata ?? {}) }
+          delete metadata['archived']
+          delete metadata['archivedAt']
+          return { ...node, metadata }
+        }
+
+        return {
+          ...node,
+          metadata: {
+            ...(node.metadata ?? {}),
+            archived: true,
+            archivedAt: new Date().toISOString(),
+          },
+        }
+      })
+    }
 
     const merged: GraphContract = {
       schemaVersion: base.schemaVersion,

@@ -1,4 +1,5 @@
 import type { GraphContract, GraphEdge, GraphNode, NodeType } from '#domain/contracts/dto/graph_contract_dto'
+import type { MergeStrategy } from '#domain/usecases/import_parser_result_usecase'
 import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
@@ -9,13 +10,27 @@ const IMPORT_REPORT_PATH = resolve(process.cwd(), '../shared/latest-import-repor
 export interface GraphImportReport {
   timestamp: string
   sourceType: string
+  mergeStrategy: MergeStrategy
   fileName?: string
   addedNodeIds: string[]
   addedEdgeIds: string[]
   skippedNodeIds: string[]
   skippedEdgeIds: string[]
-  modifiedNodes: Array<{ id: string; before: string; after: string }>
-  modifiedEdges: Array<{ id: string; before: string; after: string }>
+  archivedNodeIds: string[]
+  modifiedNodes: Array<{
+    id: string
+    before: string
+    after: string
+    applied: boolean
+    changes: Array<{ path: string; before: string; after: string }>
+  }>
+  modifiedEdges: Array<{
+    id: string
+    before: string
+    after: string
+    applied: boolean
+    changes: Array<{ path: string; before: string; after: string }>
+  }>
   totalNodes: number
   totalEdges: number
 }
@@ -68,6 +83,67 @@ function sortObjectKeys(value: unknown): unknown {
 
 function stableStringify(value: unknown): string {
   return JSON.stringify(sortObjectKeys(value), null, 2)
+}
+
+function displayValue(value: unknown): string {
+  if (value === undefined) {
+    return 'undefined'
+  }
+  return stableStringify(value)
+}
+
+function collectDiffChanges(
+  before: unknown,
+  after: unknown,
+  basePath = ''
+): Array<{ path: string; before: string; after: string }> {
+  const beforeType = Array.isArray(before) ? 'array' : typeof before
+  const afterType = Array.isArray(after) ? 'array' : typeof after
+
+  if (beforeType !== afterType) {
+    return [
+      {
+        path: basePath || '$',
+        before: displayValue(before),
+        after: displayValue(after),
+      },
+    ]
+  }
+
+  if (before === null || after === null || beforeType !== 'object') {
+    if (Object.is(before, after)) {
+      return []
+    }
+    return [
+      {
+        path: basePath || '$',
+        before: displayValue(before),
+        after: displayValue(after),
+      },
+    ]
+  }
+
+  if (Array.isArray(before) && Array.isArray(after)) {
+    const maxLength = Math.max(before.length, after.length)
+    const changes: Array<{ path: string; before: string; after: string }> = []
+    for (let index = 0; index < maxLength; index++) {
+      const path = `${basePath || '$'}[${index}]`
+      changes.push(...collectDiffChanges(before[index], after[index], path))
+    }
+    return changes
+  }
+
+  const beforeObject = before as Record<string, unknown>
+  const afterObject = after as Record<string, unknown>
+  const keys = new Set([...Object.keys(beforeObject), ...Object.keys(afterObject)])
+  const changes: Array<{ path: string; before: string; after: string }> = []
+
+  for (const key of keys) {
+    const path = basePath ? `${basePath}.${key}` : key
+    changes.push(...collectDiffChanges(beforeObject[key], afterObject[key], path))
+  }
+
+  return changes
 }
 
 export function isNodeArchived(node: GraphNode): boolean {
@@ -134,11 +210,13 @@ export async function loadLatestImportReport(): Promise<GraphImportReport | null
     return {
       timestamp: parsed.timestamp,
       sourceType: parsed.sourceType ?? 'unknown',
+      mergeStrategy: parsed.mergeStrategy ?? 'skip',
       fileName: parsed.fileName,
       addedNodeIds: parsed.addedNodeIds ?? [],
       addedEdgeIds: parsed.addedEdgeIds ?? [],
       skippedNodeIds: parsed.skippedNodeIds ?? [],
       skippedEdgeIds: parsed.skippedEdgeIds ?? [],
+      archivedNodeIds: parsed.archivedNodeIds ?? [],
       modifiedNodes: parsed.modifiedNodes ?? [],
       modifiedEdges: parsed.modifiedEdges ?? [],
       totalNodes: parsed.totalNodes ?? 0,
@@ -158,15 +236,24 @@ export function createImportReport(params: {
   incoming: Pick<GraphContract, 'nodes' | 'edges'>
   merged: GraphContract
   sourceType: string
+  mergeStrategy: MergeStrategy
   fileName?: string
 }): GraphImportReport {
-  const { base, incoming, merged, sourceType, fileName } = params
+  const { base, incoming, merged, sourceType, mergeStrategy, fileName } = params
   const baseNodesById = new Map(base.nodes.map((node) => [node.id, node]))
   const baseEdgesById = new Map(base.edges.map((edge) => [edge.id, edge]))
+  const mergedNodesById = new Map(merged.nodes.map((node) => [node.id, node]))
+  const mergedEdgesById = new Map(merged.edges.map((edge) => [edge.id, edge]))
 
   const addedNodeIds: string[] = []
   const skippedNodeIds: string[] = []
-  const modifiedNodes: Array<{ id: string; before: string; after: string }> = []
+  const modifiedNodes: Array<{
+    id: string
+    before: string
+    after: string
+    applied: boolean
+    changes: Array<{ path: string; before: string; after: string }>
+  }> = []
   for (const node of incoming.nodes) {
     const existing = baseNodesById.get(node.id)
     if (!existing) {
@@ -183,12 +270,20 @@ export function createImportReport(params: {
       id: node.id,
       before: stableStringify(existing),
       after: stableStringify(node),
+      applied: stableStringify(mergedNodesById.get(node.id) ?? null) === stableStringify(node),
+      changes: collectDiffChanges(existing, node),
     })
   }
 
   const addedEdgeIds: string[] = []
   const skippedEdgeIds: string[] = []
-  const modifiedEdges: Array<{ id: string; before: string; after: string }> = []
+  const modifiedEdges: Array<{
+    id: string
+    before: string
+    after: string
+    applied: boolean
+    changes: Array<{ path: string; before: string; after: string }>
+  }> = []
   for (const edge of incoming.edges) {
     const existing = baseEdgesById.get(edge.id)
     if (!existing) {
@@ -205,17 +300,29 @@ export function createImportReport(params: {
       id: edge.id,
       before: stableStringify(existing),
       after: stableStringify(edge),
+      applied: stableStringify(mergedEdgesById.get(edge.id) ?? null) === stableStringify(edge),
+      changes: collectDiffChanges(existing, edge),
     })
   }
+
+  const archivedNodeIds = merged.nodes
+    .filter((node) => isNodeArchived(node))
+    .filter((node) => {
+      const baseNode = baseNodesById.get(node.id)
+      return Boolean(baseNode && !isNodeArchived(baseNode))
+    })
+    .map((node) => node.id)
 
   return {
     timestamp: new Date().toISOString(),
     sourceType,
+    mergeStrategy,
     fileName,
     addedNodeIds,
     addedEdgeIds,
     skippedNodeIds,
     skippedEdgeIds,
+    archivedNodeIds,
     modifiedNodes,
     modifiedEdges,
     totalNodes: merged.nodes.length,

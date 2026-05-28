@@ -255,7 +255,76 @@ Content-Type: application/json
 {
   "sourceType": "docker-ps",
   "schemaVersion": "1.0",
+  "mergeStrategy": "skip",
   "payload": "[{\"ID\":\"abc123\",\"Names\":\"orders-api\",\"Image\":\"acme/orders-api:1.12.0\",\"State\":\"running\",\"Ports\":\"0.0.0.0:3333->3333/tcp\"}]"
+}
+
+###
+
+### Upload inline payload (JSON body, UPDATE strategy) — expect 200 + modifiedNodes applied
+POST {{base}}/uploads
+Content-Type: application/json
+
+{
+  "sourceType": "docker-ps",
+  "schemaVersion": "1.0",
+  "mergeStrategy": "update",
+  "payload": "[{\"ID\":\"abc123\",\"Names\":\"orders-api\",\"Image\":\"acme/orders-api:2.0.0\",\"State\":\"degraded\",\"Ports\":\"0.0.0.0:9090->3333/tcp\"}]"
+}
+
+###
+
+### Upload inline payload (JSON body, DRY-RUN update) — expect 200 + persisted=false
+POST {{base}}/uploads
+Content-Type: application/json
+
+{
+  "sourceType": "docker-ps",
+  "schemaVersion": "1.0",
+  "mergeStrategy": "update",
+  "dryRun": true,
+  "payload": "[{\"ID\":\"abc123\",\"Names\":\"orders-api\",\"Image\":\"acme/orders-api:3.3.3\",\"State\":\"testing\",\"Ports\":\"0.0.0.0:9191->3333/tcp\"}]"
+}
+
+###
+
+### Upload inline payload (JSON body, ARCHIVE-MISSING strategy) — expect 200 + archivedNodeIds > 0
+POST {{base}}/uploads
+Content-Type: application/json
+
+{
+  "sourceType": "docker-ps",
+  "schemaVersion": "1.0",
+  "mergeStrategy": "archive-missing",
+  "payload": "[{\"ID\":\"small001\",\"Names\":\"tiny-service\",\"Image\":\"acme/tiny:0.1.0\",\"State\":\"running\",\"Ports\":\"\"}]"
+}
+
+###
+
+### Parser ingest DRY-RUN — expect 200 + persisted=false
+POST {{base}}/parser/ingest
+Content-Type: application/json
+
+{
+  "mergeStrategy": "skip",
+  "dryRun": true,
+  "parserResult": {
+    "schemaVersion": "1.0",
+    "nodes": [
+      {
+        "id": "container:preview-api",
+        "type": "container",
+        "label": "preview-api",
+        "metadata": {
+          "docker_image": "acme/preview:1.0.0",
+          "status": "running"
+        }
+      }
+    ],
+    "edges": [],
+    "errors": [],
+    "warnings": []
+  }
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
