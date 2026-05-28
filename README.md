@@ -43,6 +43,7 @@ Enforcement:
 - Matrice de decision des pratiques: `docs/project-practices-decision-matrix.md`
 - Playbook pour futurs projets: `docs/future-projects-playbook.md`
 - Guide de refonte d'un projet existant: `docs/refactoring-guide.md`
+- Pattern: Champs privés JavaScript natifs: `docs/private-fields-pattern.md`
 
 ### Backend — AdonisJS Hexagonal
 
