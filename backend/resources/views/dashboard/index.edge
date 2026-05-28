@@ -1,4 +1,5 @@
-@layout('layout', { title: 'Dashboard' })
+@layout('layout')
+@set('title', 'Dashboard')
 
 @section('content')
   <div class="page-title"><i class="fas fa-tachometer-alt"></i> Dashboard</div>
@@ -126,10 +127,4 @@
     </div>
   </div>
 
-  <script>
-    // Auto-update stats (optional)
-    setInterval(() => {
-      // You can add real-time updates here
-    }, 5000);
-  </script>
 @endsection

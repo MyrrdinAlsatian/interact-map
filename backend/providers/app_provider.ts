@@ -1,6 +1,8 @@
 import { UserRepositoryContract } from '#domain/contracts/repositories/user_repository'
 import { InMemoryUserRepository } from '#infrastructure/repositories/inmemory_user_repository'
 import type { ApplicationService } from '@adonisjs/core/types'
+import edge from 'edge.js'
+import { migrate } from 'edge.js/plugins/migrate'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -14,6 +16,9 @@ export default class AppProvider {
    * The container bindings have booted
    */
   async boot() {
+    // Enable Edge.js compat mode so @layout/@section/@endsection directives work
+    migrate(edge)
+
     // We bind "InMemoryUserRepository" class to the "UserRepository" contract so it could be swap easily
     this.app.container.bind(UserRepositoryContract, () => new InMemoryUserRepository())
     // this.app.container.bind(WebsurgAuthorRepository, () => {

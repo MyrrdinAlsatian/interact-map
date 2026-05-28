@@ -1,4 +1,5 @@
-@layout('layout', { title: pageTitle })
+@layout('layout')
+@set('title', pageTitle)
 
 @section('content')
     <section aria-labelledby="inventory-{{ pageTitle | lower }}">
