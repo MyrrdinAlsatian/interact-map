@@ -1,0 +1,328 @@
+### interact-map — Test fixtures
+### Requires VS Code extension: REST Client (humao.rest-client)
+### or any tool that supports .http files (IntelliJ HTTP Client, httpyac…)
+
+@base = http://localhost:3333
+
+# ──────────────────────────────────────────────────────────────────────────────
+# HEALTH
+# ──────────────────────────────────────────────────────────────────────────────
+
+### Health check — expect 200 { status: "ok" }
+GET {{base}}/health
+
+# ──────────────────────────────────────────────────────────────────────────────
+# NAVIGATION — Server-rendered pages (HTML)
+# ──────────────────────────────────────────────────────────────────────────────
+
+### Dashboard — expect 200 HTML with stat-cards
+GET {{base}}/
+Accept: text/html
+
+###
+
+### Applications inventory — expect 200 HTML, liste des applications du dataset
+GET {{base}}/applications
+Accept: text/html
+
+###
+
+### Services inventory — expect 200 HTML (PostgreSQL, Redis, Mailjet…)
+GET {{base}}/services
+Accept: text/html
+
+###
+
+### Servers inventory — expect 200 HTML (prod-vm-01)
+GET {{base}}/servers
+Accept: text/html
+
+###
+
+### Containers inventory — expect 200 HTML (orders-api)
+GET {{base}}/containers
+Accept: text/html
+
+###
+
+### Interactions inventory — expect 200 HTML (5 edges du dataset)
+GET {{base}}/interactions
+Accept: text/html
+
+###
+
+### Graph page — expect 200 HTML avec bandeau de stats + composant architecture-graph
+GET {{base}}/graph
+Accept: text/html
+
+# ──────────────────────────────────────────────────────────────────────────────
+# FRAGMENTS Unpoly — HTML partials (simule les requêtes AJAX d'Unpoly)
+# ──────────────────────────────────────────────────────────────────────────────
+
+### Fragment applications — expect 200 HTML du partial inventory_table
+GET {{base}}/fragments/inventory-applications
+Accept: text/html
+X-Up-Target: #inventory-applications
+
+###
+
+### Fragment services — expect 200 HTML
+GET {{base}}/fragments/inventory-services
+Accept: text/html
+X-Up-Target: #inventory-services
+
+###
+
+### Fragment servers — expect 200 HTML
+GET {{base}}/fragments/inventory-servers
+Accept: text/html
+X-Up-Target: #inventory-servers
+
+###
+
+### Fragment containers — expect 200 HTML
+GET {{base}}/fragments/inventory-containers
+Accept: text/html
+X-Up-Target: #inventory-containers
+
+###
+
+### Fragment interactions — expect 200 HTML
+GET {{base}}/fragments/inventory-interactions
+Accept: text/html
+X-Up-Target: #inventory-interactions
+
+###
+
+### Fragment graph-summary — expect 200 HTML avec les compteurs de noeuds
+GET {{base}}/fragments/graph-summary
+Accept: text/html
+X-Up-Target: #graph-summary
+
+###
+
+### Fragment inconnu — expect 422 { error: "...", fallbackNavigation: "full_page" }
+GET {{base}}/fragments/does-not-exist
+Accept: text/html
+X-Up-Target: #does-not-exist
+
+# ──────────────────────────────────────────────────────────────────────────────
+# USERS
+# ──────────────────────────────────────────────────────────────────────────────
+
+### Enregistrer un viewer — expect 201 { id, email, role }
+POST {{base}}/users/register
+Content-Type: application/json
+
+{
+  "email": "alice@example.com",
+  "password": "securePassword123!",
+  "role": "viewer"
+}
+
+###
+
+### Enregistrer un editor — expect 201
+POST {{base}}/users/register
+Content-Type: application/json
+
+{
+  "email": "bob@example.com",
+  "password": "securePassword123!",
+  "role": "editor"
+}
+
+###
+
+### Enregistrer un admin — expect 201
+POST {{base}}/users/register
+Content-Type: application/json
+
+{
+  "email": "carol@example.com",
+  "password": "securePassword123!",
+  "role": "admin"
+}
+
+###
+
+### Email invalide — expect 422 validation error
+POST {{base}}/users/register
+Content-Type: application/json
+
+{
+  "email": "not-an-email",
+  "password": "securePassword123!",
+  "role": "viewer"
+}
+
+###
+
+### Rôle invalide — expect 422 validation error
+POST {{base}}/users/register
+Content-Type: application/json
+
+{
+  "email": "dave@example.com",
+  "password": "abc",
+  "role": "superuser"
+}
+
+###
+
+### Lister tous les utilisateurs — expect 200 []
+GET {{base}}/users/all
+
+# ──────────────────────────────────────────────────────────────────────────────
+# OBSERVABILITY
+# ──────────────────────────────────────────────────────────────────────────────
+
+### Métriques — expect 200 { request_latency_ms, fragment_error_count, parse_error_count }
+GET {{base}}/observability/metrics
+
+###
+
+### Logs d'audit — expect 200 [] ou liste d'entrées
+GET {{base}}/audit/logs
+
+# ──────────────────────────────────────────────────────────────────────────────
+# UPLOADS
+# ──────────────────────────────────────────────────────────────────────────────
+
+### Upload fichier (multipart) — expect 200 ou 201
+# POST {{base}}/uploads
+# Content-Type: multipart/form-data; boundary=----boundary
+#
+# ------boundary
+# Content-Disposition: form-data; name="file"; filename="production-compose.yml"
+# Content-Type: text/yaml
+#
+# version: "3.8"
+# services:
+#   web:
+#     image: nginx:alpine
+#     ports: ["80:80"]
+#   api:
+#     image: acme/api:1.0
+#     ports: ["3333:3333"]
+#     depends_on: [web]
+# ------boundary--
+
+# ──────────────────────────────────────────────────────────────────────────────
+# WRITE ENDPOINTS (désactivés — auth non finalisée)
+# Décommenter les routes dans backend/src/infrastructure/adonis/routes.ts d'abord
+# ──────────────────────────────────────────────────────────────────────────────
+
+### [WRITE] Valider un contrat de graphe — expect 200 { valid: true, errors: [] }
+# POST {{base}}/graph/contract/validate
+# Content-Type: application/json
+#
+# {
+#   "schemaVersion": "1.0",
+#   "nodes": [
+#     {"id": "app-web",    "type": "application", "label": "Web Frontend"},
+#     {"id": "app-orders", "type": "application", "label": "Orders API"},
+#     {"id": "svc-db",     "type": "service",     "label": "PostgreSQL"}
+#   ],
+#   "edges": [
+#     {"id": "e1", "source": "app-web",    "target": "app-orders", "criticality": "high",     "dependencyType": "required", "protocol": "https"},
+#     {"id": "e2", "source": "app-orders", "target": "svc-db",     "criticality": "critical", "dependencyType": "required", "protocol": "tcp"}
+#   ],
+#   "errors": []
+# }
+
+###
+
+### [WRITE] Valider contrat invalide — expect 422 avec errors[]
+# POST {{base}}/graph/contract/validate
+# Content-Type: application/json
+#
+# {
+#   "schemaVersion": "1.0",
+#   "nodes": [
+#     {"id": "app-web", "type": "application"}
+#   ],
+#   "edges": [],
+#   "errors": []
+# }
+
+###
+
+### [WRITE] Simuler un incident sur app-orders — expect 200 { impacted: [...] }
+# POST {{base}}/graph/simulate-incident
+# Content-Type: application/json
+#
+# {
+#   "nodeId": "app-orders",
+#   "contract": {
+#     "schemaVersion": "1.0",
+#     "nodes": [
+#       {"id": "app-web",    "type": "application", "label": "Web Frontend"},
+#       {"id": "app-orders", "type": "application", "label": "Orders API"},
+#       {"id": "svc-db",     "type": "service",     "label": "PostgreSQL"},
+#       {"id": "svc-redis",  "type": "service",     "label": "Redis"}
+#     ],
+#     "edges": [
+#       {"id": "e1", "source": "app-web",    "target": "app-orders", "criticality": "high",     "dependencyType": "required"},
+#       {"id": "e2", "source": "app-orders", "target": "svc-db",     "criticality": "critical", "dependencyType": "required"},
+#       {"id": "e3", "source": "app-orders", "target": "svc-redis",  "criticality": "medium",   "dependencyType": "cache"}
+#     ],
+#     "errors": []
+#   }
+# }
+
+###
+
+### [WRITE] Ingestion parser — docker-compose valide schemaVersion 1.0 — expect 200
+# POST {{base}}/parser/ingest
+# Content-Type: application/json
+#
+# {
+#   "parserResult": {
+#     "schemaVersion": "1.0",
+#     "nodes": [
+#       {"id": "container:web", "type": "container", "label": "web", "metadata": {"docker_image": "nginx:alpine"}},
+#       {"id": "container:api", "type": "container", "label": "api", "metadata": {"docker_image": "acme/api:1.0"}}
+#     ],
+#     "edges": [
+#       {"id": "depends:web->api", "source": "container:web", "target": "container:api", "criticality": "high", "dependencyType": "required", "protocol": "docker-network"}
+#     ],
+#     "errors": [],
+#     "warnings": []
+#   },
+#   "base": {"schemaVersion": "1.0", "nodes": [], "edges": [], "errors": []}
+# }
+
+###
+
+### [WRITE] Ingestion parser — schemaVersion 0.9 (précédente) — expect 200 avec warnings
+# POST {{base}}/parser/ingest
+# Content-Type: application/json
+#
+# {
+#   "parserResult": {
+#     "schemaVersion": "0.9",
+#     "nodes": [{"id": "container:db", "type": "container", "label": "db", "metadata": {"docker_image": "postgres:16"}}],
+#     "edges": [],
+#     "errors": [],
+#     "warnings": [{"code": "VERSION_PREVIOUS", "message": "Using previous schema version 0.9.", "severity": "warning"}]
+#   },
+#   "base": {"schemaVersion": "1.0", "nodes": [], "edges": [], "errors": []}
+# }
+
+###
+
+### [WRITE] Ingestion parser — schemaVersion trop ancienne — expect 422 VERSION_UNSUPPORTED
+# POST {{base}}/parser/ingest
+# Content-Type: application/json
+#
+# {
+#   "parserResult": {
+#     "schemaVersion": "0.1",
+#     "nodes": [],
+#     "edges": [],
+#     "errors": [],
+#     "warnings": []
+#   },
+#   "base": {"schemaVersion": "1.0", "nodes": [], "edges": [], "errors": []}
+# }
