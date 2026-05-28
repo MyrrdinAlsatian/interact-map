@@ -44,3 +44,36 @@ Cette matrice aide a choisir rapidement la bonne pratique selon le contexte prod
 - Court terme: consolider tests RBAC/audit sur endpoints critiques.
 - Moyen terme: migrer la persistance vers DB si concurrence/echelle augmente.
 - Long terme: conserver architecture hybride (server-first + islands) en limitant la dette de couplage.
+
+## Checklist Definition of Done (nouvelle feature)
+
+Utiliser cette checklist avant merge pour reduire les regressions et garder l'alignement spec/doc/code.
+
+- [ ] Cadrage besoin
+	- User story claire (qui, quoi, pourquoi) + critere de succes mesurable.
+- [ ] Impact architecture
+	- Choix explicite: server-first ou capability island.
+	- Frontiere domain/infrastructure respectee.
+- [ ] Contrat de donnees
+	- Schema defini ou mis a jour (version, champs obligatoires, erreurs structurees).
+	- Compatibilite descendante verifiee.
+- [ ] Securite et acces
+	- Roles autorises definis endpoint par endpoint.
+	- Cas de refus 401/403 explicitement testes.
+- [ ] Risque operationnel
+	- Si mutation sensible: dry-run, diff lisible, merge strategy explicite.
+- [ ] Tracabilite
+	- Audit log sur chaque mutation (success, denied, failure).
+	- Metadonnees minimales presentes (acteur, action, ressource, timestamp, outcome).
+- [ ] UX et fallback
+	- Fonctionnement valide sans JavaScript.
+	- Gestion 422 fragment + fallback full-page validee.
+- [ ] Persistance
+	- Mode de stockage adapte au volume/concurrence.
+	- Politique archive/restore/purge definie si suppression impliquee.
+- [ ] Qualite technique
+	- Version Node conforme projet avant debug.
+	- Diagnostics, lint, typecheck, tests cibles executes.
+- [ ] Documentation de livraison
+	- README, quickstart, docs architecture/securite mis a jour.
+	- Au moins 3 tests manuels reproductibles documentes (happy path, erreur metier, refus RBAC).
