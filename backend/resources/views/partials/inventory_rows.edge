@@ -15,19 +15,55 @@
         <th>
           Type
         </th>
+        <th>
+          State
+        </th>
+        <th>
+          Actions
+        </th>
       </tr>
     </thead>
     <tbody>
       @each(item in items)
         <tr>
           <td>
-            {{ item.id }}
+            @if(item.path)
+              <a href="{{ item.path }}" up-follow>{{ item.id }}</a>
+            @else
+              {{ item.id }}
+            @endif
           </td>
           <td>
             {{ item.label }}
           </td>
           <td>
             <span class="badge badge-{{ item.type }}">{{ item.type }}</span>
+          </td>
+          <td>
+            @if(item.archived)
+              <span class="badge badge-offline">Archived</span>
+            @else
+              <span class="badge badge-online">Active</span>
+            @endif
+          </td>
+          <td>
+            @if(item.path)
+              <div class="action-row">
+                <a href="{{ item.path }}" up-follow class="btn btn-secondary">Details</a>
+                @if(item.archived)
+                  <form method="POST" action="/nodes/{{ encodeURIComponent(item.id) }}/restore">
+                    <button type="submit" class="btn">Restore</button>
+                  </form>
+                  <form method="POST" action="/nodes/{{ encodeURIComponent(item.id) }}/purge">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                  </form>
+                @else
+                  <form method="POST" action="/nodes/{{ encodeURIComponent(item.id) }}/archive">
+                    <button type="submit" class="btn btn-warning">Archive</button>
+                  </form>
+                @endif
+              </div>
+            @endif
           </td>
         </tr>
       @endeach

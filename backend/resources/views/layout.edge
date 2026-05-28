@@ -318,6 +318,82 @@
         transform: translateY(-1px);
       }
 
+      .btn-secondary {
+        background: transparent;
+        border: 1px solid var(--border);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .btn-warning {
+        background: var(--warning);
+        color: #1b1b1b;
+      }
+
+      .btn-warning:hover {
+        background: #cc7d00;
+      }
+
+      .btn-danger {
+        background: var(--danger);
+      }
+
+      .btn-danger:hover {
+        background: #c41d24;
+      }
+
+      .input,
+      select,
+      input[type='file'] {
+        width: 100%;
+        background: #121524;
+        color: var(--text-primary);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 10px 12px;
+      }
+
+      .form-row {
+        display: flex;
+        gap: 12px;
+        align-items: end;
+      }
+
+      .form-row-stack {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .field-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+      }
+
+      .action-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .action-row form {
+        margin: 0;
+      }
+
+      .list-unstyled {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .list-unstyled li + li {
+        margin-top: 8px;
+      }
+
       /* UP-TARGET TABLE */
       #inventory-table {
         background: var(--bg-card);
@@ -386,6 +462,7 @@
           <li><a href="/containers" up-follow><i class="fas fa-box"></i> Containers</a></li>
           <li><a href="/interactions" up-follow><i class="fas fa-arrows-alt"></i> Interactions</a></li>
           <li><a href="/graph" up-follow><i class="fas fa-project-diagram"></i> Architecture</a></li>
+          <li><a href="/nodes/app-orders" up-follow><i class="fas fa-circle-info"></i> Node details</a></li>
         </ul>
       </aside>
 

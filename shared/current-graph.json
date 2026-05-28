@@ -79,6 +79,16 @@
         "status": "running",
         "exposed_ports": "0.0.0.0:3333->3333/tcp"
       }
+    },
+    {
+      "id": "container:billing-api",
+      "type": "container",
+      "label": "billing-api",
+      "metadata": {
+        "docker_image": "acme/billing-api:2.0.0",
+        "status": "running",
+        "exposed_ports": "0.0.0.0:8080->8080/tcp"
+      }
     }
   ],
   "edges": [

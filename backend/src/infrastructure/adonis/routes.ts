@@ -10,6 +10,8 @@ import MetricsController from '#infrastructure/controllers/metrics_controller'
 import AuditLogsController from '#infrastructure/controllers/audit_logs_controller'
 import UploadsController from '#infrastructure/controllers/uploads_controller'
 import ParserController from '#infrastructure/controllers/parser_controller'
+import NodeController from '#infrastructure/controllers/node_controller'
+import ImportReportController from '#infrastructure/controllers/import_report_controller'
 
 router.get('/', [DashboardController, 'index'])
 
@@ -22,6 +24,8 @@ const inventoryController = new InventoryController()
 const fragmentsController = new FragmentsController()
 const graphController = new GraphController()
 const parserController = new ParserController()
+const nodeController = new NodeController()
+const importReportController = new ImportReportController()
 
 // ─── Authenticated read routes ────────────────────────────────────────────────
 router.group(() => {
@@ -40,6 +44,13 @@ router.group(() => {
 
   // Graph capability island page (US2)
   router.get('/graph', (ctx) => graphController.index(ctx as any))
+  router.get('/imports/latest', (ctx) => importReportController.show(ctx as any))
+
+  // Node details and lifecycle actions
+  router.get('/nodes/:id', (ctx) => nodeController.show(ctx as any))
+  router.post('/nodes/:id/archive', (ctx) => nodeController.archive(ctx as any))
+  router.post('/nodes/:id/restore', (ctx) => nodeController.restore(ctx as any))
+  router.post('/nodes/:id/purge', (ctx) => nodeController.purge(ctx as any))
 
   // Parser ingestion (US3) — active JSON merge+persist flow
   router.post('/parser/ingest', (ctx) => parserController.ingest(ctx as any))

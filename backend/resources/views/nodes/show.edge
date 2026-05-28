@@ -1,0 +1,143 @@
+@layout('layout')
+@set('title', pageTitle)
+
+@section('content')
+  <div class="page-title"><i class="fas fa-circle-info"></i> {{ node.label }}</div>
+  <p class="page-subtitle">Detailed topology view for {{ node.id }}</p>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-fingerprint"></i> Node summary
+      </div>
+      <table>
+        <tbody>
+          <tr>
+            <td><strong>ID</strong></td>
+            <td>{{ node.id }}</td>
+          </tr>
+          <tr>
+            <td><strong>Type</strong></td>
+            <td><span class="badge badge-{{ node.type }}">{{ node.type }}</span></td>
+          </tr>
+          <tr>
+            <td><strong>State</strong></td>
+            <td>
+              @if(node.archived)
+                <span class="badge badge-offline">Archived</span>
+              @else
+                <span class="badge badge-online">Active</span>
+              @endif
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="action-row" style="margin-top: 16px;">
+        @if(node.archived)
+          <form method="POST" action="/nodes/{{ encodeURIComponent(node.id) }}/restore">
+            <button type="submit" class="btn">Restore</button>
+          </form>
+          <form method="POST" action="/nodes/{{ encodeURIComponent(node.id) }}/purge">
+            <button type="submit" class="btn btn-danger">Delete permanently</button>
+          </form>
+        @else
+          <form method="POST" action="/nodes/{{ encodeURIComponent(node.id) }}/archive">
+            <button type="submit" class="btn btn-warning">Archive node</button>
+          </form>
+        @endif
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-table-list"></i> Metadata
+      </div>
+      @if(node.metadataEntries.length === 0)
+        <p style="color: var(--text-secondary);">No metadata attached.</p>
+      @else
+        <table>
+          <tbody>
+            @each(entry in node.metadataEntries)
+              <tr>
+                <td><strong>{{ entry.key }}</strong></td>
+                <td>{{ entry.value }}</td>
+              </tr>
+            @endeach
+          </tbody>
+        </table>
+      @endif
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-arrow-down"></i> Inbound dependencies
+      </div>
+      @if(inboundDependencies.length === 0)
+        <p style="color: var(--text-secondary);">No inbound dependencies.</p>
+      @else
+        <table>
+          <tbody>
+            @each(item in inboundDependencies)
+              <tr>
+                <td><a href="/nodes/{{ encodeURIComponent(item.id) }}" up-follow>{{ item.label }}</a></td>
+                <td><span class="badge badge-{{ item.type }}">{{ item.type }}</span></td>
+              </tr>
+            @endeach
+          </tbody>
+        </table>
+      @endif
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-arrow-up"></i> Outbound dependencies
+      </div>
+      @if(outboundDependencies.length === 0)
+        <p style="color: var(--text-secondary);">No outbound dependencies.</p>
+      @else
+        <table>
+          <tbody>
+            @each(item in outboundDependencies)
+              <tr>
+                <td><a href="/nodes/{{ encodeURIComponent(item.id) }}" up-follow>{{ item.label }}</a></td>
+                <td><span class="badge badge-{{ item.type }}">{{ item.type }}</span></td>
+              </tr>
+            @endeach
+          </tbody>
+        </table>
+      @endif
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <i class="fas fa-link"></i> Related interactions
+    </div>
+    @if(relatedInteractions.length === 0)
+      <p style="color: var(--text-secondary);">No interactions found for this node.</p>
+    @else
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Source</th>
+            <th>Target</th>
+            <th>Protocol</th>
+            <th>Criticality</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(interaction in relatedInteractions)
+            <tr>
+              <td>{{ interaction.id }}</td>
+              <td>{{ interaction.source }}</td>
+              <td>{{ interaction.target }}</td>
+              <td>{{ interaction.protocol }}</td>
+              <td>{{ interaction.criticality }}</td>
+            </tr>
+          @endeach
+        </tbody>
+      </table>
+    @endif
+  </div>
+@endsection

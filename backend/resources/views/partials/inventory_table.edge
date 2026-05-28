@@ -3,6 +3,20 @@
     {{ pageTitle }}
   </h2>
 
+  <form method="GET" action="/{{ pageSlug }}" class="card" style="margin-bottom: 16px;">
+    <div class="card-title">
+      <i class="fas fa-search"></i> Search & filter
+      <span style="margin-left: auto; font-size: 0.85rem; font-weight: normal; color: var(--text-secondary);">
+        {{ resultCount }} result(s), {{ archivedCount }} archived
+      </span>
+    </div>
+    <div class="form-row">
+      <input type="search" name="q" value="{{ query }}" placeholder="Search by id, label or type" class="input" />
+      <button type="submit" class="btn"><i class="fas fa-filter"></i> Filter</button>
+      <a href="/{{ pageSlug }}" class="btn btn-secondary">Reset</a>
+    </div>
+  </form>
+
   <div id="inventory-table" up-target="#inventory-table" tabindex="-1" aria-live="polite">
     @include('partials/inventory_rows')
   </div>

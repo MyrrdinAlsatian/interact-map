@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-05-28T14:04:13.264Z",
+  "sourceType": "docker-ps",
+  "addedNodeIds": [
+    "container:billing-api"
+  ],
+  "addedEdgeIds": [],
+  "skippedNodeIds": [],
+  "skippedEdgeIds": [],
+  "totalNodes": 10,
+  "totalEdges": 5
+}

@@ -5,6 +5,72 @@
   <div class="page-title"><i class="fas fa-tachometer-alt"></i> Dashboard</div>
   <p class="page-subtitle">Real-time infrastructure monitoring and status overview</p>
 
+  <div class="grid grid-2" style="margin-bottom: 24px;">
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-file-import"></i> Import infrastructure data
+      </div>
+      <form method="POST" action="/uploads" enctype="multipart/form-data">
+        <div class="form-row form-row-stack">
+          <label>
+            <span class="field-label">Source type</span>
+            <select name="sourceType" class="input">
+              <option value="">Auto-detect</option>
+              <option value="docker-compose">docker-compose</option>
+              <option value="docker-inspect">docker-inspect</option>
+              <option value="docker-ps">docker-ps</option>
+            </select>
+          </label>
+          <label>
+            <span class="field-label">Schema version</span>
+            <input type="text" name="schemaVersion" value="1.0" class="input" />
+          </label>
+          <label>
+            <span class="field-label">Upload file</span>
+            <input type="file" name="file" class="input" />
+          </label>
+        </div>
+        <div class="action-row" style="margin-top: 12px;">
+          <button type="submit" class="btn"><i class="fas fa-upload"></i> Import and merge</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-code-compare"></i> Latest import diff
+      </div>
+      @if(latestImport)
+        <p style="color: var(--text-secondary); margin-bottom: 12px;">
+          {{ latestImport.sourceType }} imported at {{ latestImport.timestamp }}
+        </p>
+        <div class="grid grid-2">
+          <div>
+            <div class="stat-value" style="font-size: 1.6rem;">{{ latestImport.addedNodeIds.length }}</div>
+            <div class="stat-label">Added nodes</div>
+          </div>
+          <div>
+            <div class="stat-value" style="font-size: 1.6rem;">{{ latestImport.addedEdgeIds.length }}</div>
+            <div class="stat-label">Added edges</div>
+          </div>
+          <div>
+            <div class="stat-value" style="font-size: 1.6rem;">{{ latestImport.skippedNodeIds.length }}</div>
+            <div class="stat-label">Skipped nodes</div>
+          </div>
+          <div>
+            <div class="stat-value" style="font-size: 1.6rem;">{{ latestImport.skippedEdgeIds.length }}</div>
+            <div class="stat-label">Skipped edges</div>
+          </div>
+        </div>
+        <div class="action-row" style="margin-top: 16px;">
+          <a href="/imports/latest" up-follow class="btn btn-secondary">Open diff view</a>
+        </div>
+      @else
+        <p style="color: var(--text-secondary);">No import diff available yet.</p>
+      @endif
+    </div>
+  </div>
+
   <!-- STATS GRID -->
   <div class="grid grid-3" style="margin-bottom: 32px;">
       @each(stat in stats)

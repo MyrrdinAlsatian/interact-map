@@ -1,0 +1,100 @@
+@layout('layout')
+@set('title', pageTitle)
+
+@section('content')
+  <div class="page-title"><i class="fas fa-code-compare"></i> Latest Import Diff</div>
+  <p class="page-subtitle">Detailed change report for the most recent infrastructure import.</p>
+
+  @if(!report)
+    <div class="card">
+      <div class="card-title"><i class="fas fa-inbox"></i> No import report yet</div>
+      <p style="color: var(--text-secondary);">Run an import from the dashboard or via /uploads to generate the first diff report.</p>
+    </div>
+  @else
+    <div class="grid grid-2" style="margin-bottom: 24px;">
+      <div class="stat-card">
+        <div class="stat-value">{{ report.addedNodeIds.length }}</div>
+        <div class="stat-label">Added nodes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ report.addedEdgeIds.length }}</div>
+        <div class="stat-label">Added edges</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ report.skippedNodeIds.length }}</div>
+        <div class="stat-label">Skipped nodes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ report.skippedEdgeIds.length }}</div>
+        <div class="stat-label">Skipped edges</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="fas fa-file-lines"></i> Import metadata</div>
+      <table>
+        <tbody>
+          <tr><td><strong>Timestamp</strong></td><td>{{ report.timestamp }}</td></tr>
+          <tr><td><strong>Source type</strong></td><td>{{ report.sourceType }}</td></tr>
+          <tr><td><strong>File</strong></td><td>{{ report.fileName ?? 'n/a' }}</td></tr>
+          <tr><td><strong>Total nodes</strong></td><td>{{ report.totalNodes }}</td></tr>
+          <tr><td><strong>Total edges</strong></td><td>{{ report.totalEdges }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title"><i class="fas fa-plus"></i> Added nodes</div>
+        @if(report.addedNodeIds.length === 0)
+          <p style="color: var(--text-secondary);">No node added.</p>
+        @else
+          <ul class="list-unstyled">
+            @each(item in report.addedNodeIds)
+              <li><a href="/nodes/{{ encodeURIComponent(item) }}" up-follow>{{ item }}</a></li>
+            @endeach
+          </ul>
+        @endif
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="fas fa-ban"></i> Skipped nodes</div>
+        @if(report.skippedNodeIds.length === 0)
+          <p style="color: var(--text-secondary);">No duplicate node skipped.</p>
+        @else
+          <ul class="list-unstyled">
+            @each(item in report.skippedNodeIds)
+              <li><a href="/nodes/{{ encodeURIComponent(item) }}" up-follow>{{ item }}</a></li>
+            @endeach
+          </ul>
+        @endif
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="fas fa-plus"></i> Added edges</div>
+        @if(report.addedEdgeIds.length === 0)
+          <p style="color: var(--text-secondary);">No edge added.</p>
+        @else
+          <ul class="list-unstyled">
+            @each(item in report.addedEdgeIds)
+              <li>{{ item }}</li>
+            @endeach
+          </ul>
+        @endif
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="fas fa-ban"></i> Skipped edges</div>
+        @if(report.skippedEdgeIds.length === 0)
+          <p style="color: var(--text-secondary);">No duplicate edge skipped.</p>
+        @else
+          <ul class="list-unstyled">
+            @each(item in report.skippedEdgeIds)
+              <li>{{ item }}</li>
+            @endeach
+          </ul>
+        @endif
+      </div>
+    </div>
+  @endif
+@endsection

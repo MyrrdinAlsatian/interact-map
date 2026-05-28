@@ -3,7 +3,11 @@ import { ValidateParserResultUseCase } from '../../domain/usecases/validate_pars
 import { ValidateContractVersionUseCase } from '#domain/usecases/validate_contract_version_usecase'
 import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_contract_usecase'
 import { observabilityRepository } from '#repositories/observability_repository'
-import { loadCurrentGraphContract, persistCurrentGraphContract } from '#infrastructure/services/graph_store_service'
+import {
+  loadCurrentGraphContract,
+  persistCurrentGraphContract,
+  persistLatestImportReport,
+} from '#infrastructure/services/graph_store_service'
 import type { ParserResult } from '#domain/contracts/dto/parser_contract_dto'
 import type { GraphContract } from '#domain/contracts/dto/graph_contract_dto'
 
@@ -113,6 +117,16 @@ export default class ParserController {
 
     try {
       await persistCurrentGraphContract(output.merged)
+      await persistLatestImportReport({
+        timestamp: new Date().toISOString(),
+        sourceType: 'parser.ingest',
+        addedNodeIds: parserResult.nodes.filter((node) => !base.nodes.some((item) => item.id === node.id)).map((node) => node.id),
+        addedEdgeIds: parserResult.edges.filter((edge) => !base.edges.some((item) => item.id === edge.id)).map((edge) => edge.id),
+        skippedNodeIds: parserResult.nodes.filter((node) => base.nodes.some((item) => item.id === node.id)).map((node) => node.id),
+        skippedEdgeIds: parserResult.edges.filter((edge) => base.edges.some((item) => item.id === edge.id)).map((edge) => edge.id),
+        totalNodes: output.merged.nodes.length,
+        totalEdges: output.merged.edges.length,
+      })
     } catch {
       observabilityRepository.appendAuditLog({
         actorId: auth?.user?.id ?? 'anonymous',

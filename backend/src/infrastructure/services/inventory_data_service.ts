@@ -1,5 +1,11 @@
 import type { GraphContract, GraphEdge, GraphNode, NodeType } from '#domain/contracts/dto/graph_contract_dto'
-import { loadCurrentGraphContract } from '#infrastructure/services/graph_store_service'
+import {
+  isArchivedInteraction,
+  isNodeArchived,
+  loadCurrentGraphContract,
+  loadLatestImportReport,
+  type GraphImportReport,
+} from '#infrastructure/services/graph_store_service'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
@@ -14,12 +20,17 @@ export interface InventoryItem {
   id: string
   label: string
   type: NodeType
+  archived?: boolean
+  path?: string
 }
 
 export interface InventoryViewModel {
   pageTitle: string
   pageSlug: string
   items: InventoryItem[]
+  query: string
+  resultCount: number
+  archivedCount: number
 }
 
 export interface GraphSummaryViewModel {
@@ -54,6 +65,21 @@ export interface DashboardViewModel {
   stats: DashboardStat[]
   recentActivity: DashboardActivityItem[]
   topApplications: TopApplicationItem[]
+  latestImport: GraphImportReport | null
+}
+
+export interface NodeRelationItem {
+  id: string
+  label: string
+  type: string
+}
+
+export interface NodeDetailViewModel {
+  pageTitle: string
+  node: InventoryItem & { metadataEntries: Array<{ key: string; value: string }> }
+  inboundDependencies: NodeRelationItem[]
+  outboundDependencies: NodeRelationItem[]
+  relatedInteractions: Array<{ id: string; source: string; target: string; protocol: string; criticality: string }>
 }
 
 const TITLE_BY_CATEGORY: Record<InventoryCategory, string> = {
@@ -112,18 +138,46 @@ async function loadDatasetMeta(): Promise<{ projectName: string; sourceLabel: st
 }
 
 function mapNodes(nodes: GraphNode[], type: NodeType): InventoryItem[] {
-  return nodes.filter((node) => node.type === type).map((node) => ({ id: node.id, label: node.label, type: node.type }))
+  return nodes.filter((node) => node.type === type).map((node) => ({
+    id: node.id,
+    label: node.label,
+    type: node.type,
+    archived: isNodeArchived(node),
+    path: `/nodes/${encodeURIComponent(node.id)}`,
+  }))
 }
 
-function mapEdges(edges: GraphEdge[]): InventoryItem[] {
+function mapEdges(edges: GraphEdge[], graph: GraphContract): InventoryItem[] {
   return edges.map((edge) => ({
     id: edge.id,
     label: `${edge.source} -> ${edge.target}`,
     type: 'service',
+    archived: isArchivedInteraction(edge, graph),
   }))
 }
 
-export async function getInventoryViewModel(category: InventoryCategory): Promise<InventoryViewModel> {
+function filterItems(items: InventoryItem[], query: string): InventoryItem[] {
+  const normalized = query.trim().toLowerCase()
+  if (!normalized) {
+    return items
+  }
+
+  return items.filter(
+    (item) =>
+      item.id.toLowerCase().includes(normalized) ||
+      item.label.toLowerCase().includes(normalized) ||
+      item.type.toLowerCase().includes(normalized)
+  )
+}
+
+function metadataEntries(metadata?: Record<string, unknown>): Array<{ key: string; value: string }> {
+  return Object.entries(metadata ?? {}).map(([key, value]) => ({
+    key,
+    value: typeof value === 'string' ? value : JSON.stringify(value),
+  }))
+}
+
+export async function getInventoryViewModel(category: InventoryCategory, query = ''): Promise<InventoryViewModel> {
   const graph = await loadDatasetGraph()
 
   if (!graph) {
@@ -131,18 +185,25 @@ export async function getInventoryViewModel(category: InventoryCategory): Promis
       pageTitle: TITLE_BY_CATEGORY[category],
       pageSlug: category,
       items: FALLBACK_ITEMS[category],
+      query,
+      resultCount: FALLBACK_ITEMS[category].length,
+      archivedCount: 0,
     }
   }
 
-  const items =
+  const allItems =
     category === 'interactions'
-      ? mapEdges(graph.edges)
+      ? mapEdges(graph.edges, graph)
       : mapNodes(graph.nodes, NODE_TYPE_BY_CATEGORY[category])
+  const items = filterItems(allItems, query)
 
   return {
     pageTitle: TITLE_BY_CATEGORY[category],
     pageSlug: category,
-    items: items.length > 0 ? items : FALLBACK_ITEMS[category],
+    items,
+    query,
+    resultCount: items.length,
+    archivedCount: allItems.filter((item) => item.archived).length,
   }
 }
 
@@ -171,7 +232,11 @@ export async function getGraphSummaryViewModel(): Promise<GraphSummaryViewModel>
 }
 
 export async function getDashboardViewModel(): Promise<DashboardViewModel> {
-  const [graph, meta] = await Promise.all([loadDatasetGraph(), loadDatasetMeta()])
+  const [graph, meta, latestImport] = await Promise.all([
+    loadDatasetGraph(),
+    loadDatasetMeta(),
+    loadLatestImportReport(),
+  ])
 
   if (!graph || !meta) {
     return {
@@ -186,6 +251,7 @@ export async function getDashboardViewModel(): Promise<DashboardViewModel> {
       ],
       recentActivity: [],
       topApplications: [],
+      latestImport: null,
     }
   }
 
@@ -215,6 +281,14 @@ export async function getDashboardViewModel(): Promise<DashboardViewModel> {
     },
   ]
 
+  if (latestImport) {
+    recentActivity.unshift({
+      title: `Latest import added ${latestImport.addedNodeIds.length} nodes`,
+      detail: `${latestImport.addedEdgeIds.length} edges added, ${latestImport.skippedNodeIds.length} skipped duplicates`,
+      tone: 'success',
+    })
+  }
+
   return {
     pageTitle: 'Dashboard',
     stats: [
@@ -227,5 +301,48 @@ export async function getDashboardViewModel(): Promise<DashboardViewModel> {
     ],
     recentActivity,
     topApplications: topApplications.length > 0 ? topApplications : [{ label: 'No applications', trend: '→ steady traffic', tone: 'neutral' }],
+    latestImport,
+  }
+}
+
+export async function getNodeDetailViewModel(nodeId: string): Promise<NodeDetailViewModel | null> {
+  const graph = await loadDatasetGraph()
+  if (!graph) {
+    return null
+  }
+
+  const node = graph.nodes.find((item) => item.id === nodeId)
+  if (!node) {
+    return null
+  }
+
+  const inboundEdges = graph.edges.filter((edge) => edge.target === nodeId)
+  const outboundEdges = graph.edges.filter((edge) => edge.source === nodeId)
+
+  return {
+    pageTitle: `${node.label}`,
+    node: {
+      id: node.id,
+      label: node.label,
+      type: node.type,
+      archived: isNodeArchived(node),
+      path: `/nodes/${encodeURIComponent(node.id)}`,
+      metadataEntries: metadataEntries(node.metadata),
+    },
+    inboundDependencies: inboundEdges
+      .map((edge) => graph.nodes.find((candidate) => candidate.id === edge.source))
+      .filter(Boolean)
+      .map((candidate) => ({ id: candidate!.id, label: candidate!.label, type: candidate!.type })),
+    outboundDependencies: outboundEdges
+      .map((edge) => graph.nodes.find((candidate) => candidate.id === edge.target))
+      .filter(Boolean)
+      .map((candidate) => ({ id: candidate!.id, label: candidate!.label, type: candidate!.type })),
+    relatedInteractions: [...inboundEdges, ...outboundEdges].map((edge) => ({
+      id: edge.id,
+      source: edge.source,
+      target: edge.target,
+      protocol: edge.protocol ?? 'n/a',
+      criticality: edge.criticality,
+    })),
   }
 }
