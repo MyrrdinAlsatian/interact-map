@@ -39,6 +39,8 @@ Enforcement:
 - Example dataset: `examples/project-dataset.json`
 - HTTP fixture (REST Client): `examples/interact-map.http`
 - Problemes rencontres + solutions: `docs/problems-and-solutions.md`
+- Pratiques du projet (TLDR pour/contre): `docs/project-practices-tldr.md`
+- Matrice de decision des pratiques: `docs/project-practices-decision-matrix.md`
 
 ### Backend — AdonisJS Hexagonal
 
