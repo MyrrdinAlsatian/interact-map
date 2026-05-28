@@ -189,24 +189,74 @@ GET {{base}}/audit/logs
 # UPLOADS
 # ──────────────────────────────────────────────────────────────────────────────
 
-### Upload fichier (multipart) — expect 200 ou 201
-# POST {{base}}/uploads
-# Content-Type: multipart/form-data; boundary=----boundary
-#
-# ------boundary
-# Content-Disposition: form-data; name="file"; filename="production-compose.yml"
-# Content-Type: text/yaml
-#
-# version: "3.8"
-# services:
-#   web:
-#     image: nginx:alpine
-#     ports: ["80:80"]
-#   api:
-#     image: acme/api:1.0
-#     ports: ["3333:3333"]
-#     depends_on: [web]
-# ------boundary--
+### Upload fichier docker-compose (multipart) — expect 200, merge + persist dans current-graph.json
+POST {{base}}/uploads
+Content-Type: multipart/form-data; boundary=----boundary
+
+------boundary
+Content-Disposition: form-data; name="file"; filename="production-compose.yml"
+Content-Type: text/yaml
+
+version: "3.8"
+services:
+  web:
+    image: nginx:alpine
+    ports: ["80:80"]
+  api:
+    image: acme/api:1.0
+    ports: ["3333:3333"]
+    depends_on: [web]
+------boundary--
+
+###
+
+### Upload fichier docker-inspect (multipart + sourceType explicite) — expect 200
+POST {{base}}/uploads
+Content-Type: multipart/form-data; boundary=----boundary-inspect
+
+------boundary-inspect
+Content-Disposition: form-data; name="sourceType"
+
+docker-inspect
+------boundary-inspect
+Content-Disposition: form-data; name="schemaVersion"
+
+1.0
+------boundary-inspect
+Content-Disposition: form-data; name="file"; filename="docker-inspect.json"
+Content-Type: application/json
+
+[
+  {
+    "Id": "abc123",
+    "Name": "/orders-api",
+    "Config": {
+      "Image": "acme/orders-api:1.12.0",
+      "Env": ["REDIS_HOST=redis", "DB_HOST=postgres"]
+    },
+    "State": {
+      "Status": "running"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "bridge": {}
+      }
+    }
+  }
+]
+------boundary-inspect--
+
+###
+
+### Upload inline payload (JSON body) — expect 200
+POST {{base}}/uploads
+Content-Type: application/json
+
+{
+  "sourceType": "docker-ps",
+  "schemaVersion": "1.0",
+  "payload": "[{\"ID\":\"abc123\",\"Names\":\"orders-api\",\"Image\":\"acme/orders-api:1.12.0\",\"State\":\"running\",\"Ports\":\"0.0.0.0:3333->3333/tcp\"}]"
+}
 
 # ──────────────────────────────────────────────────────────────────────────────
 # WRITE ENDPOINTS (désactivés — auth non finalisée)

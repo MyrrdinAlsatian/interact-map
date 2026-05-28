@@ -48,6 +48,7 @@
     "@tuyau/core": "0.4.2",
     "@vinejs/vine": "4.1.0",
     "edge.js": "6.5.0",
+    "js-yaml": "4.1.1",
     "luxon": "3.7.2",
     "pg": "8.12.0",
     "reflect-metadata": "0.2.2"
@@ -63,6 +64,7 @@
     "@japa/runner": "4.4.0",
     "@poppinss/ts-exec": "1.4.4",
     "@tuyau/utils": "0.0.9",
+    "@types/js-yaml": "4.0.9",
     "@types/luxon": "3.7.1",
     "@types/node": "^22.19.15",
     "@typescript-eslint/parser": "^8.44.0",

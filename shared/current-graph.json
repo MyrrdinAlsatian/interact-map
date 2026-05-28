@@ -69,6 +69,16 @@
       "metadata": {
         "docker_image": "nginx:alpine"
       }
+    },
+    {
+      "id": "container:orders-api",
+      "type": "container",
+      "label": "orders-api",
+      "metadata": {
+        "docker_image": "acme/orders-api:1.12.0",
+        "status": "running",
+        "exposed_ports": "0.0.0.0:3333->3333/tcp"
+      }
     }
   ],
   "edges": [
