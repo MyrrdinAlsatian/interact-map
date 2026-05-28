@@ -14,6 +14,8 @@ export interface GraphImportReport {
   addedEdgeIds: string[]
   skippedNodeIds: string[]
   skippedEdgeIds: string[]
+  modifiedNodes: Array<{ id: string; before: string; after: string }>
+  modifiedEdges: Array<{ id: string; before: string; after: string }>
   totalNodes: number
   totalEdges: number
 }
@@ -45,6 +47,27 @@ function normalizeGraph(value: GraphContract): GraphContract {
     edges: value.edges,
     errors: Array.isArray(value.errors) ? value.errors : [],
   }
+}
+
+function sortObjectKeys(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(sortObjectKeys)
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.keys(value as Record<string, unknown>)
+      .sort()
+      .reduce<Record<string, unknown>>((accumulator, key) => {
+        accumulator[key] = sortObjectKeys((value as Record<string, unknown>)[key])
+        return accumulator
+      }, {})
+  }
+
+  return value
+}
+
+function stableStringify(value: unknown): string {
+  return JSON.stringify(sortObjectKeys(value), null, 2)
 }
 
 export function isNodeArchived(node: GraphNode): boolean {
@@ -104,11 +127,23 @@ export async function persistCurrentGraphContract(contract: GraphContract): Prom
 export async function loadLatestImportReport(): Promise<GraphImportReport | null> {
   try {
     const raw = await readFile(IMPORT_REPORT_PATH, 'utf-8')
-    const parsed = JSON.parse(raw) as GraphImportReport
+    const parsed = JSON.parse(raw) as Partial<GraphImportReport>
     if (!parsed || typeof parsed !== 'object' || typeof parsed.timestamp !== 'string') {
       return null
     }
-    return parsed
+    return {
+      timestamp: parsed.timestamp,
+      sourceType: parsed.sourceType ?? 'unknown',
+      fileName: parsed.fileName,
+      addedNodeIds: parsed.addedNodeIds ?? [],
+      addedEdgeIds: parsed.addedEdgeIds ?? [],
+      skippedNodeIds: parsed.skippedNodeIds ?? [],
+      skippedEdgeIds: parsed.skippedEdgeIds ?? [],
+      modifiedNodes: parsed.modifiedNodes ?? [],
+      modifiedEdges: parsed.modifiedEdges ?? [],
+      totalNodes: parsed.totalNodes ?? 0,
+      totalEdges: parsed.totalEdges ?? 0,
+    }
   } catch {
     return null
   }
@@ -116,6 +151,76 @@ export async function loadLatestImportReport(): Promise<GraphImportReport | null
 
 export async function persistLatestImportReport(report: GraphImportReport): Promise<void> {
   await writeFile(IMPORT_REPORT_PATH, `${JSON.stringify(report, null, 2)}\n`, 'utf-8')
+}
+
+export function createImportReport(params: {
+  base: GraphContract
+  incoming: Pick<GraphContract, 'nodes' | 'edges'>
+  merged: GraphContract
+  sourceType: string
+  fileName?: string
+}): GraphImportReport {
+  const { base, incoming, merged, sourceType, fileName } = params
+  const baseNodesById = new Map(base.nodes.map((node) => [node.id, node]))
+  const baseEdgesById = new Map(base.edges.map((edge) => [edge.id, edge]))
+
+  const addedNodeIds: string[] = []
+  const skippedNodeIds: string[] = []
+  const modifiedNodes: Array<{ id: string; before: string; after: string }> = []
+  for (const node of incoming.nodes) {
+    const existing = baseNodesById.get(node.id)
+    if (!existing) {
+      addedNodeIds.push(node.id)
+      continue
+    }
+
+    if (stableStringify(existing) === stableStringify(node)) {
+      skippedNodeIds.push(node.id)
+      continue
+    }
+
+    modifiedNodes.push({
+      id: node.id,
+      before: stableStringify(existing),
+      after: stableStringify(node),
+    })
+  }
+
+  const addedEdgeIds: string[] = []
+  const skippedEdgeIds: string[] = []
+  const modifiedEdges: Array<{ id: string; before: string; after: string }> = []
+  for (const edge of incoming.edges) {
+    const existing = baseEdgesById.get(edge.id)
+    if (!existing) {
+      addedEdgeIds.push(edge.id)
+      continue
+    }
+
+    if (stableStringify(existing) === stableStringify(edge)) {
+      skippedEdgeIds.push(edge.id)
+      continue
+    }
+
+    modifiedEdges.push({
+      id: edge.id,
+      before: stableStringify(existing),
+      after: stableStringify(edge),
+    })
+  }
+
+  return {
+    timestamp: new Date().toISOString(),
+    sourceType,
+    fileName,
+    addedNodeIds,
+    addedEdgeIds,
+    skippedNodeIds,
+    skippedEdgeIds,
+    modifiedNodes,
+    modifiedEdges,
+    totalNodes: merged.nodes.length,
+    totalEdges: merged.edges.length,
+  }
 }
 
 export async function archiveNodeById(nodeId: string): Promise<GraphMutationResult | null> {

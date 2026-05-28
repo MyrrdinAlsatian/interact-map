@@ -61,6 +61,14 @@
             <div class="stat-value" style="font-size: 1.6rem;">{{ latestImport.skippedEdgeIds.length }}</div>
             <div class="stat-label">Skipped edges</div>
           </div>
+          <div>
+            <div class="stat-value" style="font-size: 1.6rem;">{{ latestImport.modifiedNodes.length }}</div>
+            <div class="stat-label">Modified nodes</div>
+          </div>
+          <div>
+            <div class="stat-value" style="font-size: 1.6rem;">{{ latestImport.modifiedEdges.length }}</div>
+            <div class="stat-label">Modified edges</div>
+          </div>
         </div>
         <div class="action-row" style="margin-top: 16px;">
           <a href="/imports/latest" up-follow class="btn btn-secondary">Open diff view</a>

@@ -4,6 +4,7 @@ import { ValidateContractVersionUseCase } from '#domain/usecases/validate_contra
 import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_contract_usecase'
 import { observabilityRepository } from '#repositories/observability_repository'
 import {
+  createImportReport,
   loadCurrentGraphContract,
   persistCurrentGraphContract,
   persistLatestImportReport,
@@ -117,16 +118,14 @@ export default class ParserController {
 
     try {
       await persistCurrentGraphContract(output.merged)
-      await persistLatestImportReport({
-        timestamp: new Date().toISOString(),
-        sourceType: 'parser.ingest',
-        addedNodeIds: parserResult.nodes.filter((node) => !base.nodes.some((item) => item.id === node.id)).map((node) => node.id),
-        addedEdgeIds: parserResult.edges.filter((edge) => !base.edges.some((item) => item.id === edge.id)).map((edge) => edge.id),
-        skippedNodeIds: parserResult.nodes.filter((node) => base.nodes.some((item) => item.id === node.id)).map((node) => node.id),
-        skippedEdgeIds: parserResult.edges.filter((edge) => base.edges.some((item) => item.id === edge.id)).map((edge) => edge.id),
-        totalNodes: output.merged.nodes.length,
-        totalEdges: output.merged.edges.length,
-      })
+      await persistLatestImportReport(
+        createImportReport({
+          base,
+          incoming: { nodes: parserResult.nodes, edges: parserResult.edges },
+          merged: output.merged,
+          sourceType: 'parser.ingest',
+        })
+      )
     } catch {
       observabilityRepository.appendAuditLog({
         actorId: auth?.user?.id ?? 'anonymous',

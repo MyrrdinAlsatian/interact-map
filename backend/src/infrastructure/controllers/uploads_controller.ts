@@ -5,6 +5,7 @@ import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_co
 import { ImportParserResultUseCase } from '#domain/usecases/import_parser_result_usecase'
 import { ValidateParserResultUseCase } from '#domain/usecases/validate_parser_result_usecase'
 import {
+  createImportReport,
   loadCurrentGraphContract,
   persistCurrentGraphContract,
   persistLatestImportReport,
@@ -115,17 +116,15 @@ export default class UploadsController {
 
     try {
       await persistCurrentGraphContract(output.merged)
-      await persistLatestImportReport({
-        timestamp: new Date().toISOString(),
-        sourceType: body.sourceType ?? fileName ?? 'auto-detect',
-        fileName,
-        addedNodeIds: parserResult.nodes.filter((node) => !base.nodes.some((item) => item.id === node.id)).map((node) => node.id),
-        addedEdgeIds: parserResult.edges.filter((edge) => !base.edges.some((item) => item.id === edge.id)).map((edge) => edge.id),
-        skippedNodeIds: parserResult.nodes.filter((node) => base.nodes.some((item) => item.id === node.id)).map((node) => node.id),
-        skippedEdgeIds: parserResult.edges.filter((edge) => base.edges.some((item) => item.id === edge.id)).map((edge) => edge.id),
-        totalNodes: output.merged.nodes.length,
-        totalEdges: output.merged.edges.length,
-      })
+      await persistLatestImportReport(
+        createImportReport({
+          base,
+          incoming: { nodes: parserResult.nodes, edges: parserResult.edges },
+          merged: output.merged,
+          sourceType: body.sourceType ?? fileName ?? 'auto-detect',
+          fileName,
+        })
+      )
     } catch {
       observabilityRepository.appendAuditLog({
         actorId,

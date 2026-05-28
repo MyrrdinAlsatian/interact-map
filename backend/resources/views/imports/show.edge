@@ -28,6 +28,14 @@
         <div class="stat-value">{{ report.skippedEdgeIds.length }}</div>
         <div class="stat-label">Skipped edges</div>
       </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ report.modifiedNodes.length }}</div>
+        <div class="stat-label">Modified nodes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ report.modifiedEdges.length }}</div>
+        <div class="stat-label">Modified edges</div>
+      </div>
     </div>
 
     <div class="card">
@@ -93,6 +101,54 @@
               <li>{{ item }}</li>
             @endeach
           </ul>
+        @endif
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top: 24px;">
+      <div class="card">
+        <div class="card-title"><i class="fas fa-pen-to-square"></i> Modified nodes</div>
+        @if(report.modifiedNodes.length === 0)
+          <p style="color: var(--text-secondary);">No node change detected.</p>
+        @else
+          @each(diff in report.modifiedNodes)
+            <div style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+              <div style="margin-bottom: 8px;"><strong><a href="/nodes/{{ encodeURIComponent(diff.id) }}" up-follow>{{ diff.id }}</a></strong></div>
+              <div class="grid grid-2">
+                <div>
+                  <div class="field-label">Before</div>
+                  <pre class="diff-block">{{ diff.before }}</pre>
+                </div>
+                <div>
+                  <div class="field-label">After</div>
+                  <pre class="diff-block">{{ diff.after }}</pre>
+                </div>
+              </div>
+            </div>
+          @endeach
+        @endif
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="fas fa-pen-to-square"></i> Modified edges</div>
+        @if(report.modifiedEdges.length === 0)
+          <p style="color: var(--text-secondary);">No edge change detected.</p>
+        @else
+          @each(diff in report.modifiedEdges)
+            <div style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+              <div style="margin-bottom: 8px;"><strong>{{ diff.id }}</strong></div>
+              <div class="grid grid-2">
+                <div>
+                  <div class="field-label">Before</div>
+                  <pre class="diff-block">{{ diff.before }}</pre>
+                </div>
+                <div>
+                  <div class="field-label">After</div>
+                  <pre class="diff-block">{{ diff.after }}</pre>
+                </div>
+              </div>
+            </div>
+          @endeach
         @endif
       </div>
     </div>
