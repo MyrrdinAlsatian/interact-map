@@ -20,8 +20,8 @@ function isContractDiagnostic(item: unknown): item is ContractError {
 }
 
 export class ValidateParserResultUseCase {
-  private readonly versionValidator = new ValidateContractVersionUseCase()
-  private readonly graphValidator = new ValidateGraphContractUseCase()
+  #versionValidator = new ValidateContractVersionUseCase()
+  #graphValidator = new ValidateGraphContractUseCase()
 
   execute(parserResult: unknown): ParserResultValidationResult {
     const errors: ContractError[] = []
@@ -88,12 +88,12 @@ export class ValidateParserResultUseCase {
       return { valid: false, errors, warnings }
     }
 
-    const versionValidation = this.versionValidator.execute(schemaVersion)
+    const versionValidation = this.#versionValidator.execute(schemaVersion)
     if (!versionValidation.valid) {
       errors.push(...versionValidation.errors)
     }
 
-    const graphValidation = this.graphValidator.execute({
+    const graphValidation = this.#graphValidator.execute({
       schemaVersion,
       nodes,
       edges,

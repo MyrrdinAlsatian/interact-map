@@ -8,7 +8,7 @@ export interface GraphContractValidationResult {
 }
 
 export class ValidateGraphContractUseCase {
-  private readonly versionValidator = new ValidateContractVersionUseCase()
+  #versionValidator = new ValidateContractVersionUseCase()
 
   execute(contract: unknown): GraphContractValidationResult {
     const errors: ContractError[] = []
@@ -29,7 +29,7 @@ export class ValidateGraphContractUseCase {
     const payload = contract as Record<string, unknown>
 
     // Schema version check
-    const versionResult = this.versionValidator.execute(payload['schemaVersion'] as string)
+    const versionResult = this.#versionValidator.execute(payload['schemaVersion'] as string)
     if (!versionResult.valid) {
       errors.push(...versionResult.errors)
     }

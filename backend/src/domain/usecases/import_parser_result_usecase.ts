@@ -36,10 +36,16 @@ export interface GraphContractValidator {
  * 5. Any structural violations are returned as errors (not thrown).
  */
 export class ImportParserResultUseCase {
+  #versionValidator: ContractVersionValidator
+  #contractValidator: GraphContractValidator
+
   constructor(
-    private readonly versionValidator: ContractVersionValidator = new ValidateContractVersionUseCase(),
-    private readonly contractValidator: GraphContractValidator = new ValidateGraphContractUseCase()
-  ) {}
+    versionValidator: ContractVersionValidator = new ValidateContractVersionUseCase(),
+    contractValidator: GraphContractValidator = new ValidateGraphContractUseCase()
+  ) {
+    this.#versionValidator = versionValidator
+    this.#contractValidator = contractValidator
+  }
 
   execute(
     parserResult: ParserResult,
@@ -50,7 +56,7 @@ export class ImportParserResultUseCase {
     const mergeStrategy: MergeStrategy = options.mergeStrategy ?? 'skip'
 
     // Version check on parser result
-    const versionCheck = this.versionValidator.execute(parserResult.schemaVersion)
+    const versionCheck = this.#versionValidator.execute(parserResult.schemaVersion)
     if (!versionCheck.valid) {
       return { merged: base, errors: versionCheck.errors, warnings }
     }
@@ -143,7 +149,7 @@ export class ImportParserResultUseCase {
     }
 
     // Validate merged result
-    const mergeValidation = this.contractValidator.execute(merged)
+    const mergeValidation = this.#contractValidator.execute(merged)
     if (!mergeValidation.valid) {
       return { merged: base, errors: mergeValidation.errors, warnings }
     }
