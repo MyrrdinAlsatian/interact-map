@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "1.0",
+  "nodes": [
+    {
+      "id": "app-web",
+      "type": "application",
+      "label": "Web Frontend",
+      "metadata": {
+        "business_criticality": "high"
+      }
+    },
+    {
+      "id": "app-orders",
+      "type": "application",
+      "label": "Orders API",
+      "metadata": {
+        "business_criticality": "critical"
+      }
+    },
+    {
+      "id": "svc-postgres",
+      "type": "service",
+      "label": "PostgreSQL",
+      "metadata": {
+        "type": "database",
+        "external": false
+      }
+    },
+    {
+      "id": "svc-redis",
+      "type": "service",
+      "label": "Redis",
+      "metadata": {
+        "type": "cache",
+        "external": false
+      }
+    },
+    {
+      "id": "svc-mailjet",
+      "type": "external",
+      "label": "Mailjet",
+      "metadata": {
+        "type": "api",
+        "external": true
+      }
+    },
+    {
+      "id": "srv-prod-1",
+      "type": "server",
+      "label": "prod-vm-01",
+      "metadata": {
+        "provider": "OVH",
+        "environment": "production"
+      }
+    },
+    {
+      "id": "ctr-orders",
+      "type": "container",
+      "label": "orders-api",
+      "metadata": {
+        "docker_image": "acme/orders-api",
+        "docker_tag": "1.12.0"
+      }
+    },
+    {
+      "id": "container:web",
+      "type": "container",
+      "label": "web",
+      "metadata": {
+        "docker_image": "nginx:alpine"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "app-web",
+      "target": "app-orders",
+      "criticality": "high",
+      "dependencyType": "required",
+      "protocol": "https"
+    },
+    {
+      "id": "e2",
+      "source": "app-orders",
+      "target": "svc-postgres",
+      "criticality": "critical",
+      "dependencyType": "required",
+      "protocol": "tcp"
+    },
+    {
+      "id": "e3",
+      "source": "app-orders",
+      "target": "svc-redis",
+      "criticality": "medium",
+      "dependencyType": "cache",
+      "protocol": "tcp"
+    },
+    {
+      "id": "e4",
+      "source": "app-orders",
+      "target": "svc-mailjet",
+      "criticality": "low",
+      "dependencyType": "async",
+      "protocol": "https"
+    },
+    {
+      "id": "e5",
+      "source": "ctr-orders",
+      "target": "srv-prod-1",
+      "criticality": "high",
+      "dependencyType": "required",
+      "protocol": "host"
+    }
+  ],
+  "errors": []
+}

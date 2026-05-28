@@ -9,6 +9,7 @@ import GraphController from '#infrastructure/controllers/graph_controller'
 import MetricsController from '#infrastructure/controllers/metrics_controller'
 import AuditLogsController from '#infrastructure/controllers/audit_logs_controller'
 import UploadsController from '#infrastructure/controllers/uploads_controller'
+import ParserController from '#infrastructure/controllers/parser_controller'
 
 router.get('/', [DashboardController, 'index'])
 
@@ -20,6 +21,7 @@ router.post('/users/register', [UsersController, 'register'])
 const inventoryController = new InventoryController()
 const fragmentsController = new FragmentsController()
 const graphController = new GraphController()
+const parserController = new ParserController()
 
 // ─── Authenticated read routes ────────────────────────────────────────────────
 router.group(() => {
@@ -39,6 +41,9 @@ router.group(() => {
   // Graph capability island page (US2)
   router.get('/graph', (ctx) => graphController.index(ctx as any))
 
+  // Parser ingestion (US3) — active JSON merge+persist flow
+  router.post('/parser/ingest', (ctx) => parserController.ingest(ctx as any))
+
   // Observability (admin read — role guard applied inside controller)
   router.get('/observability/metrics', [MetricsController, 'index'])
   router.get('/audit/logs', [AuditLogsController, 'index'])
@@ -51,9 +56,6 @@ router.group(() => {
 
 //   // Incident simulation (US2, security+)
 //   router.post('/graph/simulate-incident', [GraphSimulationController, 'simulate'])
-
-//   // Parser ingestion (US3, security+)
-//   router.post('/parser/ingest', [ParserController, 'ingest'])
 // }).middleware(['auth', 'requireRole:security'])
 
 // ─── Legacy / uploads ────────────────────────────────────────────────────────

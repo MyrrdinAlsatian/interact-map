@@ -3,6 +3,7 @@ import { ValidateParserResultUseCase } from '../../domain/usecases/validate_pars
 import { ValidateContractVersionUseCase } from '#domain/usecases/validate_contract_version_usecase'
 import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_contract_usecase'
 import { observabilityRepository } from '#repositories/observability_repository'
+import { loadCurrentGraphContract, persistCurrentGraphContract } from '#infrastructure/services/graph_store_service'
 import type { ParserResult } from '#domain/contracts/dto/parser_contract_dto'
 import type { GraphContract } from '#domain/contracts/dto/graph_contract_dto'
 
@@ -27,7 +28,8 @@ export default class ParserController {
     const body = request.all() as { parserResult: ParserResult; base?: GraphContract }
 
     const parserResult = body.parserResult
-    const base = body.base ?? {
+    const storedGraph = await loadCurrentGraphContract()
+    const base = body.base ?? storedGraph ?? {
       schemaVersion: '1.0',
       nodes: [],
       edges: [],
@@ -108,6 +110,30 @@ export default class ParserController {
         warnings: output.warnings.length,
       },
     })
+
+    try {
+      await persistCurrentGraphContract(output.merged)
+    } catch {
+      observabilityRepository.appendAuditLog({
+        actorId: auth?.user?.id ?? 'anonymous',
+        actorRole: auth?.user?.role ?? 'security',
+        action: 'parser.persist',
+        resourceType: 'GraphContract',
+        resourceId: String(parserResult.schemaVersion ?? 'unknown'),
+        outcome: 'failure',
+      })
+      observabilityRepository.recordLatency(Date.now() - start)
+
+      return response.status(500).json({
+        error: {
+          code: 'GRAPH_PERSIST_FAILED',
+          message: 'Parser result merged but could not be persisted to JSON storage.',
+          severity: 'error',
+        },
+        merged: output.merged,
+      })
+    }
+
     observabilityRepository.recordLatency(Date.now() - start)
 
     return response.ok({

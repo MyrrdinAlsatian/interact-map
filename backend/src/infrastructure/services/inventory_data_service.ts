@@ -1,4 +1,5 @@
 import type { GraphContract, GraphEdge, GraphNode, NodeType } from '#domain/contracts/dto/graph_contract_dto'
+import { loadCurrentGraphContract } from '#infrastructure/services/graph_store_service'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
@@ -88,17 +89,7 @@ const FALLBACK_ITEMS: Record<InventoryCategory, InventoryItem[]> = {
 }
 
 async function loadDatasetGraph(): Promise<GraphContract | null> {
-  try {
-    const datasetPath = resolve(process.cwd(), '../examples/project-dataset.json')
-    const raw = await readFile(datasetPath, 'utf-8')
-    const dataset = JSON.parse(raw) as { graph?: GraphContract }
-    if (!dataset.graph || !Array.isArray(dataset.graph.nodes) || !Array.isArray(dataset.graph.edges)) {
-      return null
-    }
-    return dataset.graph
-  } catch {
-    return null
-  }
+  return loadCurrentGraphContract()
 }
 
 async function loadDatasetMeta(): Promise<{ projectName: string; sourceLabel: string; importedAt?: string } | null> {

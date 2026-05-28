@@ -1,10 +1,9 @@
 import type { GraphContract } from '#domain/contracts/dto/graph_contract_dto'
 import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_contract_usecase'
 import { observabilityRepository } from '#repositories/observability_repository'
+import { loadCurrentGraphContract } from '#infrastructure/services/graph_store_service'
 import { getGraphSummaryViewModel } from '#infrastructure/services/inventory_data_service'
 import type { HttpContext } from '@adonisjs/core/http'
-import { readFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
 
 const validateContract = new ValidateGraphContractUseCase()
 
@@ -18,21 +17,7 @@ export default class GraphController {
   async index({ view, response }: HttpContext & { view: any }) {
     const start = Date.now()
 
-    // Load sample graph contract for initial page render
-    let sampleContract: GraphContract | null = null
-    try {
-      const datasetPath = resolve(process.cwd(), '../examples/project-dataset.json')
-      const raw = await readFile(datasetPath, 'utf-8')
-      const dataset = JSON.parse(raw) as { graph: GraphContract }
-      sampleContract = {
-        schemaVersion: '1.0',
-        nodes: dataset.graph.nodes,
-        edges: dataset.graph.edges,
-        errors: [],
-      }
-    } catch {
-      // Sample data not required — page renders without pre-loaded contract
-    }
+    const sampleContract: GraphContract | null = await loadCurrentGraphContract()
 
     const summary = await getGraphSummaryViewModel()
 
