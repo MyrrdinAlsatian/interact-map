@@ -7,7 +7,7 @@
     <script src="https://unpkg.com/unpoly@3.8.0/unpoly.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/unpoly@3.8.0/unpoly.min.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    
+
     <style>
       :root {
         --primary: #0052cc;
@@ -22,38 +22,38 @@
         --danger: #f5222d;
         --radius: 8px;
       }
-      
+
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-      
+
       body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         background: var(--bg-dark);
         color: var(--text-primary);
         line-height: 1.6;
       }
-      
+
       .skip-link {
         position: absolute;
         left: -9999px;
         z-index: 999;
       }
-      
+
       .skip-link:focus {
         left: 50%;
         transform: translateX(-50%);
         top: 10px;
       }
-      
+
       .layout-wrapper {
         display: grid;
         grid-template-columns: 260px 1fr;
         min-height: 100vh;
       }
-      
+
       /* SIDEBAR */
       .sidebar {
         background: var(--bg-card);
@@ -66,13 +66,13 @@
         display: flex;
         flex-direction: column;
       }
-      
+
       .sidebar-brand {
         padding: 0 20px 24px;
         border-bottom: 1px solid var(--border);
         margin-bottom: 24px;
       }
-      
+
       .sidebar-brand h1 {
         font-size: 1.3rem;
         font-weight: 700;
@@ -81,21 +81,21 @@
         align-items: center;
         gap: 8px;
       }
-      
+
       .sidebar-brand i {
         font-size: 1.5rem;
       }
-      
+
       .sidebar-nav {
         flex: 1;
         padding: 0;
         list-style: none;
       }
-      
+
       .sidebar-nav li {
         margin: 0;
       }
-      
+
       .sidebar-nav a {
         display: flex;
         align-items: center;
@@ -106,30 +106,30 @@
         transition: all 0.2s ease;
         border-left: 3px solid transparent;
       }
-      
+
       .sidebar-nav a:hover {
         background: rgba(0, 82, 204, 0.1);
         color: var(--primary);
         border-left-color: var(--primary);
       }
-      
+
       .sidebar-nav a.active {
         background: rgba(0, 82, 204, 0.15);
         color: var(--primary);
         border-left-color: var(--primary);
       }
-      
+
       .sidebar-nav i {
         width: 20px;
         text-align: center;
       }
-      
+
       /* MAIN CONTENT */
       .main-wrapper {
         display: flex;
         flex-direction: column;
       }
-      
+
       .top-bar {
         background: var(--bg-card);
         border-bottom: 1px solid var(--border);
@@ -138,38 +138,38 @@
         justify-content: space-between;
         align-items: center;
       }
-      
+
       .top-bar-title {
         font-size: 1.2rem;
         font-weight: 600;
         color: var(--text-primary);
       }
-      
+
       .top-bar-actions {
         display: flex;
         gap: 12px;
         align-items: center;
       }
-      
+
       main {
         flex: 1;
         padding: 24px;
         overflow-y: auto;
       }
-      
+
       .page-title {
         font-size: 1.8rem;
         font-weight: 700;
         margin-bottom: 8px;
         color: var(--text-primary);
       }
-      
+
       .page-subtitle {
         font-size: 0.95rem;
         color: var(--text-secondary);
         margin-bottom: 24px;
       }
-      
+
       /* CARDS & WIDGETS */
       .card {
         background: var(--bg-card);
@@ -179,12 +179,12 @@
         margin-bottom: 20px;
         transition: all 0.2s ease;
       }
-      
+
       .card:hover {
         border-color: var(--primary);
         box-shadow: 0 4px 12px rgba(0, 82, 204, 0.15);
       }
-      
+
       .card-title {
         font-size: 1rem;
         font-weight: 600;
@@ -194,25 +194,25 @@
         gap: 8px;
         color: var(--text-primary);
       }
-      
+
       .card-title i {
         color: var(--primary);
       }
-      
+
       /* GRID */
       .grid {
         display: grid;
         gap: 20px;
       }
-      
+
       .grid-2 {
         grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
       }
-      
+
       .grid-3 {
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       }
-      
+
       /* STATS CARD */
       .stat-card {
         background: var(--bg-card);
@@ -221,27 +221,27 @@
         padding: 20px;
         text-align: center;
       }
-      
+
       .stat-value {
         font-size: 2.5rem;
         font-weight: 700;
         color: var(--primary);
         margin-bottom: 8px;
       }
-      
+
       .stat-label {
         font-size: 0.9rem;
         color: var(--text-secondary);
         font-weight: 500;
       }
-      
+
       /* TABLE */
       table {
         width: 100%;
         border-collapse: collapse;
         color: var(--text-primary);
       }
-      
+
       th {
         background: rgba(0, 82, 204, 0.1);
         padding: 12px;
@@ -251,16 +251,16 @@
         color: var(--text-secondary);
         border-bottom: 1px solid var(--border);
       }
-      
+
       td {
         padding: 12px;
         border-bottom: 1px solid var(--border);
       }
-      
+
       tr:hover {
         background: rgba(0, 82, 204, 0.05);
       }
-      
+
       /* BADGES */
       .badge {
         display: inline-block;
@@ -269,37 +269,37 @@
         font-size: 0.8rem;
         font-weight: 600;
       }
-      
+
       .badge-app {
         background: rgba(0, 82, 204, 0.2);
         color: #64b5f6;
       }
-      
+
       .badge-service {
         background: rgba(49, 162, 76, 0.2);
         color: #66bb6a;
       }
-      
+
       .badge-server {
         background: rgba(255, 157, 0, 0.2);
         color: #ffb74d;
       }
-      
+
       .badge-container {
         background: rgba(156, 39, 176, 0.2);
         color: #ba68c8;
       }
-      
+
       .badge-online {
         background: rgba(49, 162, 76, 0.2);
         color: #66bb6a;
       }
-      
+
       .badge-offline {
         background: rgba(245, 34, 45, 0.2);
         color: #ef5350;
       }
-      
+
       /* BUTTONS */
       button, .btn {
         background: var(--primary);
@@ -312,12 +312,12 @@
         transition: all 0.2s ease;
         font-size: 0.9rem;
       }
-      
+
       button:hover, .btn:hover {
         background: var(--primary-dark);
         transform: translateY(-1px);
       }
-      
+
       /* UP-TARGET TABLE */
       #inventory-table {
         background: var(--bg-card);
@@ -326,44 +326,44 @@
         padding: 0 20px;
         overflow: hidden;
       }
-      
+
       /* FOCUS STYLES */
       a:focus-visible,
       button:focus-visible {
         outline: 2px solid var(--primary);
         outline-offset: 2px;
       }
-      
+
       /* RESPONSIVE */
       @media (max-width: 768px) {
         .layout-wrapper {
           grid-template-columns: 1fr;
         }
-        
+
         .sidebar {
           display: none;
         }
-        
+
         .grid-2, .grid-3 {
           grid-template-columns: 1fr;
         }
       }
-      
+
       /* SCROLLBAR */
       ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
       }
-      
+
       ::-webkit-scrollbar-track {
         background: var(--bg-dark);
       }
-      
+
       ::-webkit-scrollbar-thumb {
         background: var(--border);
         border-radius: 4px;
       }
-      
+
       ::-webkit-scrollbar-thumb:hover {
         background: var(--text-secondary);
       }
@@ -371,7 +371,7 @@
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
-    
+
     <div class="layout-wrapper">
       <!-- SIDEBAR -->
       <aside class="sidebar" role="navigation" aria-label="Main navigation">
@@ -388,7 +388,7 @@
           <li><a href="/graph" up-follow><i class="fas fa-project-diagram"></i> Architecture</a></li>
         </ul>
       </aside>
-      
+
       <!-- MAIN -->
       <div class="main-wrapper">
         <div class="top-bar">
@@ -398,9 +398,10 @@
             <button title="Settings"><i class="fas fa-cog"></i></button>
           </div>
         </div>
-        
+
         <main id="main-content" tabindex="-1">
-          @yield('content')
+          @section('content')
+          @endsection
         </main>
       </div>
     </div>
