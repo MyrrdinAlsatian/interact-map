@@ -1,4 +1,5 @@
 import router from '@adonisjs/core/services/router'
+import { middleware } from '#infrastructure/adonis/kernel'
 import HealthChecksController from '#infrastructure/controllers/health_checks_controller'
 import UsersController from '#infrastructure/controllers/users_controller'
 import GetAllUserController from '#infrastructure/controllers/getall_user_controller'
@@ -64,7 +65,7 @@ router.group(() => {
   // Observability (admin read — role guard applied inside controller)
   router.get('/observability/metrics', [MetricsController, 'index'])
   router.get('/audit/logs', [AuditLogsController, 'index'])
-}).middleware(['auth'])
+}).use(middleware.auth())
 
 // ─── Legacy / uploads ────────────────────────────────────────────────────────
-router.post('/uploads', [UploadsController, 'store']).middleware(['auth'])
+router.post('/uploads', [UploadsController, 'store']).use(middleware.auth())
