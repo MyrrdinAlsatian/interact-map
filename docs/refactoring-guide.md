@@ -34,7 +34,7 @@ Sortie:
 - Extraire dans des use cases / domain models indépendants du framework.
 - Choisir une structure de dossiers stable et la documenter.
 
-**Exemple:**
+**Exemple structure:**
 ```
 src/
   domain/
@@ -45,6 +45,49 @@ src/
     http/            (controllers, routes)
     persistence/     (adapters DB/fichiers)
     middleware/      (auth, logging)
+```
+
+**Exemple domain model (JavaScript moderne):**
+```javascript
+export class User {
+  #id
+  #email
+  #role
+  #createdAt
+
+  constructor(id, email, role) {
+    this.#id = id
+    this.#email = email
+    this.#role = role
+    this.#createdAt = new Date()
+  }
+
+  get id() { return this.#id }
+  get email() { return this.#email }
+  get role() { return this.#role }
+
+  canImport() {
+    return ['editor', 'admin'].includes(this.#role)
+  }
+}
+```
+
+**Exemple use case:**
+```javascript
+export class ImportGraphUseCase {
+  #repository
+
+  constructor(repository) {
+    this.#repository = repository
+  }
+
+  async execute(user, graphData) {
+    if (!user.canImport()) {
+      throw new Error('Unauthorized')
+    }
+    return this.#repository.save(graphData)
+  }
+}
 ```
 
 **Effort estimé:** 5-10 jours selon taille projet.
@@ -81,13 +124,32 @@ admin:      tous + gestion utilisateurs
 - Definir schéma versionné avec contrats explicites (erreurs structurees).
 - Valider aux frontières (request/response).
 
-**Exemple:**
-```typescript
-interface GraphContract {
-  schemaVersion: "1.0" | "0.9"   // version explicite
-  nodes: GraphNode[]
-  edges: GraphEdge[]
-  errors: ContractError[]         // erreurs structurées
+**Exemple contrat versionnée:**
+```javascript
+export class GraphContract {
+  #schemaVersion
+  #nodes
+  #edges
+  #errors
+
+  constructor(schemaVersion, nodes, edges) {
+    if (!['1.0', '0.9'].includes(schemaVersion)) {
+      throw new Error(`Unsupported schema version: ${schemaVersion}`)
+    }
+    this.#schemaVersion = schemaVersion
+    this.#nodes = nodes
+    this.#edges = edges
+    this.#errors = []
+  }
+
+  validate() {
+    // validation logique
+    return this.#errors.length === 0
+  }
+
+  get schemaVersion() { return this.#schemaVersion }
+  get nodes() { return this.#nodes }
+  get edges() { return this.#edges }
 }
 ```
 
