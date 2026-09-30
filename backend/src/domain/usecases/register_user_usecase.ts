@@ -10,6 +10,18 @@ export class RegisterUserUseCase {
   }
 
   async execute(payload: RegisterUserDto) {
+    if (
+      !payload ||
+      typeof payload.email !== 'string' ||
+      payload.email.trim() === '' ||
+      typeof payload.displayName !== 'string' ||
+      payload.displayName.trim() === '' ||
+      typeof payload.password !== 'string' ||
+      payload.password.trim() === ''
+    ) {
+      throw new Error('Email, display name, and password are required')
+    }
+
     const existing = await this.#repository.findByEmail(payload.email)
     if (existing) {
       throw new Error('User email already exists')
