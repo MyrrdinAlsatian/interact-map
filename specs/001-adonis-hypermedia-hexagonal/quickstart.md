@@ -163,7 +163,7 @@ tests      PASS (3/3)
 ```
 
 Remediation applied in backend toolchain:
-- Added `eslint` and TypeScript parser support in `eslint.config.js`.
+- Replaced ESLint and Prettier with Oxlint and Oxfmt, preserving the Adonis formatting conventions. Oxfmt does not yet support Edge.js templates, so `resources/views/**/*.edge` is excluded from format checks.
 - Removed incompatible `ignoreDeprecations` compiler option from `tsconfig.json`.
 - Updated test script to run TypeScript tests through `tsx` loader.
 - Added ambient declaration for `@ioc:Adonis/Core/Route` to satisfy typecheck.

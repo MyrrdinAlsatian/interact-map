@@ -1,4 +1,9 @@
-import type { GraphContract, GraphEdge, GraphNode, NodeType } from '#domain/contracts/dto/graph_contract_dto'
+import type {
+  GraphContract,
+  GraphEdge,
+  GraphNode,
+  NodeType,
+} from '#domain/contracts/dto/graph_contract_dto'
 import type { MergeStrategy } from '#domain/usecases/import_parser_result_usecase'
 import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'

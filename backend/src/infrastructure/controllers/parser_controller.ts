@@ -70,10 +70,7 @@ export default class ParserController {
     const parserResult = body.parserResult
     const mergeStrategy = (body.mergeStrategy ?? 'skip') as MergeStrategy
     const dryRun =
-      body.dryRun === true ||
-      body.dryRun === 'true' ||
-      body.dryRun === 'on' ||
-      body.dryRun === '1'
+      body.dryRun === true || body.dryRun === 'true' || body.dryRun === 'on' || body.dryRun === '1'
 
     if (!ALLOWED_MERGE_STRATEGIES.includes(mergeStrategy)) {
       return response.status(422).json({
@@ -86,12 +83,13 @@ export default class ParserController {
     }
 
     const storedGraph = await loadCurrentGraphContract()
-    const base = body.base ?? storedGraph ?? {
-      schemaVersion: '1.0',
-      nodes: [],
-      edges: [],
-      errors: [],
-    }
+    const base = body.base ??
+      storedGraph ?? {
+        schemaVersion: '1.0',
+        nodes: [],
+        edges: [],
+        errors: [],
+      }
 
     if (!parserResult || typeof parserResult !== 'object') {
       return response.status(422).json({

@@ -64,7 +64,7 @@ Symptome:
 - Certains patterns booleens multi-lignes provoquaient des warnings/erreurs de style.
 
 Cause:
-- Regles de formatage strictes du projet (Prettier/Adonis), avec conventions de style specifiques.
+- Regles de formatage strictes du projet (Oxfmt/Adonis), avec conventions de style specifiques.
 
 Solution appliquee:
 - Normalisation des checks booleens avec un pattern stable et lisible.

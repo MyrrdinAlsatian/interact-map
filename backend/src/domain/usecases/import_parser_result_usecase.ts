@@ -101,22 +101,30 @@ export class ImportParserResultUseCase {
       mergeStrategy === 'skip'
         ? [
             ...base.nodes,
-            ...parserResult.nodes.filter((node) => !base.nodes.some((existing) => existing.id === node.id)),
+            ...parserResult.nodes.filter(
+              (node) => !base.nodes.some((existing) => existing.id === node.id)
+            ),
           ]
         : [
             ...base.nodes.map((node) => incomingNodesById.get(node.id) ?? node),
-            ...parserResult.nodes.filter((node) => !base.nodes.some((existing) => existing.id === node.id)),
+            ...parserResult.nodes.filter(
+              (node) => !base.nodes.some((existing) => existing.id === node.id)
+            ),
           ]
 
     const mergedEdges =
       mergeStrategy === 'skip'
         ? [
             ...base.edges,
-            ...parserResult.edges.filter((edge) => !base.edges.some((existing) => existing.id === edge.id)),
+            ...parserResult.edges.filter(
+              (edge) => !base.edges.some((existing) => existing.id === edge.id)
+            ),
           ]
         : [
             ...base.edges.map((edge) => incomingEdgesById.get(edge.id) ?? edge),
-            ...parserResult.edges.filter((edge) => !base.edges.some((existing) => existing.id === edge.id)),
+            ...parserResult.edges.filter(
+              (edge) => !base.edges.some((existing) => existing.id === edge.id)
+            ),
           ]
 
     if (mergeStrategy === 'archive-missing') {

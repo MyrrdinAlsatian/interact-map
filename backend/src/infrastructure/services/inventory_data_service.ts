@@ -1,4 +1,9 @@
-import type { GraphContract, GraphEdge, GraphNode, NodeType } from '#domain/contracts/dto/graph_contract_dto'
+import type {
+  GraphContract,
+  GraphEdge,
+  GraphNode,
+  NodeType,
+} from '#domain/contracts/dto/graph_contract_dto'
 import {
   isArchivedInteraction,
   isNodeArchived,
@@ -79,7 +84,13 @@ export interface NodeDetailViewModel {
   node: InventoryItem & { metadataEntries: Array<{ key: string; value: string }> }
   inboundDependencies: NodeRelationItem[]
   outboundDependencies: NodeRelationItem[]
-  relatedInteractions: Array<{ id: string; source: string; target: string; protocol: string; criticality: string }>
+  relatedInteractions: Array<{
+    id: string
+    source: string
+    target: string
+    protocol: string
+    criticality: string
+  }>
 }
 
 const TITLE_BY_CATEGORY: Record<InventoryCategory, string> = {
@@ -118,7 +129,11 @@ async function loadDatasetGraph(): Promise<GraphContract | null> {
   return loadCurrentGraphContract()
 }
 
-async function loadDatasetMeta(): Promise<{ projectName: string; sourceLabel: string; importedAt?: string } | null> {
+async function loadDatasetMeta(): Promise<{
+  projectName: string
+  sourceLabel: string
+  importedAt?: string
+} | null> {
   try {
     const datasetPath = resolve(process.cwd(), '../examples/project-dataset.json')
     const raw = await readFile(datasetPath, 'utf-8')
@@ -138,13 +153,15 @@ async function loadDatasetMeta(): Promise<{ projectName: string; sourceLabel: st
 }
 
 function mapNodes(nodes: GraphNode[], type: NodeType): InventoryItem[] {
-  return nodes.filter((node) => node.type === type).map((node) => ({
-    id: node.id,
-    label: node.label,
-    type: node.type,
-    archived: isNodeArchived(node),
-    path: `/nodes/${encodeURIComponent(node.id)}`,
-  }))
+  return nodes
+    .filter((node) => node.type === type)
+    .map((node) => ({
+      id: node.id,
+      label: node.label,
+      type: node.type,
+      archived: isNodeArchived(node),
+      path: `/nodes/${encodeURIComponent(node.id)}`,
+    }))
 }
 
 function mapEdges(edges: GraphEdge[], graph: GraphContract): InventoryItem[] {
@@ -170,14 +187,19 @@ function filterItems(items: InventoryItem[], query: string): InventoryItem[] {
   )
 }
 
-function metadataEntries(metadata?: Record<string, unknown>): Array<{ key: string; value: string }> {
+function metadataEntries(
+  metadata?: Record<string, unknown>
+): Array<{ key: string; value: string }> {
   return Object.entries(metadata ?? {}).map(([key, value]) => ({
     key,
     value: typeof value === 'string' ? value : JSON.stringify(value),
   }))
 }
 
-export async function getInventoryViewModel(category: InventoryCategory, query = ''): Promise<InventoryViewModel> {
+export async function getInventoryViewModel(
+  category: InventoryCategory,
+  query = ''
+): Promise<InventoryViewModel> {
   const graph = await loadDatasetGraph()
 
   if (!graph) {
@@ -266,7 +288,9 @@ export async function getDashboardViewModel(): Promise<DashboardViewModel> {
   const recentActivity: DashboardActivityItem[] = [
     {
       title: `Dataset ${meta.projectName} loaded`,
-      detail: meta.importedAt ? `${meta.sourceLabel} imported at ${meta.importedAt}` : `Source ${meta.sourceLabel} imported`,
+      detail: meta.importedAt
+        ? `${meta.sourceLabel} imported at ${meta.importedAt}`
+        : `Source ${meta.sourceLabel} imported`,
       tone: 'success',
     },
     {
@@ -300,7 +324,10 @@ export async function getDashboardViewModel(): Promise<DashboardViewModel> {
       { label: 'Uptime', value: '99.8%', icon: 'fa-heartbeat' },
     ],
     recentActivity,
-    topApplications: topApplications.length > 0 ? topApplications : [{ label: 'No applications', trend: '→ steady traffic', tone: 'neutral' }],
+    topApplications:
+      topApplications.length > 0
+        ? topApplications
+        : [{ label: 'No applications', trend: '→ steady traffic', tone: 'neutral' }],
     latestImport,
   }
 }

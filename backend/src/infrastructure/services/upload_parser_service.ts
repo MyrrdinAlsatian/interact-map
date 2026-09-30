@@ -20,7 +20,12 @@ function detectSourceType(content: string, fileName?: string): ParserSourceType 
   if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
     try {
       const parsed = JSON.parse(trimmed) as unknown
-      if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'object' && parsed[0]) {
+      if (
+        Array.isArray(parsed) &&
+        parsed.length > 0 &&
+        typeof parsed[0] === 'object' &&
+        parsed[0]
+      ) {
         const row = parsed[0] as Record<string, unknown>
         const looksLikeInspect = 'Config' in row || 'NetworkSettings' in row || 'State' in row
         if (looksLikeInspect) {
@@ -59,11 +64,19 @@ function parseDockerCompose(content: string, schemaVersion: string): ParserResul
   const services = parsed?.services ?? {}
 
   if (!parsed || typeof parsed !== 'object') {
-    return { schemaVersion, nodes: [], edges: [], errors: [error('COMPOSE_INVALID', 'docker-compose payload is invalid YAML.')], warnings }
+    return {
+      schemaVersion,
+      nodes: [],
+      edges: [],
+      errors: [error('COMPOSE_INVALID', 'docker-compose payload is invalid YAML.')],
+      warnings,
+    }
   }
 
   if (Object.keys(services).length === 0) {
-    warnings.push(warning('COMPOSE_EMPTY', 'No services found in docker-compose payload.', 'services'))
+    warnings.push(
+      warning('COMPOSE_EMPTY', 'No services found in docker-compose payload.', 'services')
+    )
   }
 
   const nodes: GraphNode[] = []
@@ -109,15 +122,31 @@ function parseDockerInspect(content: string, schemaVersion: string): ParserResul
   try {
     parsed = JSON.parse(content)
   } catch {
-    return { schemaVersion, nodes: [], edges: [], errors: [error('INSPECT_INVALID_JSON', 'docker inspect payload must be valid JSON array.')], warnings }
+    return {
+      schemaVersion,
+      nodes: [],
+      edges: [],
+      errors: [error('INSPECT_INVALID_JSON', 'docker inspect payload must be valid JSON array.')],
+      warnings,
+    }
   }
 
   if (!Array.isArray(parsed)) {
-    return { schemaVersion, nodes: [], edges: [], errors: [error('INSPECT_INVALID_FORMAT', 'docker inspect payload must be an array.')], warnings }
+    return {
+      schemaVersion,
+      nodes: [],
+      edges: [],
+      errors: [error('INSPECT_INVALID_FORMAT', 'docker inspect payload must be an array.')],
+      warnings,
+    }
   }
 
   const names = parsed
-    .map((item) => (item && typeof item === 'object' ? String((item as Record<string, unknown>).Name ?? '').replace(/^\//, '') : ''))
+    .map((item) =>
+      item && typeof item === 'object'
+        ? String((item as Record<string, unknown>).Name ?? '').replace(/^\//, '')
+        : ''
+    )
     .filter(Boolean)
 
   for (const entry of parsed) {
@@ -169,11 +198,23 @@ function parseDockerPs(content: string, schemaVersion: string): ParserResult {
   try {
     parsed = JSON.parse(content)
   } catch {
-    return { schemaVersion, nodes: [], edges: [], errors: [error('DOCKER_PS_INVALID_JSON', 'docker ps payload must be valid JSON array.')], warnings }
+    return {
+      schemaVersion,
+      nodes: [],
+      edges: [],
+      errors: [error('DOCKER_PS_INVALID_JSON', 'docker ps payload must be valid JSON array.')],
+      warnings,
+    }
   }
 
   if (!Array.isArray(parsed)) {
-    return { schemaVersion, nodes: [], edges: [], errors: [error('DOCKER_PS_INVALID_FORMAT', 'docker ps payload must be an array.')], warnings }
+    return {
+      schemaVersion,
+      nodes: [],
+      edges: [],
+      errors: [error('DOCKER_PS_INVALID_FORMAT', 'docker ps payload must be an array.')],
+      warnings,
+    }
   }
 
   const nodes: GraphNode[] = parsed.map((row: any) => {
@@ -200,7 +241,9 @@ export function parseUploadedInfrastructureData(params: {
   schemaVersion?: string
 }): ParserResult {
   const schemaVersion = params.schemaVersion ?? '1.0'
-  const sourceType = (params.sourceType as ParserSourceType | undefined) ?? detectSourceType(params.content, params.fileName)
+  const sourceType =
+    (params.sourceType as ParserSourceType | undefined) ??
+    detectSourceType(params.content, params.fileName)
 
   if (sourceType === 'docker-compose') {
     return parseDockerCompose(params.content, schemaVersion)

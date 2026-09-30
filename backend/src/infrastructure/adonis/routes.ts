@@ -31,41 +31,43 @@ const nodeController = new NodeController()
 const importReportController = new ImportReportController()
 
 // ─── Authenticated read routes ────────────────────────────────────────────────
-router.group(() => {
-  // User management
-  router.get('/users/all', [GetAllUserController, 'handle'])
+router
+  .group(() => {
+    // User management
+    router.get('/users/all', [GetAllUserController, 'handle'])
 
-  // Inventory navigation (US1)
-  router.get('/applications', (ctx) => inventoryController.applications(ctx as any))
-  router.get('/services', (ctx) => inventoryController.services(ctx as any))
-  router.get('/servers', (ctx) => inventoryController.servers(ctx as any))
-  router.get('/containers', (ctx) => inventoryController.containers(ctx as any))
-  router.get('/interactions', (ctx) => inventoryController.interactions(ctx as any))
+    // Inventory navigation (US1)
+    router.get('/applications', (ctx) => inventoryController.applications(ctx as any))
+    router.get('/services', (ctx) => inventoryController.services(ctx as any))
+    router.get('/servers', (ctx) => inventoryController.servers(ctx as any))
+    router.get('/containers', (ctx) => inventoryController.containers(ctx as any))
+    router.get('/interactions', (ctx) => inventoryController.interactions(ctx as any))
 
-  // Hypermedia fragment resolver (US1)
-  router.get('/fragments/:target', (ctx) => fragmentsController.resolve(ctx as any))
+    // Hypermedia fragment resolver (US1)
+    router.get('/fragments/:target', (ctx) => fragmentsController.resolve(ctx as any))
 
-  // Graph capability island page (US2)
-  router.get('/graph', (ctx) => graphController.index(ctx as any))
-  router.get('/imports/latest', (ctx) => importReportController.show(ctx as any))
+    // Graph capability island page (US2)
+    router.get('/graph', (ctx) => graphController.index(ctx as any))
+    router.get('/imports/latest', (ctx) => importReportController.show(ctx as any))
 
-  // Node details and lifecycle actions
-  router.get('/nodes/:id', (ctx) => nodeController.show(ctx as any))
-  router.post('/nodes/:id/archive', (ctx) => nodeController.archive(ctx as any))
-  router.post('/nodes/:id/restore', (ctx) => nodeController.restore(ctx as any))
-  router.post('/nodes/:id/purge', (ctx) => nodeController.purge(ctx as any))
+    // Node details and lifecycle actions
+    router.get('/nodes/:id', (ctx) => nodeController.show(ctx as any))
+    router.post('/nodes/:id/archive', (ctx) => nodeController.archive(ctx as any))
+    router.post('/nodes/:id/restore', (ctx) => nodeController.restore(ctx as any))
+    router.post('/nodes/:id/purge', (ctx) => nodeController.purge(ctx as any))
 
-  // Graph API actions
-  router.post('/graph/contract/validate', (ctx) => graphController.validate(ctx as any))
-  router.post('/graph/simulate-incident', (ctx) => graphSimulationController.simulate(ctx as any))
+    // Graph API actions
+    router.post('/graph/contract/validate', (ctx) => graphController.validate(ctx as any))
+    router.post('/graph/simulate-incident', (ctx) => graphSimulationController.simulate(ctx as any))
 
-  // Parser ingestion (US3) — active JSON merge+persist flow
-  router.post('/parser/ingest', (ctx) => parserController.ingest(ctx as any))
+    // Parser ingestion (US3) — active JSON merge+persist flow
+    router.post('/parser/ingest', (ctx) => parserController.ingest(ctx as any))
 
-  // Observability (admin read — role guard applied inside controller)
-  router.get('/observability/metrics', [MetricsController, 'index'])
-  router.get('/audit/logs', [AuditLogsController, 'index'])
-}).use(middleware.auth())
+    // Observability (admin read — role guard applied inside controller)
+    router.get('/observability/metrics', [MetricsController, 'index'])
+    router.get('/audit/logs', [AuditLogsController, 'index'])
+  })
+  .use(middleware.auth())
 
 // ─── Legacy / uploads ────────────────────────────────────────────────────────
 router.post('/uploads', [UploadsController, 'store']).use(middleware.auth())

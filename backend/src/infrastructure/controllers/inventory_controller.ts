@@ -16,7 +16,11 @@ export default class InventoryController {
   async #renderCategory(
     category: InventoryCategory,
     template: string,
-    { view, response, request }: { view: any; response: HttpContext['response']; request: HttpContext['request'] }
+    {
+      view,
+      response,
+      request,
+    }: { view: any; response: HttpContext['response']; request: HttpContext['request'] }
   ) {
     const start = Date.now()
     const query = String(request.input('q') ?? '')

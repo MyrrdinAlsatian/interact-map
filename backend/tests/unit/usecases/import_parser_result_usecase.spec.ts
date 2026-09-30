@@ -30,7 +30,10 @@ test('ImportParserResultUseCase accepts injected validator adapters', async () =
       versionValidatorCalled = true
       return {
         valid: schemaVersion === '1.0',
-        errors: schemaVersion === '1.0' ? [] : [{ code: 'VERSION_UNSUPPORTED', message: 'unsupported', severity: 'error' }],
+        errors:
+          schemaVersion === '1.0'
+            ? []
+            : [{ code: 'VERSION_UNSUPPORTED', message: 'unsupported', severity: 'error' }],
       }
     },
   }

@@ -2,10 +2,17 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const rootDir = join(__dirname, '..', '..')
+const scriptDirectory = dirname(fileURLToPath(import.meta.url))
+const rootDir = join(scriptDirectory, '..', '..')
 const sharedJsonPath = join(rootDir, 'shared', 'graph-contract-metadata.json')
-const backendMetadataPath = join(rootDir, 'backend', 'src', 'domain', 'contracts', 'graph_contract_metadata.ts')
+const backendMetadataPath = join(
+  rootDir,
+  'backend',
+  'src',
+  'domain',
+  'contracts',
+  'graph_contract_metadata.ts'
+)
 const frontendMetadataPath = join(rootDir, 'frontend', 'lib', 'graph-contract-metadata.js')
 
 async function main() {
