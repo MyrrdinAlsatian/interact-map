@@ -23,6 +23,22 @@ AdonisJS-specific adapters. Holds:
 - `repositories/` — concrete repository implementations (e.g. in-memory, Lucid ORM)
 - `validators/` — request payload validators
 
+## AdonisJS 7 Runtime and Indexing
+
+The backend targets AdonisJS 7 and requires Node.js `>=24.6.0` (enforced by `package.json`). Its initialization hooks are registered in `adonisrc.ts`:
+
+- `indexEntities()` indexes the configured application directories and generates the Adonis server-side entity indexes used by the app's generated imports and types.
+- Tuyau's `generateRegistry()` scans the registered routes and generates the typed API client registry under `.adonisjs/client/registry`. The Tuyau 1.x integration uses this hook and its Ace commands; the previous provider and `config/tuyau.ts` are no longer used.
+
+These files are generated artifacts. Run `node ace codegen` from `backend/` after changing indexed directories or routes; do not edit generated files by hand.
+
+### v6-to-v7 Compatibility Notes
+
+- `config/encryption.ts` uses Adonis' `legacy` driver with `APP_KEY` so existing v6-encrypted values remain decryptable. Keep the same production key; key rotation requires a separate data migration.
+- `request.all()` now includes multipart files as well as fields. Upload handlers should continue reading file metadata and temporary paths with `request.file()` / `request.files()` rather than treating the merged result as plain JSON.
+- Requests accepting JSON receive JSON error responses instead of rendered status pages. Controller routes receive generated names; two routes targeting the same controller method can conflict if only one has an explicit name.
+- The TypeScript JIT runner is `@poppinss/ts-exec`; `ts-node` is no longer part of the backend toolchain.
+
 ## Feature Boundaries (001-adonis-hypermedia-hexagonal)
 
 | Concern                         | Layer          | File(s)                                                                                                                                                                                                                                                                              |

@@ -1,4 +1,6 @@
 import { defineConfig } from '@adonisjs/core/app'
+import { indexEntities } from '@adonisjs/core'
+import { generateRegistry } from '@tuyau/core/hooks'
 
 export default defineConfig({
   /*
@@ -39,8 +41,10 @@ export default defineConfig({
     () => import('@adonisjs/session/session_provider'),
     () => import('@adonisjs/auth/auth_provider'),
     () => import('#providers/app_provider'),
-    () => import('@tuyau/core/tuyau_provider'),
   ],
+  hooks: {
+    init: [indexEntities(), generateRegistry()],
+  },
   directories: {
     httpControllers: './src/infrastructure/controllers/',
     models: './src/infrastructure/orm/Lucid/models/',

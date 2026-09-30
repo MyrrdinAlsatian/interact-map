@@ -1,19 +1,5 @@
-import env from '#infrastructure/adonis/env'
 import app from '@adonisjs/core/services/app'
-import { Secret } from '@adonisjs/core/helpers'
 import { defineConfig } from '@adonisjs/core/http'
-
-/**
- * The app key is used for encrypting cookies, generating signed URLs,
- * and by the "encryption" module.
- *
- * The encryption module will fail to decrypt data if the key is lost or
- * changed. Therefore it is recommended to keep the app key secure.
- */
-const appKeyValue = env.get('APP_KEY')
-export const appKey = new Secret(
-  appKeyValue.length >= 16 ? appKeyValue : '0123456789abcdef0123456789abcdef'
-)
 
 /**
  * The configuration settings used by the HTTP server
