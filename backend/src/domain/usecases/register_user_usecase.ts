@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto'
 import type { RegisterUserDto } from '#domain/contracts/dto/register_user_dto'
 import type { UserRepositoryContract } from '#domain/contracts/repositories/user_repository'
 
@@ -27,9 +26,6 @@ export class RegisterUserUseCase {
       throw new Error('User email already exists')
     }
 
-    return this.#repository.register({
-      ...payload,
-      password: `${payload.password}:${randomUUID()}`,
-    })
+    return this.#repository.register(payload)
   }
 }

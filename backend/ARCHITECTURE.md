@@ -32,6 +32,14 @@ The backend targets AdonisJS 7 and requires Node.js `>=24.6.0` (enforced by `pac
 
 These files are generated artifacts. Run `node ace codegen` from `backend/` after changing indexed directories or routes; do not edit generated files by hand.
 
+## Local Database
+
+Lucid uses `better-sqlite3` by default in development, tests, and production. Development data is stored in `database/development.sqlite3`, production data in `database/production.sqlite3`, and tests use an in-memory database. Set `DB_SQLITE_FILENAME` to override the location; an absolute path is recommended for a mounted production volume. Set it to `:memory:` only for ephemeral local runs. PostgreSQL remains an explicit alternative via `DB_CONNECTION=postgres` and `DB_HOST`, `DB_PORT`, `DB_USER`, and `DB_DATABASE`.
+
+Before starting a deployment for the first time or after an upgrade, run `node ace migration:run --force` from `backend/`, then start the server. The `--force` flag is required by Ace when migrations run under `NODE_ENV=production`. Keep the SQLite file on durable storage: container-local filesystems may be discarded on restart. Run one application instance against a SQLite file; do not mount one database file into multiple replicas. For multi-instance writes or high write concurrency, use PostgreSQL instead. Back up SQLite through its online backup API or while the application is stopped.
+
+Lucid migrations create the `users` and `application_states` tables. The latter stores the canonical graph and latest import report as JSON payloads; updates to both are transactional. On first read, existing `../shared/current-graph.json` and `../shared/latest-import-report.json` files are imported into SQLite and left untouched. The separate `../database/schema.sql` is PostgreSQL-specific design SQL and is not applied by the Lucid migration runner.
+
 ### v6-to-v7 Compatibility Notes
 
 - `config/encryption.ts` uses Adonis' `legacy` driver with `APP_KEY` so existing v6-encrypted values remain decryptable. Keep the same production key; key rotation requires a separate data migration.
@@ -51,7 +59,7 @@ These files are generated artifacts. Run `node ace codegen` from `backend/` afte
 | Observability interfaces        | Domain         | `contracts/repositories/observability_repository.ts`                                                                                                                                                                                                                                 |
 | Metrics + audit storage         | Infrastructure | `repositories/observability_repository.ts`                                                                                                                                                                                                                                           |
 | Auth + RBAC middleware          | Infrastructure | `middleware/auth_middleware.ts`, `adonis/kernel.ts`                                                                                                                                                                                                                                  |
-| JSON graph persistence          | Infrastructure | `services/graph_store_service.ts`                                                                                                                                                                                                                                                    |
+| SQLite graph persistence        | Infrastructure | `services/graph_store_service.ts`                                                                                                                                                                                                                                                    |
 | Server-side Docker file parsing | Infrastructure | `services/upload_parser_service.ts`                                                                                                                                                                                                                                                  |
 | Inventory view model builder    | Infrastructure | `services/inventory_data_service.ts`                                                                                                                                                                                                                                                 |
 | HTTP controllers                | Infrastructure | `controllers/inventory_controller.ts`, `fragments_controller.ts`, `graph_controller.ts`, `graph_simulation_controller.ts`, `parser_controller.ts`, `uploads_controller.ts`, `node_controller.ts`, `import_report_controller.ts`, `metrics_controller.ts`, `audit_logs_controller.ts` |
@@ -61,22 +69,23 @@ These files are generated artifacts. Run `node ace codegen` from `backend/` afte
 
 ### `graph_store_service.ts`
 
-Central JSON persistence adapter. Reads and writes `shared/current-graph.json` and `shared/latest-import-report.json`.
+SQLite-backed persistence adapter for the canonical graph and latest import report. Existing JSON files are read once as a non-destructive migration fallback.
 
 **Exports:**
 
-| Function                                                                              | Description                                                      |
-| ------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `loadCurrentGraphContract()`                                                          | Read graph from disk (or return empty graph if missing)          |
-| `persistCurrentGraphContract(contract)`                                               | Write graph to `shared/current-graph.json`                       |
-| `loadLatestImportReport()`                                                            | Read last diff report, or `null`                                 |
-| `persistLatestImportReport(report)`                                                   | Write report to `shared/latest-import-report.json`               |
-| `createImportReport({ base, incoming, merged, sourceType, mergeStrategy, fileName })` | Compute `GraphImportReport` with field-level diff                |
-| `archiveNodeById(id)`                                                                 | Set `metadata.archived = true` on node                           |
-| `restoreNodeById(id)`                                                                 | Remove `metadata.archived` and `metadata.archivedAt`             |
-| `purgeNodeById(id)`                                                                   | Remove node and all its incident edges                           |
-| `isNodeArchived(node)`                                                                | Predicate helper                                                 |
-| `collectDiffChanges(before, after, basePath)`                                         | Recursive field-level diff (returns `{ path, before, after }[]`) |
+| Function                                                                              | Description                                                       |
+| ------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `loadCurrentGraphContract()`                                                          | Read graph from SQLite, importing the legacy JSON file if needed  |
+| `persistCurrentGraphContract(contract)`                                               | Persist graph payload in SQLite                                   |
+| `loadLatestImportReport()`                                                            | Read report from SQLite, importing the legacy JSON file if needed |
+| `persistLatestImportReport(report)`                                                   | Persist report payload in SQLite                                  |
+| `persistImportState(graph, report)`                                                   | Atomically persist graph and report                               |
+| `createImportReport({ base, incoming, merged, sourceType, mergeStrategy, fileName })` | Compute `GraphImportReport` with field-level diff                 |
+| `archiveNodeById(id)`                                                                 | Set `metadata.archived = true` on node                            |
+| `restoreNodeById(id)`                                                                 | Remove `metadata.archived` and `metadata.archivedAt`              |
+| `purgeNodeById(id)`                                                                   | Remove node and all its incident edges                            |
+| `isNodeArchived(node)`                                                                | Predicate helper                                                  |
+| `collectDiffChanges(before, after, basePath)`                                         | Recursive field-level diff (returns `{ path, before, after }[]`)  |
 
 **Key types:**
 

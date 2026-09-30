@@ -5,12 +5,78 @@ import type {
   NodeType,
 } from '#domain/contracts/dto/graph_contract_dto'
 import type { MergeStrategy } from '#domain/usecases/import_parser_result_usecase'
-import { readFile, writeFile } from 'node:fs/promises'
+import db from '@adonisjs/lucid/services/db'
+import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
 const SHARED_GRAPH_PATH = resolve(process.cwd(), '../shared/current-graph.json')
 const EXAMPLE_DATASET_PATH = resolve(process.cwd(), '../examples/project-dataset.json')
 const IMPORT_REPORT_PATH = resolve(process.cwd(), '../shared/latest-import-report.json')
+const GRAPH_STATE_KEY = 'current-graph'
+const IMPORT_REPORT_STATE_KEY = 'latest-import-report'
+
+interface ApplicationStateRow {
+  payload: string
+}
+
+async function readStoredState(key: string): Promise<string | null> {
+  const row = (await db
+    .from('application_states')
+    .where('state_key', key)
+    .select('payload')
+    .first()) as ApplicationStateRow | undefined
+  return row?.payload ?? null
+}
+
+async function writeStoredState(key: string, value: unknown) {
+  const now = new Date().toISOString()
+  const payload = JSON.stringify(value)
+  await db
+    .table('application_states')
+    .insert({ state_key: key, payload, created_at: now, updated_at: now })
+    .onConflict('state_key')
+    .merge({ payload, updated_at: now })
+}
+
+function parseStoredGraph(raw: string): GraphContract {
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(raw)
+  } catch {
+    throw new Error('Stored graph state is not valid JSON')
+  }
+  if (!isGraphContract(parsed)) {
+    throw new Error('Stored graph state does not match the graph contract')
+  }
+  return normalizeGraph(parsed)
+}
+
+function parseStoredImportReport(raw: string): GraphImportReport {
+  let parsed: Partial<GraphImportReport>
+  try {
+    parsed = JSON.parse(raw) as Partial<GraphImportReport>
+  } catch {
+    throw new Error('Stored import report is not valid JSON')
+  }
+  if (!parsed || typeof parsed !== 'object' || typeof parsed.timestamp !== 'string') {
+    throw new Error('Stored import report does not match the import report contract')
+  }
+  return {
+    timestamp: parsed.timestamp,
+    sourceType: parsed.sourceType ?? 'unknown',
+    mergeStrategy: parsed.mergeStrategy ?? 'skip',
+    ...(parsed.fileName === undefined ? {} : { fileName: parsed.fileName }),
+    addedNodeIds: parsed.addedNodeIds ?? [],
+    addedEdgeIds: parsed.addedEdgeIds ?? [],
+    skippedNodeIds: parsed.skippedNodeIds ?? [],
+    skippedEdgeIds: parsed.skippedEdgeIds ?? [],
+    archivedNodeIds: parsed.archivedNodeIds ?? [],
+    modifiedNodes: parsed.modifiedNodes ?? [],
+    modifiedEdges: parsed.modifiedEdges ?? [],
+    totalNodes: parsed.totalNodes ?? 0,
+    totalEdges: parsed.totalEdges ?? 0,
+  }
+}
 
 export interface GraphImportReport {
   timestamp: string
@@ -192,8 +258,14 @@ async function readExampleDatasetGraph(): Promise<GraphContract | null> {
 }
 
 export async function loadCurrentGraphContract(): Promise<GraphContract | null> {
+  const storedGraph = await readStoredState(GRAPH_STATE_KEY)
+  if (storedGraph !== null) {
+    return parseStoredGraph(storedGraph)
+  }
+
   const sharedGraph = await readSharedGraph()
   if (sharedGraph) {
+    await persistCurrentGraphContract(sharedGraph)
     return sharedGraph
   }
 
@@ -202,38 +274,48 @@ export async function loadCurrentGraphContract(): Promise<GraphContract | null> 
 
 export async function persistCurrentGraphContract(contract: GraphContract): Promise<void> {
   const normalized = normalizeGraph(contract)
-  await writeFile(SHARED_GRAPH_PATH, `${JSON.stringify(normalized, null, 2)}\n`, 'utf-8')
+  await writeStoredState(GRAPH_STATE_KEY, normalized)
 }
 
 export async function loadLatestImportReport(): Promise<GraphImportReport | null> {
+  const storedReport = await readStoredState(IMPORT_REPORT_STATE_KEY)
+  if (storedReport !== null) {
+    return parseStoredImportReport(storedReport)
+  }
+
   try {
     const raw = await readFile(IMPORT_REPORT_PATH, 'utf-8')
-    const parsed = JSON.parse(raw) as Partial<GraphImportReport>
-    if (!parsed || typeof parsed !== 'object' || typeof parsed.timestamp !== 'string') {
-      return null
-    }
-    return {
-      timestamp: parsed.timestamp,
-      sourceType: parsed.sourceType ?? 'unknown',
-      mergeStrategy: parsed.mergeStrategy ?? 'skip',
-      fileName: parsed.fileName,
-      addedNodeIds: parsed.addedNodeIds ?? [],
-      addedEdgeIds: parsed.addedEdgeIds ?? [],
-      skippedNodeIds: parsed.skippedNodeIds ?? [],
-      skippedEdgeIds: parsed.skippedEdgeIds ?? [],
-      archivedNodeIds: parsed.archivedNodeIds ?? [],
-      modifiedNodes: parsed.modifiedNodes ?? [],
-      modifiedEdges: parsed.modifiedEdges ?? [],
-      totalNodes: parsed.totalNodes ?? 0,
-      totalEdges: parsed.totalEdges ?? 0,
-    }
+    const report = parseStoredImportReport(raw)
+    await persistLatestImportReport(report)
+    return report
   } catch {
     return null
   }
 }
 
 export async function persistLatestImportReport(report: GraphImportReport): Promise<void> {
-  await writeFile(IMPORT_REPORT_PATH, `${JSON.stringify(report, null, 2)}\n`, 'utf-8')
+  await writeStoredState(IMPORT_REPORT_STATE_KEY, report)
+}
+
+export async function persistImportState(
+  graph: GraphContract,
+  report: GraphImportReport
+): Promise<void> {
+  const normalized = normalizeGraph(graph)
+  await db.transaction(async (trx) => {
+    const now = new Date().toISOString()
+    for (const [key, value] of [
+      [GRAPH_STATE_KEY, normalized],
+      [IMPORT_REPORT_STATE_KEY, report],
+    ] as const) {
+      const payload = JSON.stringify(value)
+      await trx
+        .table('application_states')
+        .insert({ state_key: key, payload, created_at: now, updated_at: now })
+        .onConflict('state_key')
+        .merge({ payload, updated_at: now })
+    }
+  })
 }
 
 export function createImportReport(params: {

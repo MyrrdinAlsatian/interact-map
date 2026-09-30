@@ -12,8 +12,7 @@ import { observabilityRepository } from '#repositories/observability_repository'
 import {
   createImportReport,
   loadCurrentGraphContract,
-  persistCurrentGraphContract,
-  persistLatestImportReport,
+  persistImportState,
 } from '#infrastructure/services/graph_store_service'
 import { hasRequiredRole } from '#infrastructure/middleware/auth_middleware'
 import type { ParserResult } from '#domain/contracts/dto/parser_contract_dto'
@@ -178,8 +177,7 @@ export default class ParserController {
 
     if (!dryRun) {
       try {
-        await persistCurrentGraphContract(output.merged)
-        await persistLatestImportReport(previewReport)
+        await persistImportState(output.merged, previewReport)
       } catch {
         observabilityRepository.appendAuditLog({
           actorId: auth?.user?.id ?? 'anonymous',
@@ -194,7 +192,7 @@ export default class ParserController {
         return response.status(500).json({
           error: {
             code: 'GRAPH_PERSIST_FAILED',
-            message: 'Parser result merged but could not be persisted to JSON storage.',
+            message: 'Parser result merged but could not be persisted to SQLite.',
             severity: 'error',
           },
           merged: output.merged,

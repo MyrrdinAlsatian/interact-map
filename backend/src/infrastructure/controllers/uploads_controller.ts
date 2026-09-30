@@ -10,8 +10,7 @@ import { ValidateParserResultUseCase } from '#domain/usecases/validate_parser_re
 import {
   createImportReport,
   loadCurrentGraphContract,
-  persistCurrentGraphContract,
-  persistLatestImportReport,
+  persistImportState,
 } from '#infrastructure/services/graph_store_service'
 import { readFile } from 'node:fs/promises'
 
@@ -143,8 +142,7 @@ export default class UploadsController {
 
     if (!dryRun) {
       try {
-        await persistCurrentGraphContract(output.merged)
-        await persistLatestImportReport(previewReport)
+        await persistImportState(output.merged, previewReport)
       } catch {
         observabilityRepository.appendAuditLog({
           actorId,
@@ -159,7 +157,7 @@ export default class UploadsController {
         return response.status(500).json({
           error: {
             code: 'GRAPH_PERSIST_FAILED',
-            message: 'Upload parsed and merged, but persistence to JSON failed.',
+            message: 'Upload parsed and merged, but persistence to SQLite failed.',
             severity: 'error',
           },
           merged: output.merged,
