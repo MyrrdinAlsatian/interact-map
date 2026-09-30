@@ -279,7 +279,7 @@ export async function getDashboardViewModel(): Promise<DashboardViewModel> {
 
   const summary = await getGraphSummaryViewModel()
   const applicationNodes = graph.nodes.filter((node) => node.type === 'application')
-  const topApplications = applicationNodes.slice(0, 4).map((node, index) => ({
+  const topApplications: TopApplicationItem[] = applicationNodes.slice(0, 4).map((node, index) => ({
     label: node.id,
     trend: index < 2 ? '↑ high traffic' : '→ steady traffic',
     tone: index < 2 ? 'success' : 'neutral',
