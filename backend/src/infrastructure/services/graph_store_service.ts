@@ -76,7 +76,7 @@ function sortObjectKeys(value: unknown): unknown {
 
   if (value && typeof value === 'object') {
     return Object.keys(value as Record<string, unknown>)
-      .sort()
+      .toSorted()
       .reduce<Record<string, unknown>>((accumulator, key) => {
         accumulator[key] = sortObjectKeys((value as Record<string, unknown>)[key])
         return accumulator
