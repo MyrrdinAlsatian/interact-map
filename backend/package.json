@@ -2,10 +2,6 @@
   "name": "interact-map-backend",
   "private": true,
   "type": "module",
-  "engines": {
-    "node": ">=24.6.0",
-    "npm": ">=10.0.0"
-  },
   "imports": {
     "#generated/*": "./.adonisjs/server/*.js",
     "#transformers/*": "./app/transformers/*.js",
@@ -33,9 +29,9 @@
     "build": "node ace build",
     "dev": "node ace serve --hmr",
     "test": "node ace test",
-    "lint:eslint": "eslint .",
-    "lint:prettier": "prettier --check .",
-    "format": "prettier --write .",
+    "lint": "oxlint .",
+    "format:check": "oxfmt --check .",
+    "format": "oxfmt .",
     "typecheck": "tsc --noEmit",
     "generate:graph-contract-metadata": "node scripts/generate-graph-contract-metadata.js"
   },
@@ -55,8 +51,6 @@
   },
   "devDependencies": {
     "@adonisjs/assembler": "7.8.2",
-    "@adonisjs/eslint-config": "2.1.2",
-    "@adonisjs/prettier-config": "1.4.5",
     "@adonisjs/tsconfig": " 1.4.1",
     "@japa/api-client": "3.1.0",
     "@japa/assert": "4.1.1",
@@ -67,21 +61,23 @@
     "@types/js-yaml": "4.0.9",
     "@types/luxon": "3.7.1",
     "@types/node": "^22.19.15",
-    "@typescript-eslint/parser": "^8.44.0",
-    "eslint": "^9.35.0",
     "hot-hook": "0.4.0",
+    "oxfmt": "0.71.0",
+    "oxlint": "1.86.0",
     "pino-pretty": "13.1.2",
-    "prettier": "3.6.2",
     "ts-node": "10.9.2",
     "tsx": "^4.20.5",
     "typescript": "^5.9.3",
     "youch": "4.1.1"
+  },
+  "engines": {
+    "node": ">=24.6.0",
+    "npm": ">=10.0.0"
   },
   "hotHook": {
     "boundaries": [
       "./src/infrastructure/controllers/**/*.ts",
       "./src/infrastructure/middleware/*.ts"
     ]
-  },
-  "prettier": "@adonisjs/prettier-config"
+  }
 }
