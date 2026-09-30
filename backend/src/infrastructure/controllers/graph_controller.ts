@@ -37,7 +37,7 @@ export default class GraphController {
     const start = Date.now()
 
     if (!hasRequiredRole(auth?.user?.role, 'editor')) {
-      observabilityRepository.appendAuditLog({
+      await observabilityRepository.appendAuditLog({
         actorId: String(auth?.user?.id ?? 'anonymous'),
         actorRole: auth?.user?.role ?? 'viewer',
         action: 'graph.contract.validate',
@@ -54,7 +54,7 @@ export default class GraphController {
     const result = validateContract.execute(payload)
 
     if (!result.valid) {
-      observabilityRepository.appendAuditLog({
+      await observabilityRepository.appendAuditLog({
         actorId: String(auth?.user?.id ?? 'anonymous'),
         actorRole: auth?.user?.role ?? 'viewer',
         action: 'graph.contract.validate',
@@ -74,7 +74,7 @@ export default class GraphController {
       })
     }
 
-    observabilityRepository.appendAuditLog({
+    await observabilityRepository.appendAuditLog({
       actorId: String(auth?.user?.id ?? 'anonymous'),
       actorRole: auth?.user?.role ?? 'viewer',
       action: 'graph.contract.validate',

@@ -17,7 +17,7 @@ export default class AuditLogsController {
       })
     }
 
-    const entries = observabilityRepository.queryAuditLogs()
+    const entries = await observabilityRepository.queryAuditLogs()
     return response.ok(entries.toReversed())
   }
 }

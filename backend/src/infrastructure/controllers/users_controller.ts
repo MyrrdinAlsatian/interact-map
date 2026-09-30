@@ -10,7 +10,7 @@ export default class UsersController {
     try {
       const result = await useCase.execute(payload)
 
-      observabilityRepository.appendAuditLog({
+      await observabilityRepository.appendAuditLog({
         actorId: result.id,
         actorRole: 'viewer',
         action: 'users.register',
@@ -26,7 +26,7 @@ export default class UsersController {
         displayName: result.displayName,
       })
     } catch (error: any) {
-      observabilityRepository.appendAuditLog({
+      await observabilityRepository.appendAuditLog({
         actorId: 'anonymous',
         actorRole: 'viewer',
         action: 'users.register',

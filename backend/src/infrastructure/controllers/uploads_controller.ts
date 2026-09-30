@@ -77,7 +77,7 @@ export default class UploadsController {
     const validation = validateParserResult.execute(parserResult)
     if (!validation.valid) {
       observabilityRepository.incrementParseError()
-      observabilityRepository.appendAuditLog({
+      await observabilityRepository.appendAuditLog({
         actorId,
         actorRole,
         action: 'uploads.store',
@@ -109,7 +109,7 @@ export default class UploadsController {
     const output = importParserResult.execute(parserResult, base, { mergeStrategy })
     if (output.errors.length > 0) {
       observabilityRepository.incrementParseError()
-      observabilityRepository.appendAuditLog({
+      await observabilityRepository.appendAuditLog({
         actorId,
         actorRole,
         action: 'uploads.store',
@@ -144,7 +144,7 @@ export default class UploadsController {
       try {
         await persistImportState(output.merged, previewReport)
       } catch {
-        observabilityRepository.appendAuditLog({
+        await observabilityRepository.appendAuditLog({
           actorId,
           actorRole,
           action: 'uploads.store',
@@ -165,7 +165,7 @@ export default class UploadsController {
       }
     }
 
-    observabilityRepository.appendAuditLog({
+    await observabilityRepository.appendAuditLog({
       actorId,
       actorRole,
       action: dryRun ? 'uploads.preview' : 'uploads.store',

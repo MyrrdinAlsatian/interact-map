@@ -33,6 +33,6 @@ export interface ObservabilityRepository {
   incrementFragmentError(): void
   incrementParseError(): void
   getMetrics(): CoreMetrics
-  appendAuditLog(event: AuditEventInput): AuditLogEntry
-  queryAuditLogs(): AuditLogEntry[]
+  appendAuditLog(event: AuditEventInput): Promise<AuditLogEntry>
+  queryAuditLogs(): Promise<AuditLogEntry[]>
 }

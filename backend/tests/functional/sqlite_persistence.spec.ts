@@ -7,6 +7,7 @@ import {
   loadLatestImportReport,
   persistImportState,
 } from '#infrastructure/services/graph_store_service'
+import { SqliteObservabilityRepository } from '#infrastructure/repositories/observability_repository'
 
 test('persists the graph and import report in SQLite', async () => {
   const graph: GraphContract = {
@@ -34,4 +35,23 @@ test('persists the graph and import report in SQLite', async () => {
 
   assert.deepEqual(await loadCurrentGraphContract(), graph)
   assert.deepEqual(await loadLatestImportReport(), report)
+})
+
+test('persists audit entries across repository instances', async () => {
+  const writer = new SqliteObservabilityRepository()
+  const reader = new SqliteObservabilityRepository()
+  const entry = await writer.appendAuditLog({
+    actorId: 'sqlite-audit-test',
+    actorRole: 'admin',
+    action: 'sqlite.persistence.test',
+    resourceType: 'Test',
+    resourceId: 'audit-round-trip',
+    outcome: 'success',
+    metadata: { persistent: true },
+  })
+
+  const entries = await reader.queryAuditLogs()
+  const storedEntry = entries.find((candidate) => candidate.id === entry.id)
+
+  assert.deepEqual(storedEntry, entry)
 })

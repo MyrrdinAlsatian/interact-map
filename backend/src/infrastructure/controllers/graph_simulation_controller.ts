@@ -19,7 +19,7 @@ export default class GraphSimulationController {
     const start = Date.now()
 
     if (!hasRequiredRole(auth?.user?.role, 'editor')) {
-      observabilityRepository.appendAuditLog({
+      await observabilityRepository.appendAuditLog({
         actorId: auth?.user?.id ?? 'anonymous',
         actorRole: auth?.user?.role ?? 'viewer',
         action: 'graph.simulate-incident',
@@ -106,7 +106,7 @@ export default class GraphSimulationController {
       impactedEdges: [...impactedEdgeIds],
     }
 
-    observabilityRepository.appendAuditLog({
+    await observabilityRepository.appendAuditLog({
       actorId: auth?.user?.id ?? 'anonymous',
       actorRole: auth?.user?.role ?? 'security',
       action: 'graph.simulate-incident',

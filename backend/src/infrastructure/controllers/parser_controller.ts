@@ -44,7 +44,7 @@ export default class ParserController {
     const start = Date.now()
 
     if (!hasRequiredRole(auth?.user?.role, 'editor')) {
-      observabilityRepository.appendAuditLog({
+      await observabilityRepository.appendAuditLog({
         actorId: auth?.user?.id ?? 'anonymous',
         actorRole: auth?.user?.role ?? 'viewer',
         action: 'parser.ingest',
@@ -103,7 +103,7 @@ export default class ParserController {
     const validation = this.#parserResultValidator.execute(parserResult)
     if (!validation.valid) {
       observabilityRepository.incrementParseError()
-      observabilityRepository.appendAuditLog({
+      await observabilityRepository.appendAuditLog({
         actorId: auth?.user?.id ?? 'anonymous',
         actorRole: auth?.user?.role ?? 'security',
         action: 'parser.validate',
@@ -129,7 +129,7 @@ export default class ParserController {
 
     if (output.errors.length > 0) {
       observabilityRepository.incrementParseError()
-      observabilityRepository.appendAuditLog({
+      await observabilityRepository.appendAuditLog({
         actorId: auth?.user?.id ?? 'anonymous',
         actorRole: auth?.user?.role ?? 'security',
         action: 'parser.ingest',
@@ -151,7 +151,7 @@ export default class ParserController {
       })
     }
 
-    observabilityRepository.appendAuditLog({
+    await observabilityRepository.appendAuditLog({
       actorId: auth?.user?.id ?? 'anonymous',
       actorRole: auth?.user?.role ?? 'security',
       action: dryRun ? 'parser.preview' : 'parser.ingest',
@@ -179,7 +179,7 @@ export default class ParserController {
       try {
         await persistImportState(output.merged, previewReport)
       } catch {
-        observabilityRepository.appendAuditLog({
+        await observabilityRepository.appendAuditLog({
           actorId: auth?.user?.id ?? 'anonymous',
           actorRole: auth?.user?.role ?? 'security',
           action: 'parser.persist',

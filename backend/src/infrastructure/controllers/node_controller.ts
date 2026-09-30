@@ -30,7 +30,7 @@ export default class NodeController {
       return response.status(404).json({ error: 'Node not found' })
     }
 
-    observabilityRepository.appendAuditLog({
+    await observabilityRepository.appendAuditLog({
       actorId: String(auth?.user?.id ?? 'anonymous'),
       actorRole: auth?.user?.role ?? 'viewer',
       action: 'node.archive',
@@ -48,7 +48,7 @@ export default class NodeController {
       return response.status(404).json({ error: 'Node not found' })
     }
 
-    observabilityRepository.appendAuditLog({
+    await observabilityRepository.appendAuditLog({
       actorId: String(auth?.user?.id ?? 'anonymous'),
       actorRole: auth?.user?.role ?? 'viewer',
       action: 'node.restore',
@@ -66,7 +66,7 @@ export default class NodeController {
       return response.status(404).json({ error: 'Node not found' })
     }
 
-    observabilityRepository.appendAuditLog({
+    await observabilityRepository.appendAuditLog({
       actorId: String(auth?.user?.id ?? 'anonymous'),
       actorRole: auth?.user?.role ?? 'viewer',
       action: 'node.purge',
