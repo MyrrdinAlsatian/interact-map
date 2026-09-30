@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { ImportParserResultUseCase } from '#domain/usecases/import_parser_result_usecase'
 import type { ParserResult } from '#domain/contracts/dto/parser_contract_dto'
-import type { GraphContract, ContractError } from '#domain/contracts/dto/graph_contract_dto'
+import type { GraphContract } from '#domain/contracts/dto/graph_contract_dto'
 import type { ContractVersionValidationResult } from '#domain/usecases/validate_contract_version_usecase'
 import type { GraphContractValidationResult } from '#domain/usecases/validate_graph_contract_usecase'
 
@@ -36,7 +36,7 @@ test('ImportParserResultUseCase accepts injected validator adapters', async () =
   }
 
   const contractValidator = {
-    execute(contract: unknown): GraphContractValidationResult {
+    execute(_contract: unknown): GraphContractValidationResult {
       contractValidatorCalled = true
       return { valid: true, errors: [] }
     },
@@ -62,7 +62,7 @@ test('ImportParserResultUseCase returns validator errors from injected version v
   }
 
   const contractValidator = {
-    execute(contract: unknown): GraphContractValidationResult {
+    execute(_contract: unknown): GraphContractValidationResult {
       return { valid: true, errors: [] }
     },
   }
@@ -78,7 +78,7 @@ test('ImportParserResultUseCase returns validator errors from injected version v
 
 test('ImportParserResultUseCase refuses merge when parserResult warnings include severity error', async () => {
   const versionValidator = {
-    execute(schemaVersion: string): ContractVersionValidationResult {
+    execute(_schemaVersion: string): ContractVersionValidationResult {
       return {
         valid: true,
         errors: [],
@@ -87,7 +87,7 @@ test('ImportParserResultUseCase refuses merge when parserResult warnings include
   }
 
   const contractValidator = {
-    execute(contract: unknown): GraphContractValidationResult {
+    execute(_contract: unknown): GraphContractValidationResult {
       return { valid: true, errors: [] }
     },
   }
