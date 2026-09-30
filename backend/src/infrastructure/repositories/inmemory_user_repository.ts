@@ -16,7 +16,7 @@ export class InMemoryUserRepository implements UserRepositoryContract {
 
   async register(payload: RegisterUserDto) {
     const user = new User({
-      id: randomUUID(),
+      id: `${Date.now()}-${randomUUID()}`,
       email: payload.email,
       displayName: payload.displayName,
       passwordHash: payload.password,
