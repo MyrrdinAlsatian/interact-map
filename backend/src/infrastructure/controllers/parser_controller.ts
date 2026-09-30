@@ -2,7 +2,10 @@ import {
   ImportParserResultUseCase,
   type MergeStrategy,
 } from '#domain/usecases/import_parser_result_usecase'
-import { ValidateParserResultUseCase } from '../../domain/usecases/validate_parser_result_usecase.js'
+import {
+  ValidateParserResultUseCase,
+  type ParserResultValidator,
+} from '../../domain/usecases/validate_parser_result_usecase.js'
 import { ValidateContractVersionUseCase } from '#domain/usecases/validate_contract_version_usecase'
 import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_contract_usecase'
 import { observabilityRepository } from '#repositories/observability_repository'
@@ -16,7 +19,6 @@ import { hasRequiredRole } from '#infrastructure/middleware/auth_middleware'
 import type { ParserResult } from '#domain/contracts/dto/parser_contract_dto'
 import type { GraphContract } from '#domain/contracts/dto/graph_contract_dto'
 
-const validateParserResult = new ValidateParserResultUseCase()
 const importParserResult = new ImportParserResultUseCase(
   new ValidateContractVersionUseCase(),
   new ValidateGraphContractUseCase()
@@ -33,6 +35,12 @@ const ALLOWED_MERGE_STRATEGIES: MergeStrategy[] = ['skip', 'update', 'archive-mi
  * Returns: merged GraphContract or structured errors.
  */
 export default class ParserController {
+  #parserResultValidator: ParserResultValidator
+
+  constructor(parserResultValidator: ParserResultValidator = new ValidateParserResultUseCase()) {
+    this.#parserResultValidator = parserResultValidator
+  }
+
   async ingest({ request, response, auth }: { request: any; response: any; auth: any }) {
     const start = Date.now()
 
@@ -95,7 +103,7 @@ export default class ParserController {
       })
     }
 
-    const validation = validateParserResult.execute(parserResult)
+    const validation = this.#parserResultValidator.execute(parserResult)
     if (!validation.valid) {
       observabilityRepository.incrementParseError()
       observabilityRepository.appendAuditLog({

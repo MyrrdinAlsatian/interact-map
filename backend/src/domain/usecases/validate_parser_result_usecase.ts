@@ -1,4 +1,3 @@
-import type { ParserResult } from '#domain/contracts/dto/parser_contract_dto'
 import type { ContractError } from '#domain/contracts/dto/graph_contract_dto'
 import { ValidateContractVersionUseCase } from '#domain/usecases/validate_contract_version_usecase'
 import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_contract_usecase'
@@ -7,6 +6,18 @@ export interface ParserResultValidationResult {
   valid: boolean
   errors: ContractError[]
   warnings: ContractError[]
+}
+
+export interface ParserResultValidator {
+  execute(parserResult: unknown): ParserResultValidationResult
+}
+
+export interface ParserResultVersionValidator {
+  execute(schemaVersion: string): { valid: boolean; errors: ContractError[] }
+}
+
+export interface ParserResultGraphValidator {
+  execute(contract: unknown): { valid: boolean; errors: ContractError[] }
 }
 
 function isContractDiagnostic(item: unknown): item is ContractError {
@@ -19,9 +30,17 @@ function isContractDiagnostic(item: unknown): item is ContractError {
   )
 }
 
-export class ValidateParserResultUseCase {
-  #versionValidator = new ValidateContractVersionUseCase()
-  #graphValidator = new ValidateGraphContractUseCase()
+export class ValidateParserResultUseCase implements ParserResultValidator {
+  #versionValidator: ParserResultVersionValidator
+  #graphValidator: ParserResultGraphValidator
+
+  constructor(
+    versionValidator: ParserResultVersionValidator = new ValidateContractVersionUseCase(),
+    graphValidator: ParserResultGraphValidator = new ValidateGraphContractUseCase()
+  ) {
+    this.#versionValidator = versionValidator
+    this.#graphValidator = graphValidator
+  }
 
   execute(parserResult: unknown): ParserResultValidationResult {
     const errors: ContractError[] = []
