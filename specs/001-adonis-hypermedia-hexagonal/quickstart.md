@@ -21,11 +21,10 @@ npm test
 
 ## 3. Start backend (scaffold mode)
 ```bash
-node ace migration:run
 npm run dev
 ```
 
-Run the migrations before the first startup and after schema upgrades. Without them, SQLite has no `application_states` table and graph reads fail.
+The `predev` script applies pending migrations before starting the development server. Without those migrations, SQLite has no `application_states` table and graph reads fail. For production startup, apply migrations explicitly with `node ace migration:run --force` before launching the server.
 
 ## 4. Verify hypermedia baseline and progressive enhancement
 

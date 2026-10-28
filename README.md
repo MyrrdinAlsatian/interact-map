@@ -19,8 +19,7 @@ Recommended workflow:
 cd backend
 nvm use
 npm install
-node ace migration:run
-npm run dev    # HMR dev server on :3333
+npm run dev    # applies migrations, then starts HMR server on :3333
 npm run build  # production build
 npm test       # run Japa test suite
 ```
