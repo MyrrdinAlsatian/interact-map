@@ -483,8 +483,9 @@
         <div class="top-bar">
           <div class="top-bar-title" id="page-title">{{ title ?? 'Interact Map' }}</div>
           <div class="top-bar-actions">
-            <button title="Refresh"><i class="fas fa-sync-alt"></i></button>
-            <button title="Settings"><i class="fas fa-cog"></i></button>
+            <form method="POST" action="/logout">
+              <button type="submit" aria-label="Sign out"><i class="fas fa-sign-out-alt"></i> Sign out</button>
+            </form>
           </div>
         </div>
 

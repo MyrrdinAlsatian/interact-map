@@ -30,17 +30,23 @@ The `predev` script applies pending migrations before starting the development s
 
 **US1 Manual Verification Steps:**
 
-### 4a. No-JS baseline (disable JavaScript in browser DevTools)
+### 4a. Session authentication
+- Open `/register`, create an account, and confirm the browser redirects to `/login`.
+- Sign in with that account and confirm the browser reaches `/` with a session cookie.
+- Sign out and confirm `/applications` redirects back to `/login`.
+- Submit invalid credentials and confirm the response stays generic and does not disclose whether the email exists.
+
+### 4b. No-JS baseline (disable JavaScript in browser DevTools)
 - Navigate to `http://localhost:3333/applications` → full HTML inventory page renders (status 200, Content-Type text/html).
 - Navigate to `http://localhost:3333/services`, `/servers`, `/containers`, `/interactions` → each returns a full HTML page without JS.
 - Verify all navigation links are plain `<a href>` elements that work without Unpoly.
 
-### 4b. Unpoly fragment updates (JavaScript enabled)
+### 4c. Unpoly fragment updates (JavaScript enabled)
 - Load `http://localhost:3333/applications` with Unpoly active.
 - Click a nav link (e.g. Services) → verify Unpoly intercepts and updates only `#inventory-table` (no full reload). Check browser network tab for `X-Up-Target` header.
 - Perform at least 3 different fragment navigations; confirm each completes without full-page reload.
 
-### 4c. Missing fragment 422 fallback
+### 4d. Missing fragment 422 fallback
 - Request `GET http://localhost:3333/fragments/unknown-target`
 - Expected response: `HTTP 422`, body:
   ```json
@@ -52,10 +58,10 @@ The `predev` script applies pending migrations before starting the development s
 - Verify client behavior: after receiving `422`, the browser performs a full-page `GET` to the originating target URL.
 - If Unpoly is not active, verify the raw `422` JSON is returned and no fragment HTML is rendered.
 
-### 4d. Known fragment resolution
+### 4e. Known fragment resolution
 - Request `GET http://localhost:3333/fragments/inventory-applications` → returns HTTP 200 with valid HTML partial.
 
-### 4e. Accessibility baseline checks (FR-015)
+### 4f. Accessibility baseline checks (FR-015)
 - Use keyboard-only navigation on `/applications`: Tab order reaches all primary nav links, and Enter activates navigation.
 - Verify skip link is visible on focus and moves focus to `#main-content`.
 - Verify visible focus ring appears on links, inputs, selects, buttons, and textarea controls.
@@ -175,7 +181,7 @@ Remediation applied in backend toolchain:
 
 ### 6c. Auth/RBAC/Audit and observability verification checklist
 
-- Auth baseline implemented: public routes are `GET /health` and `POST /users/register`; all other routes are authenticated.
+- Auth baseline implemented with an HTTP-only session cookie: public routes include `GET /health`, `GET/POST /login`, `GET /register`, and `POST /users/register`; application pages and APIs require authentication.
 - RBAC baseline implemented: `editor` role gates standard writes/imports, `security` role gates audit/observability oversight, `admin` retains privileged operations.
 - Audit access implemented at `GET /audit/logs` for `security+` role policy.
 - Audit write hooks implemented in graph validation, incident simulation, and parser ingestion controllers.

@@ -7,7 +7,7 @@ import type { ActorRole } from '#domain/contracts/dto/graph_contract_dto'
 // import type { ActorRole } from '#domain/contracts/dto/graph_contract_dto'
 
 export default class AuthMiddleware {
-  redirectTo = '/'
+  redirectTo = '/login'
 
   async handle(
     ctx: HttpContext,

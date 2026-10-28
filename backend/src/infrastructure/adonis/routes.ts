@@ -14,13 +14,23 @@ import UploadsController from '#infrastructure/controllers/uploads_controller'
 import ParserController from '#infrastructure/controllers/parser_controller'
 import NodeController from '#infrastructure/controllers/node_controller'
 import ImportReportController from '#infrastructure/controllers/import_report_controller'
+import SessionsController from '#infrastructure/controllers/sessions_controller'
 
-router.get('/', [DashboardController, 'index'])
+const sessionsController = new SessionsController()
 
 // ─── Public routes ────────────────────────────────────────────────────────────
 
 router.get('/health', [HealthChecksController, 'handle'])
 router.post('/users/register', [UsersController, 'register'])
+router
+  .get('/register', async ({ view, response }) => {
+    const html = await view.render('auth/register', { error: null, email: '', displayName: '' })
+    response.header('Content-Type', 'text/html; charset=utf-8')
+    return response.send(html)
+  })
+  .use(middleware.guest())
+router.get('/login', (ctx) => sessionsController.showLogin(ctx as any)).use(middleware.guest())
+router.post('/login', (ctx) => sessionsController.login(ctx as any)).use(middleware.guest())
 
 const inventoryController = new InventoryController()
 const fragmentsController = new FragmentsController()
@@ -33,6 +43,9 @@ const importReportController = new ImportReportController()
 // ─── Authenticated read routes ────────────────────────────────────────────────
 router
   .group(() => {
+    router.get('/', [DashboardController, 'index'])
+    router.post('/logout', (ctx) => sessionsController.logout(ctx as any))
+
     // User management
     router.get('/users/all', [GetAllUserController, 'handle'])
 

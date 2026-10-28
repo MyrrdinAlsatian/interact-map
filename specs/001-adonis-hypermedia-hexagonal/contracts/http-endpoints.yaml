@@ -5,7 +5,7 @@ info:
 servers:
   - url: http://localhost:3333
 security:
-  - bearerAuth: []
+  - sessionCookie: []
 paths:
   /health:
     get:
@@ -14,6 +14,63 @@ paths:
       responses:
         '200':
           description: Service healthy
+  /login:
+    get:
+      summary: Render sign-in form
+      security: []
+      responses:
+        '200':
+          description: Sign-in page
+          content:
+            text/html:
+              schema: { type: string }
+    post:
+      summary: Create an authenticated session
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200':
+          description: Session created for JSON clients
+        '302':
+          description: Browser redirected to the dashboard
+        '401':
+          description: Email or password is incorrect
+  /logout:
+    post:
+      summary: End the authenticated session
+      responses:
+        '200':
+          description: Session ended for JSON clients
+        '302':
+          description: Browser redirected to the sign-in page
+        '401':
+          description: Authentication required
+  /register:
+    get:
+      summary: Render account registration form
+      security: []
+      responses:
+        '200':
+          description: Registration page
+          content:
+            text/html:
+              schema: { type: string }
   /users:
     get:
       summary: Get all users
@@ -38,10 +95,20 @@ paths:
                 email: { type: string, format: email }
                 displayName: { type: string }
                 password: { type: string, minLength: 8 }
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [email, displayName, password]
+              properties:
+                email: { type: string, format: email }
+                displayName: { type: string }
+                password: { type: string, minLength: 8 }
       responses:
         '201':
-          description: User created
-        '400':
+          description: User created for JSON clients
+        '302':
+          description: Browser redirected to sign-in after registration
+        '422':
           description: Validation error
   /graph/contract/validate:
     post:
@@ -138,10 +205,10 @@ paths:
           description: Role does not permit audit access
 components:
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: adonis-session
   schemas:
     GraphContract:
       type: object

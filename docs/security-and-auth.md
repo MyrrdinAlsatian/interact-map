@@ -18,10 +18,11 @@
 
 ## Authentication (Feature 001)
 
-- Development baseline: Bearer token authentication via `authMiddleware` in `backend/src/infrastructure/middleware/auth_middleware.ts`.
-- Authenticated user is available on `ctx.auth.user` with fields: `id`, `role`.
-- Public routes (no auth): `GET /health`, `POST /users/register`.
-- All other routes require valid authenticated user.
+- Authentication uses AdonisJS's session guard and the HTTP-only `adonis-session` cookie (cookie-backed session store).
+- `GET /login` and `GET /register` render the public sign-in and registration forms. `POST /login` creates a session; `POST /logout` ends it.
+- `POST /users/register` creates viewer accounts and supports JSON clients as well as the browser form.
+- Public routes (no auth): `GET /health`, `GET /login`, `POST /login`, `GET /register`, and `POST /users/register`.
+- All application pages and APIs, including `GET /`, require a valid authenticated session.
 
 ## Authorization / RBAC (Feature 001)
 
@@ -67,6 +68,8 @@ All write/mutate operations emit an `AuditLogEntry` via `ObservabilityRepository
 ```
 
 Operations that emit audit entries:
+- `POST /login` — outcome: success | failure
+- `POST /logout` — outcome: success
 - `POST /graph/contract/validate` — outcome: success | failure
 - `POST /graph/simulate-incident` — outcome: success
 - `POST /parser/ingest` — outcome: success | failure
@@ -78,6 +81,8 @@ Operations that emit audit entries:
 | Endpoint | Controller action | Audit action | Outcome coverage |
 |---|---|---|---|
 | `POST /users/register` | `UsersController.register` | `users.register` | success + failure |
+| `POST /login` | `SessionsController.login` | `users.login` | success + failure |
+| `POST /logout` | `SessionsController.logout` | `users.logout` | success |
 | `POST /graph/contract/validate` | `GraphController.validate` | `graph.contract.validate` | success + failure |
 | `POST /graph/simulate-incident` | `GraphSimulationController.simulate` | `graph.simulate-incident` | success |
 | `POST /parser/ingest` | `ParserController.ingest` | `parser.ingest` | success + failure |

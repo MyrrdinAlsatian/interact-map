@@ -57,7 +57,12 @@ Enforcement:
 
 | Endpoint | Role | Description |
 |---|---|---|
+| `GET /login` | public | Sign-in form |
+| `POST /login` | public | Create a session (HTML form or JSON client) |
+| `GET /register` | public | Account registration form |
+| `POST /users/register` | public | Create a viewer account (HTML form or JSON client) |
 | `GET /` | viewer+ | Dashboard with import form and last diff summary |
+| `POST /logout` | viewer+ | End the current session |
 | `GET /applications` | viewer+ | Application inventory with search (`?q=`) |
 | `GET /services` | viewer+ | Service inventory |
 | `GET /servers` | viewer+ | Server inventory |

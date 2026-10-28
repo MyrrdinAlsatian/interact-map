@@ -21,6 +21,10 @@ export class RegisterUserUseCase {
       throw new Error('Email, display name, and password are required')
     }
 
+    if (payload.password.length < 8) {
+      throw new Error('Password must contain at least 8 characters')
+    }
+
     const existing = await this.#repository.findByEmail(payload.email)
     if (existing) {
       throw new Error('User email already exists')
