@@ -21,8 +21,11 @@ npm test
 
 ## 3. Start backend (scaffold mode)
 ```bash
+node ace migration:run
 npm run dev
 ```
+
+Run the migrations before the first startup and after schema upgrades. Without them, SQLite has no `application_states` table and graph reads fail.
 
 ## 4. Verify hypermedia baseline and progressive enhancement
 
