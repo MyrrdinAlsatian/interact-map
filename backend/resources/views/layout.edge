@@ -483,9 +483,11 @@
         <div class="top-bar">
           <div class="top-bar-title" id="page-title">{{ title ?? 'Interact Map' }}</div>
           <div class="top-bar-actions">
-            <form method="POST" action="/logout">
-              <button type="submit" aria-label="Sign out"><i class="fas fa-sign-out-alt"></i> Sign out</button>
-            </form>
+            @if(authEnabled)
+              <form method="POST" action="/logout">
+                <button type="submit" aria-label="Sign out"><i class="fas fa-sign-out-alt"></i> Sign out</button>
+              </form>
+            @endif
           </div>
         </div>
 

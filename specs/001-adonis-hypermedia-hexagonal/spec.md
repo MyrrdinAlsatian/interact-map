@@ -83,6 +83,8 @@ As an operator, I can parse infrastructure input through a custom Web Component 
 - **FR-007**: System MUST follow clean code principles (small modules, explicit dependencies, testable use cases).
 - **FR-008**: System MUST define a framework-agnostic graph contract shared by backend and capability islands.
 - **FR-009**: System MUST require authentication for application access, allow read operations for authenticated `viewer`, `security`, `editor`, and `admin` roles, allow standard writes/imports for `editor`, allow security and audit oversight operations for `security`, and reserve privileged administration operations for `admin`.
+
+**Development mode override**: When `NODE_ENV=development`, authentication and role checks are bypassed for local iteration. All other environments enforce the session and role policies above.
 - **FR-010**: System MUST expose and consume a versioned JSON contract with `schemaVersion`, `nodes[]`, `edges[]`, and `errors[]`, with runtime schema validation on backend and frontend boundaries.
 - **FR-011**: System MUST return `422` structured fragment errors for missing Unpoly targets, after which the client MUST perform a full-page `GET` to the originating target URL.
 - **FR-012**: System MUST emit structured JSON logs and core metrics for backend and capability-island interactions, where `request_latency_ms` records every HTTP response duration in milliseconds, `fragment_error_count` increments on each missing-fragment `422`, and `parse_error_count` increments on each parser validation failure.

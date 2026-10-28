@@ -24,6 +24,8 @@ npm run build  # production build
 npm test       # run Japa test suite
 ```
 
+In development, application routes are available without signing in. Session authentication is enabled outside development.
+
 Enforcement:
 
 - `backend/package.json` defines `engines.node` and `engines.npm`
@@ -79,6 +81,8 @@ Enforcement:
 | `GET /fragments/:target` | viewer+ | Unpoly fragment resolver |
 | `GET /observability/metrics` | security+ | Core metrics |
 | `GET /audit/logs` | security+ | Audit log |
+
+The role column describes auth-enabled environments. In development, authentication and role guards are bypassed for local work.
 
 ### Upload / Ingest Parameters
 

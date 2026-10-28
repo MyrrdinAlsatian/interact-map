@@ -18,11 +18,12 @@
 
 ## Authentication (Feature 001)
 
-- Authentication uses AdonisJS's session guard and the HTTP-only `adonis-session` cookie (cookie-backed session store).
+- Outside development, authentication uses AdonisJS's session guard and the HTTP-only `adonis-session` cookie (cookie-backed session store).
+- With `NODE_ENV=development`, auth middleware and role checks are bypassed for local iteration. `/login` and `/register` redirect to `/`, the sign-out control is hidden, and unauthenticated audit events use the synthetic actor `dev-user` with role `admin`. Never deploy with `NODE_ENV=development`.
 - `GET /login` and `GET /register` render the public sign-in and registration forms. `POST /login` creates a session; `POST /logout` ends it.
 - `POST /users/register` creates viewer accounts and supports JSON clients as well as the browser form.
 - Public routes (no auth): `GET /health`, `GET /login`, `POST /login`, `GET /register`, and `POST /users/register`.
-- All application pages and APIs, including `GET /`, require a valid authenticated session.
+- Outside development, all application pages and APIs, including `GET /`, require a valid authenticated session.
 
 ## Authorization / RBAC (Feature 001)
 

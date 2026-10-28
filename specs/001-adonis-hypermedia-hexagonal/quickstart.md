@@ -30,11 +30,13 @@ The `predev` script applies pending migrations before starting the development s
 
 **US1 Manual Verification Steps:**
 
-### 4a. Session authentication
-- Open `/register`, create an account, and confirm the browser redirects to `/login`.
-- Sign in with that account and confirm the browser reaches `/` with a session cookie.
-- Sign out and confirm `/applications` redirects back to `/login`.
-- Submit invalid credentials and confirm the response stays generic and does not disclose whether the email exists.
+### 4a. Development authentication bypass
+- With `NODE_ENV=development`, open `/`, `/applications`, and `/graph` without signing in; each page should be accessible.
+- Open `/login` and `/register`; both should redirect to `/`.
+- Confirm the top bar does not display a sign-out control.
+- Confirm role-gated development actions work and audit records use actor `dev-user` with role `admin`.
+
+Session login and logout remain active outside development.
 
 ### 4b. No-JS baseline (disable JavaScript in browser DevTools)
 - Navigate to `http://localhost:3333/applications` → full HTML inventory page renders (status 200, Content-Type text/html).

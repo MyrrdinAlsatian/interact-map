@@ -2,6 +2,7 @@ openapi: 3.0.3
 info:
   title: Hypermedia Architecture API Contract
   version: 0.2.0
+  description: Session authentication and role policies apply outside development; development mode bypasses them for local iteration.
 servers:
   - url: http://localhost:3333
 security:

@@ -6,6 +6,7 @@ import type {
   AuditLogEntry,
   AuditEventInput,
 } from '#domain/contracts/repositories/observability_repository'
+import env from '#infrastructure/adonis/env'
 
 interface AuditLogRow {
   id: string
@@ -77,9 +78,13 @@ export class SqliteObservabilityRepository implements ObservabilityRepository {
   }
 
   async appendAuditLog(event: AuditEventInput): Promise<AuditLogEntry> {
+    const auditEvent =
+      env.get('NODE_ENV') === 'development' && event.actorId === 'anonymous'
+        ? { ...event, actorId: 'dev-user', actorRole: 'admin' as const }
+        : event
     const entry: AuditLogEntry = {
       id: randomUUID(),
-      ...event,
+      ...auditEvent,
       timestamp: new Date().toISOString(),
     }
     await db.table('audit_logs').insert({

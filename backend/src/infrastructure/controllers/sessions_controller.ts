@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { observabilityRepository } from '#repositories/observability_repository'
 import User from '#infrastructure/orm/Lucid/models/user'
+import { isDevelopmentAuthBypassEnabled } from '#infrastructure/middleware/auth_middleware'
 
 function wantsJson(request: HttpContext['request']) {
   return String(request.header('accept') ?? '').includes('application/json')
@@ -79,6 +80,11 @@ export default class SessionsController {
   }
 
   async logout({ request, response, auth }: HttpContext) {
+    if (isDevelopmentAuthBypassEnabled()) {
+      if (wantsJson(request)) return response.ok({ loggedOut: true })
+      return response.redirect('/')
+    }
+
     const user = auth.user
     if (!user) return response.unauthorized()
 

@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 import type { Authenticators } from '@adonisjs/auth/types'
 import type { ActorRole } from '#domain/contracts/dto/graph_contract_dto'
+import env from '#infrastructure/adonis/env'
 
 // import { ROLE_HIERARCHY } from '#infrastructure/adonis/kernel'
 // import type { ActorRole } from '#domain/contracts/dto/graph_contract_dto'
@@ -16,9 +17,15 @@ export default class AuthMiddleware {
       guards?: (keyof Authenticators)[]
     } = {}
   ) {
+    if (isDevelopmentAuthBypassEnabled()) return next()
+
     await ctx.auth.authenticateUsing(options.guards, { loginRoute: this.redirectTo })
     return next()
   }
+}
+
+export function isDevelopmentAuthBypassEnabled() {
+  return env.get('NODE_ENV') === 'development'
 }
 
 export const ROLE_HIERARCHY: Record<ActorRole, number> = {
@@ -29,7 +36,13 @@ export const ROLE_HIERARCHY: Record<ActorRole, number> = {
 }
 
 export function hasRequiredRole(userRole: unknown, minimumRole: ActorRole): boolean {
-  const role = (typeof userRole === 'string' ? userRole : 'viewer') as ActorRole
+  const role = (
+    typeof userRole === 'string'
+      ? userRole
+      : isDevelopmentAuthBypassEnabled()
+        ? 'admin'
+        : 'viewer'
+  ) as ActorRole
   const userLevel = ROLE_HIERARCHY[role] ?? -1
   const requiredLevel = ROLE_HIERARCHY[minimumRole]
   return userLevel >= requiredLevel

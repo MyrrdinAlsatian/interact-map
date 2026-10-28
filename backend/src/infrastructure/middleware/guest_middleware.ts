@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 import type { Authenticators } from '@adonisjs/auth/types'
+import { isDevelopmentAuthBypassEnabled } from '#infrastructure/middleware/auth_middleware'
 
 /**
  * Guest middleware is used to deny access to routes that should
@@ -20,6 +21,8 @@ export default class GuestMiddleware {
     next: NextFn,
     options: { guards?: (keyof Authenticators)[] } = {}
   ) {
+    if (isDevelopmentAuthBypassEnabled()) return ctx.response.redirect(this.redirectTo, true)
+
     for (let guard of options.guards || [ctx.auth.defaultGuard]) {
       if (await ctx.auth.use(guard).check()) {
         return ctx.response.redirect(this.redirectTo, true)
