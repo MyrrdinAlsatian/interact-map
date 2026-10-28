@@ -1,9 +1,10 @@
 # Quickstart
 
 ## Prerequisites
-- Node.js 24+
+- Node.js >=24.6.0
 - npm 10+
-- PostgreSQL (for runtime integration phase)
+- No database installation is required for the default SQLite setup.
+- PostgreSQL is optional; configure `DB_CONNECTION=postgres` and the `DB_*` connection variables to use it.
 
 ## 1. Install backend dependencies
 ```bash
@@ -124,7 +125,9 @@ npm run dev
 #### 5k. Deterministic output
 - Run the same fixture twice and confirm output is identical (same nodes/edges order, same error codes).
 
-## 6. Full validation run results (T055 + remediation)
+## 6. Historical validation run (T055 + remediation)
+
+This run predates the Node.js 24.6 runtime requirement and SQLite graph/audit persistence. Its results are retained as historical evidence and do not validate the current backend.
 
 Validation date: 2026-03-13
 
@@ -205,7 +208,19 @@ Validate all write/mutate endpoints produce audit records:
 
 After exercising each endpoint, query `GET /audit/logs` (security+) and confirm each action appears with expected outcome.
 
-## 7. Architecture verification checklist
+## 7. Current validation status
+
+Checked on 2026-10-28. `nvm use` selected Node.js 24.15.0 and npm 11.12.1 from `backend/.nvmrc`, satisfying the runtime requirement. Standard `npm ci` reaches dependency installation but fails while running the `esbuild` lifecycle script (`EPERM` when spawning its binary). `npm ci --ignore-scripts` installed all 436 packages; smoke checks confirmed `oxlint`, `esbuild`, and `better-sqlite3` are usable.
+
+Test results in this environment:
+- Unit suite: 10 passed using `node --import=tsx bin/test.ts unit`.
+- Functional suite: blocked during setup after SQLite migrations because opening `127.0.0.1:3334` fails with `EPERM`.
+- Standard `npm test`: blocked before running suites because the runner's `get-port` dependency cannot query network interfaces (`uv_interface_addresses` system error).
+- `npm run lint` and `npm run typecheck` have not yet been run.
+
+The SQLite persistence tests are part of the functional suite and therefore remain unverified here.
+
+## 8. Architecture verification checklist
 - Domain layer has no direct framework dependencies.
 - Infrastructure layer adapts framework/runtime concerns.
 - Canonical graph contract remains independent from AntV X6 structures.

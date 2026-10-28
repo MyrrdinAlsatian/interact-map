@@ -9,10 +9,10 @@ Deliver a hypermedia-first AdonisJS foundation where server-rendered pages remai
 
 ## Technical Context
 
-**Language/Version**: TypeScript 5.9 (backend), JavaScript ES modules (frontend), Node.js 20+  
-**Primary Dependencies**: AdonisJS 6 (`@adonisjs/core`, `@adonisjs/auth`, `@adonisjs/lucid`), `pg`, Unpoly 3.8, AntV X6 adapter layer, native Web Components  
-**Storage**: PostgreSQL (backend persistence), IndexedDB/Dexie (browser offline snapshots)  
-**Testing**: Node built-in test runner for unit tests, Oxlint, Oxfmt, `tsc --noEmit`, manual progressive-enhancement checks in browser
+**Language/Version**: TypeScript 6 (backend), JavaScript ES modules (frontend), Node.js >=24.6.0
+**Primary Dependencies**: AdonisJS 7 (`@adonisjs/core`, `@adonisjs/auth`, `@adonisjs/lucid`), `better-sqlite3`, optional `pg`, Unpoly 3.8, AntV X6 adapter layer, native Web Components
+**Storage**: SQLite by default (PostgreSQL optional) for backend persistence; IndexedDB/Dexie for browser offline snapshots
+**Testing**: Japa functional and unit tests, Oxlint, Oxfmt, `tsc --noEmit`, manual progressive-enhancement checks in browser
 **Target Platform**: Linux backend runtime + modern desktop browsers (Chrome/Firefox/Edge)  
 **Project Type**: Web application (server-rendered backend + frontend capability islands)  
 **Performance Goals**: Graph component renders sample graph in <2s on a Linux x86-64 developer workstation (>=8 GB RAM) using a modern Chromium-based browser; `applications`, `services`, and `servers` inventory fragment interactions update via Unpoly without full reload  

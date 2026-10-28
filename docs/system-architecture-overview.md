@@ -28,7 +28,8 @@ The platform documents applications, services, infrastructure, and runtime depen
    - Framework-agnostic entities and domain services.
    - Canonical graph model independent from visualization engine.
 5. Infrastructure Layer
-   - JSON file persistence (`shared/current-graph.json`, `shared/latest-import-report.json`).
+   - SQLite persistence by default for graph state, import reports, and audit logs; PostgreSQL is an optional alternative.
+   - Existing graph/report JSON files in `shared/` are imported on first read as a migration fallback.
    - `GraphStoreService`: load/persist graph, archive/restore/purge nodes, create import report with field-level diff.
    - `UploadParserService`: server-side Docker file parsers (docker-compose YAML, docker-inspect JSON, docker-ps JSON).
    - `InventoryDataService`: builds view models for all inventory pages, node detail, dashboard with search and archive state.
@@ -144,7 +145,7 @@ ValidateGraphContractUseCase         ← schema version + structural validation
 ValidateContractVersionUseCase
         │  errors[] → 422 immediately
         ▼
-GraphStoreService.loadCurrentGraphContract()   ← reads shared/current-graph.json
+GraphStoreService.loadCurrentGraphContract()   ← reads SQLite (imports legacy shared JSON on first read)
         │
         ▼
 ImportParserResultUseCase(parserResult, base, { mergeStrategy })

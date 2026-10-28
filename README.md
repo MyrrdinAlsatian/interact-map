@@ -33,9 +33,9 @@ Enforcement:
 
 ### Infrastructure
 
-- SQL schema: `database/schema.sql`
-- Shared graph state: `shared/current-graph.json`
-- Latest import report: `shared/latest-import-report.json`
+- Backend persistence: SQLite (`backend/database/development.sqlite3` by default); PostgreSQL is an optional alternative
+- Legacy graph state and import report JSON files under `shared/` are imported into SQLite on first read when present
+- PostgreSQL design schema: `database/schema.sql` (not used by the Lucid migration runner)
 - Example dataset: `examples/project-dataset.json`
 - HTTP fixture (REST Client): `examples/interact-map.http`
 - Problemes rencontres + solutions: `docs/problems-and-solutions.md`

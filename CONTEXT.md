@@ -13,7 +13,7 @@ A parameter accepted by `/uploads` and `/parser/ingest` that controls how incomi
 _Avoid_: replace mode, sync mode, overwrite mode
 
 **GraphImportReport**:
-A persisted JSON document (`shared/latest-import-report.json`) describing the outcome of the last successful import. Contains: `timestamp`, `sourceType`, `mergeStrategy`, `fileName`, `addedNodeIds`, `addedEdgeIds`, `skippedNodeIds`, `skippedEdgeIds`, `archivedNodeIds`, `modifiedNodes[]` (with field-level `changes[]`, `before`, `after`, `applied`), `modifiedEdges[]`, `totalNodes`, `totalEdges`.
+A persisted JSON document describing the outcome of the last successful import. The backend stores it in the SQLite `application_states` table (or the configured PostgreSQL database); legacy `shared/latest-import-report.json` data is imported on first read when present. It contains: `timestamp`, `sourceType`, `mergeStrategy`, `fileName`, `addedNodeIds`, `addedEdgeIds`, `skippedNodeIds`, `skippedEdgeIds`, `archivedNodeIds`, `modifiedNodes[]` (with field-level `changes[]`, `before`, `after`, `applied`), `modifiedEdges[]`, `totalNodes`, `totalEdges`.
 _Avoid_: import log, change log without structure
 
 **NodeLifecycle**:

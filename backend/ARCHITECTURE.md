@@ -162,6 +162,6 @@ Independent from backend domain. Browser-native:
 3. Every write/mutate action must emit one `AuditLogEntry` via `ObservabilityRepository`.
 4. Schema version policy: current (`1.0`) and previous (`0.9`) accepted; older versions produce structured `ContractError[]`.
 5. Missing fragment targets return HTTP 422 with `ErrorEnvelope` and `fallbackNavigation: full_page`.
-6. Graph state is persisted as a single JSON file (`shared/current-graph.json`). All mutations go through `GraphStoreService`.
+6. Graph state and the latest import report are persisted transactionally in SQLite by default (or PostgreSQL when configured). Existing `shared/` JSON files are a one-time migration fallback; all mutations go through `GraphStoreService`.
 7. Import requests with `dryRun: true` must never call `persistCurrentGraphContract()` or `persistLatestImportReport()`.
 8. `purgeNodeById` always cascade-removes all edges where `source` or `target` matches the purged node id.
