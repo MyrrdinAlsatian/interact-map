@@ -63,7 +63,7 @@ export default class SessionsController {
     await auth.use('web').login(user)
     await observabilityRepository.appendAuditLog({
       actorId: String(user.id),
-      actorRole: 'viewer',
+      actorRole: user.role,
       action: 'users.login',
       resourceType: 'Session',
       resourceId: String(user.id),
@@ -72,7 +72,7 @@ export default class SessionsController {
 
     if (json) {
       return response.ok({
-        user: { id: user.id, email: user.email, displayName: user.displayName },
+        user: { id: user.id, email: user.email, displayName: user.displayName, role: user.role },
       })
     }
 

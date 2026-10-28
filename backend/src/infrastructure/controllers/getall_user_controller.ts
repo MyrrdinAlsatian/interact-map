@@ -5,6 +5,6 @@ export default class GetAllUserController {
   async handle({ response }: { response: any }) {
     const useCase = new GetAllUserUseCase(new LucidUserRepository())
     const users = await useCase.execute()
-    return response.ok(users.map(({ id, email, displayName }) => ({ id, email, displayName })))
+    return response.ok(users.map(({ id, email, displayName, role }) => ({ id, email, displayName, role })))
   }
 }

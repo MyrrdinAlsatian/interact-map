@@ -38,6 +38,8 @@ The `predev` script applies pending migrations before starting the development s
 
 Session login and logout remain active outside development.
 
+New accounts default to `viewer`. In an auth-enabled environment, an operator can assign the first administrator after registration with `node ace users:set-role <email> admin`.
+
 ### 4b. No-JS baseline (disable JavaScript in browser DevTools)
 - Navigate to `http://localhost:3333/applications` → full HTML inventory page renders (status 200, Content-Type text/html).
 - Navigate to `http://localhost:3333/services`, `/servers`, `/containers`, `/interactions` → each returns a full HTML page without JS.

@@ -63,6 +63,7 @@ Enforcement:
 | `POST /login` | public | Create a session (HTML form or JSON client) |
 | `GET /register` | public | Account registration form |
 | `POST /users/register` | public | Create a viewer account (HTML form or JSON client) |
+| `GET /users/all` | viewer+ | List accounts and their roles |
 | `GET /` | viewer+ | Dashboard with import form and last diff summary |
 | `POST /logout` | viewer+ | End the current session |
 | `GET /applications` | viewer+ | Application inventory with search (`?q=`) |
@@ -83,6 +84,7 @@ Enforcement:
 | `GET /audit/logs` | security+ | Audit log |
 
 The role column describes auth-enabled environments. In development, authentication and role guards are bypassed for local work.
+Registered users start as `viewer`; assign elevated roles from the trusted backend CLI with `node ace users:set-role <email> <role>`.
 
 ### Upload / Ingest Parameters
 

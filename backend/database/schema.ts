@@ -44,7 +44,7 @@ export class AuditLogSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['createdAt', 'displayName', 'email', 'id', 'passwordHash', 'updatedAt'] as const
+  static $columns = ['createdAt', 'displayName', 'email', 'id', 'passwordHash', 'role', 'updatedAt'] as const
   $columns = UserSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -56,6 +56,8 @@ export class UserSchema extends BaseModel {
   declare id: string
   @column()
   declare passwordHash: string | null
+  @column()
+  declare role: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 }

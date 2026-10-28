@@ -20,6 +20,7 @@ export class InMemoryUserRepository implements UserRepositoryContract {
       email: payload.email,
       displayName: payload.displayName,
       passwordHash: payload.password,
+      role: 'viewer',
     })
     users.push(user)
     return user

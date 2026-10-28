@@ -3,6 +3,7 @@ import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
+import type { ActorRole } from '#domain/contracts/dto/graph_contract_dto'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -18,6 +19,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column()
   declare email: string
+
+  @column()
+  declare role: ActorRole
 
   @column({ columnName: 'password_hash', serializeAs: null })
   declare passwordHash: string | null

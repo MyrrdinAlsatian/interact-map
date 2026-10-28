@@ -72,13 +72,25 @@ paths:
           content:
             text/html:
               schema: { type: string }
-  /users:
+  /users/all:
     get:
       summary: Get all users
-      description: Read operation available to authenticated users.
+      description: Read operation available to authenticated users; each user includes their stored role.
       responses:
         '200':
           description: User list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [id, email, displayName, role]
+                  properties:
+                    id: { type: string }
+                    email: { type: string, format: email }
+                    displayName: { type: string }
+                    role: { type: string, enum: [viewer, editor, security, admin] }
         '401':
           description: Authentication required
   /users/register:

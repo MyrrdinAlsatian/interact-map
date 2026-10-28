@@ -22,12 +22,13 @@
 - With `NODE_ENV=development`, auth middleware and role checks are bypassed for local iteration. `/login` and `/register` redirect to `/`, the sign-out control is hidden, and unauthenticated audit events use the synthetic actor `dev-user` with role `admin`. Never deploy with `NODE_ENV=development`.
 - `GET /login` and `GET /register` render the public sign-in and registration forms. `POST /login` creates a session; `POST /logout` ends it.
 - `POST /users/register` creates viewer accounts and supports JSON clients as well as the browser form.
+- Roles are stored on each account. A trusted server operator assigns or changes them with `node ace users:set-role <email> <role>`; there is no public role-escalation endpoint.
 - Public routes (no auth): `GET /health`, `GET /login`, `POST /login`, `GET /register`, and `POST /users/register`.
 - Outside development, all application pages and APIs, including `GET /`, require a valid authenticated session.
 
 ## Authorization / RBAC (Feature 001)
 
-Role hierarchy implemented in `backend/src/infrastructure/adonis/kernel.ts`:
+Role hierarchy implemented in `backend/src/infrastructure/middleware/auth_middleware.ts`:
 
 | Role | Level | Write permissions |
 |------|-------|-------------------|
@@ -37,6 +38,8 @@ Role hierarchy implemented in `backend/src/infrastructure/adonis/kernel.ts`:
 | `admin` | 3 | All operations + privileged administration |
 
 Role guard: `requireRole(minimumRole)` factory from `auth_middleware.ts`. Returns 403 if user level < required level.
+
+The first account can be registered through `/register`, then promoted from the server CLI, for example `node ace users:set-role operator@example.com admin`. Role changes are written to the audit log as `users.role_change`.
 
 **Route RBAC policy summary:**
 - `GET /applications`, `/services`, `/servers`, `/containers`, `/interactions`, `/graph` — `viewer+`
@@ -69,6 +72,7 @@ All write/mutate operations emit an `AuditLogEntry` via `ObservabilityRepository
 ```
 
 Operations that emit audit entries:
+- `node ace users:set-role <email> <role>` — outcome: success
 - `POST /login` — outcome: success | failure
 - `POST /logout` — outcome: success
 - `POST /graph/contract/validate` — outcome: success | failure
@@ -81,6 +85,7 @@ Operations that emit audit entries:
 
 | Endpoint | Controller action | Audit action | Outcome coverage |
 |---|---|---|---|
+| CLI `users:set-role` | `SetUserRole.run` | `users.role_change` | success |
 | `POST /users/register` | `UsersController.register` | `users.register` | success + failure |
 | `POST /login` | `SessionsController.login` | `users.login` | success + failure |
 | `POST /logout` | `SessionsController.logout` | `users.logout` | success |

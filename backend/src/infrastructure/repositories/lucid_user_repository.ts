@@ -10,6 +10,7 @@ function toDomainUser(record: LucidUser): User {
     email: record.email,
     displayName: record.displayName,
     passwordHash: record.passwordHash,
+    role: record.role,
   })
 }
 
@@ -30,6 +31,7 @@ export class LucidUserRepository implements UserRepositoryContract {
       email: payload.email,
       displayName: payload.displayName,
       passwordHash: payload.password,
+      role: 'viewer',
     })
     return toDomainUser(record)
   }
