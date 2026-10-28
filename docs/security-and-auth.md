@@ -42,11 +42,13 @@ Role guard: `requireRole(minimumRole)` factory from `auth_middleware.ts`. Return
 The first account can be registered through `/register`, then promoted from the server CLI, for example `node ace users:set-role operator@example.com admin`. Role changes are written to the audit log as `users.role_change`.
 
 **Route RBAC policy summary:**
-- `GET /applications`, `/services`, `/servers`, `/containers`, `/interactions`, `/graph` — `viewer+`
+- `GET /`, `/applications`, `/services`, `/servers`, `/containers`, `/interactions`, `/graph` — `viewer+`
+- `GET /users/all` — `admin`
 - `GET /nodes/:id` — `viewer+`
-- `POST /nodes/:id/archive`, `/restore`, `/purge` — `viewer+`
+- `POST /nodes/:id/archive`, `/restore` — `editor+`
+- `POST /nodes/:id/purge` — `admin`
 - `GET /imports/latest` — `viewer+`
-- `POST /uploads` — `viewer+`
+- `POST /uploads` — `editor+`
 - `POST /graph/contract/validate` — `editor+`
 - `POST /graph/simulate-incident` — `editor+`
 - `POST /parser/ingest` — `editor+`
@@ -73,6 +75,7 @@ All write/mutate operations emit an `AuditLogEntry` via `ObservabilityRepository
 
 Operations that emit audit entries:
 - `node ace users:set-role <email> <role>` — outcome: success
+- Role middleware denials — outcome: denied, with action and required role metadata
 - `POST /login` — outcome: success | failure
 - `POST /logout` — outcome: success
 - `POST /graph/contract/validate` — outcome: success | failure
@@ -86,6 +89,7 @@ Operations that emit audit entries:
 | Endpoint | Controller action | Audit action | Outcome coverage |
 |---|---|---|---|
 | CLI `users:set-role` | `SetUserRole.run` | `users.role_change` | success |
+| Role middleware | `RoleMiddleware.handle` | route-specific action | denied |
 | `POST /users/register` | `UsersController.register` | `users.register` | success + failure |
 | `POST /login` | `SessionsController.login` | `users.login` | success + failure |
 | `POST /logout` | `SessionsController.logout` | `users.logout` | success |
@@ -99,5 +103,5 @@ Operations that emit audit entries:
 | `POST /nodes/:id/restore` | `NodeController.restore` | `node.restore` | success + failure |
 | `POST /nodes/:id/purge` | `NodeController.purge` | `node.purge` | success + failure |
 
-Audit log is append-only. Query via `GET /audit/logs` (admin only).
+Audit log is append-only. Query via `GET /audit/logs` (`security+`). Role denials are written with outcome `denied` and the required role in metadata.
 

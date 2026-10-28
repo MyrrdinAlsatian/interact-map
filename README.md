@@ -63,7 +63,7 @@ Enforcement:
 | `POST /login` | public | Create a session (HTML form or JSON client) |
 | `GET /register` | public | Account registration form |
 | `POST /users/register` | public | Create a viewer account (HTML form or JSON client) |
-| `GET /users/all` | viewer+ | List accounts and their roles |
+| `GET /users/all` | admin | List accounts and their roles |
 | `GET /` | viewer+ | Dashboard with import form and last diff summary |
 | `POST /logout` | viewer+ | End the current session |
 | `GET /applications` | viewer+ | Application inventory with search (`?q=`) |
@@ -73,10 +73,10 @@ Enforcement:
 | `GET /interactions` | viewer+ | Edge inventory |
 | `GET /graph` | viewer+ | Architecture graph capability island |
 | `GET /nodes/:id` | viewer+ | Node detail page (metadata, deps, interactions) |
-| `POST /nodes/:id/archive` | viewer+ | Soft-archive a node |
-| `POST /nodes/:id/restore` | viewer+ | Restore an archived node |
-| `POST /nodes/:id/purge` | viewer+ | Permanently remove node and its edges |
-| `POST /uploads` | viewer+ | Parse + merge + persist (multipart or JSON body) |
+| `POST /nodes/:id/archive` | editor+ | Soft-archive a node |
+| `POST /nodes/:id/restore` | editor+ | Restore an archived node |
+| `POST /nodes/:id/purge` | admin | Permanently remove node and its edges |
+| `POST /uploads` | editor+ | Parse + merge + persist (multipart or JSON body) |
 | `POST /parser/ingest` | editor+ | Ingest a pre-built `ParserResult` |
 | `GET /imports/latest` | viewer+ | Latest import diff page |
 | `GET /fragments/:target` | viewer+ | Unpoly fragment resolver |

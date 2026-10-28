@@ -106,8 +106,12 @@
 | Endpoint group | viewer | editor | security | admin |
 |---|---|---|---|---|
 | Inventory/graph read pages (`GET /applications`, `/services`, `/servers`, `/containers`, `/interactions`, `/graph`) | Yes | Yes | Yes | Yes |
+| Account listing (`GET /users/all`) | No | No | No | Yes |
 | Contract validation and parser ingestion (`POST /graph/contract/validate`, `POST /parser/ingest`) | No | Yes | Yes | Yes |
 | Incident simulation (`POST /graph/simulate-incident`) | No | Yes | Yes | Yes |
+| Infrastructure import (`POST /uploads`) | No | Yes | Yes | Yes |
+| Node archive/restore (`POST /nodes/:id/archive`, `/restore`) | No | Yes | Yes | Yes |
+| Permanent node purge (`POST /nodes/:id/purge`) | No | No | No | Yes |
 | Observability review (`GET /observability/metrics`) | No | No | Yes | Yes |
 | Audit logs (`GET /audit/logs`) | No | No | Yes | Yes |
 

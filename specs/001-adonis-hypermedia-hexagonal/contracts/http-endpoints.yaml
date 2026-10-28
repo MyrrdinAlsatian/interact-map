@@ -75,7 +75,7 @@ paths:
   /users/all:
     get:
       summary: Get all users
-      description: Read operation available to authenticated users; each user includes their stored role.
+      description: Admin-only account listing; each user includes their stored role.
       responses:
         '200':
           description: User list
@@ -93,6 +93,8 @@ paths:
                     role: { type: string, enum: [viewer, editor, security, admin] }
         '401':
           description: Authentication required
+        '403':
+          description: Admin role required
   /users/register:
     post:
       summary: Register user (development auth flow)
@@ -126,7 +128,7 @@ paths:
   /graph/contract/validate:
     post:
       summary: Validate graph contract payload
-      description: Accepts current and previous schema versions only.
+      description: Requires editor or higher; accepts current and previous schema versions only.
       requestBody:
         required: true
         content:
@@ -144,10 +146,12 @@ paths:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '401':
           description: Authentication required
+        '403':
+          description: Editor role required
   /graph/simulate-incident:
     post:
       summary: Simulate graph impact from a failing node
-      description: Requires authenticated user with role `security` or higher.
+      description: Requires authenticated user with role `editor` or higher.
       requestBody:
         required: true
         content:
@@ -168,6 +172,70 @@ paths:
           description: Role does not permit simulation
         '401':
           description: Authentication required
+  /parser/ingest:
+    post:
+      summary: Ingest a normalized parser result
+      description: Requires editor or higher; validates and merges a ParserResult into the stored graph.
+      responses:
+        '200':
+          description: Parser result accepted
+        '403':
+          description: Editor role required
+        '422':
+          description: Parser result or graph contract rejected
+  /uploads:
+    post:
+      summary: Parse and import an infrastructure file
+      description: Requires editor or higher. Accepts multipart form data or JSON payloads.
+      responses:
+        '200':
+          description: Infrastructure data parsed and imported
+        '403':
+          description: Editor role required
+        '422':
+          description: Upload or parsed graph rejected
+  /nodes/{id}/archive:
+    post:
+      summary: Archive a graph node
+      description: Requires editor or higher.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '302':
+          description: Redirected to the node inventory
+        '403':
+          description: Editor role required
+  /nodes/{id}/restore:
+    post:
+      summary: Restore an archived graph node
+      description: Requires editor or higher.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '302':
+          description: Redirected to the node inventory
+        '403':
+          description: Editor role required
+  /nodes/{id}/purge:
+    post:
+      summary: Permanently purge a graph node
+      description: Requires admin. Permanently removes the node and its incident edges.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '302':
+          description: Redirected to the node inventory
+        '403':
+          description: Admin role required
   /fragments/{target}:
     get:
       summary: Resolve server-rendered fragment for Unpoly requests
@@ -204,7 +272,7 @@ paths:
   /audit/logs:
     get:
       summary: Query audit records
-      description: Read-only access for `admin` role.
+      description: Read-only access for the `security` role and higher.
       responses:
         '200':
           description: Audit log entries

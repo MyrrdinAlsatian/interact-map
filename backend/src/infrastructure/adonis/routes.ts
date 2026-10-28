@@ -47,7 +47,9 @@ router
     router.post('/logout', (ctx) => sessionsController.logout(ctx as any))
 
     // User management
-    router.get('/users/all', [GetAllUserController, 'handle'])
+    router
+      .get('/users/all', [GetAllUserController, 'handle'])
+      .use(middleware.role({ minimumRole: 'admin', action: 'users.list' }))
 
     // Inventory navigation (US1)
     router.get('/applications', (ctx) => inventoryController.applications(ctx as any))
@@ -65,22 +67,41 @@ router
 
     // Node details and lifecycle actions
     router.get('/nodes/:id', (ctx) => nodeController.show(ctx as any))
-    router.post('/nodes/:id/archive', (ctx) => nodeController.archive(ctx as any))
-    router.post('/nodes/:id/restore', (ctx) => nodeController.restore(ctx as any))
-    router.post('/nodes/:id/purge', (ctx) => nodeController.purge(ctx as any))
+    router
+      .post('/nodes/:id/archive', (ctx) => nodeController.archive(ctx as any))
+      .use(middleware.role({ minimumRole: 'editor', action: 'node.archive' }))
+    router
+      .post('/nodes/:id/restore', (ctx) => nodeController.restore(ctx as any))
+      .use(middleware.role({ minimumRole: 'editor', action: 'node.restore' }))
+    router
+      .post('/nodes/:id/purge', (ctx) => nodeController.purge(ctx as any))
+      .use(middleware.role({ minimumRole: 'admin', action: 'node.purge' }))
 
     // Graph API actions
-    router.post('/graph/contract/validate', (ctx) => graphController.validate(ctx as any))
-    router.post('/graph/simulate-incident', (ctx) => graphSimulationController.simulate(ctx as any))
+    router
+      .post('/graph/contract/validate', (ctx) => graphController.validate(ctx as any))
+      .use(middleware.role({ minimumRole: 'editor', action: 'graph.contract.validate' }))
+    router
+      .post('/graph/simulate-incident', (ctx) => graphSimulationController.simulate(ctx as any))
+      .use(middleware.role({ minimumRole: 'editor', action: 'graph.simulate-incident' }))
 
     // Parser ingestion (US3) — active JSON merge+persist flow
-    router.post('/parser/ingest', (ctx) => parserController.ingest(ctx as any))
+    router
+      .post('/parser/ingest', (ctx) => parserController.ingest(ctx as any))
+      .use(middleware.role({ minimumRole: 'editor', action: 'parser.ingest' }))
 
     // Observability (admin read — role guard applied inside controller)
-    router.get('/observability/metrics', [MetricsController, 'index'])
-    router.get('/audit/logs', [AuditLogsController, 'index'])
+    router
+      .get('/observability/metrics', [MetricsController, 'index'])
+      .use(middleware.role({ minimumRole: 'security', action: 'metrics.read' }))
+    router
+      .get('/audit/logs', [AuditLogsController, 'index'])
+      .use(middleware.role({ minimumRole: 'security', action: 'audit.read' }))
   })
   .use(middleware.auth())
 
 // ─── Legacy / uploads ────────────────────────────────────────────────────────
-router.post('/uploads', [UploadsController, 'store']).use(middleware.auth())
+router
+  .post('/uploads', [UploadsController, 'store'])
+  .use(middleware.auth())
+  .use(middleware.role({ minimumRole: 'editor', action: 'uploads.store' }))

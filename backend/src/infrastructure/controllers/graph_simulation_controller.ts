@@ -1,6 +1,5 @@
 import { observabilityRepository } from '#repositories/observability_repository'
 import type { TraversalMode, GraphContract } from '#domain/contracts/dto/graph_contract_dto'
-import { hasRequiredRole } from '#infrastructure/middleware/auth_middleware'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
@@ -17,19 +16,6 @@ import { resolve } from 'node:path'
 export default class GraphSimulationController {
   async simulate({ request, response, auth }: { request: any; response: any; auth: any }) {
     const start = Date.now()
-
-    if (!hasRequiredRole(auth?.user?.role, 'editor')) {
-      await observabilityRepository.appendAuditLog({
-        actorId: auth?.user?.id ?? 'anonymous',
-        actorRole: auth?.user?.role ?? 'viewer',
-        action: 'graph.simulate-incident',
-        resourceType: 'GraphContract',
-        resourceId: 'unknown',
-        outcome: 'denied',
-      })
-      observabilityRepository.recordLatency(Date.now() - start)
-      return response.forbidden({ message: 'Insufficient role. Required: editor or higher.' })
-    }
 
     const {
       projectId,

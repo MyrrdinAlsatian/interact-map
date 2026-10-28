@@ -14,7 +14,6 @@ import {
   loadCurrentGraphContract,
   persistImportState,
 } from '#infrastructure/services/graph_store_service'
-import { hasRequiredRole } from '#infrastructure/middleware/auth_middleware'
 import type { ParserResult } from '#domain/contracts/dto/parser_contract_dto'
 import type { GraphContract } from '#domain/contracts/dto/graph_contract_dto'
 
@@ -42,22 +41,6 @@ export default class ParserController {
 
   async ingest({ request, response, auth }: { request: any; response: any; auth: any }) {
     const start = Date.now()
-
-    if (!hasRequiredRole(auth?.user?.role, 'editor')) {
-      await observabilityRepository.appendAuditLog({
-        actorId: auth?.user?.id ?? 'anonymous',
-        actorRole: auth?.user?.role ?? 'viewer',
-        action: 'parser.ingest',
-        resourceType: 'ParserResult',
-        resourceId: 'unknown',
-        outcome: 'denied',
-      })
-      observabilityRepository.recordLatency(Date.now() - start)
-
-      return response.forbidden({
-        message: 'Insufficient role. Required: editor or higher.',
-      })
-    }
 
     const body = request.all() as {
       parserResult: ParserResult

@@ -3,7 +3,6 @@ import { ValidateGraphContractUseCase } from '#domain/usecases/validate_graph_co
 import { observabilityRepository } from '#repositories/observability_repository'
 import { loadCurrentGraphContract } from '#infrastructure/services/graph_store_service'
 import { getGraphSummaryViewModel } from '#infrastructure/services/inventory_data_service'
-import { hasRequiredRole } from '#infrastructure/middleware/auth_middleware'
 import type { HttpContext } from '@adonisjs/core/http'
 
 const validateContract = new ValidateGraphContractUseCase()
@@ -35,19 +34,6 @@ export default class GraphController {
 
   async validate({ request, response, auth }: HttpContext & { auth: any }) {
     const start = Date.now()
-
-    if (!hasRequiredRole(auth?.user?.role, 'editor')) {
-      await observabilityRepository.appendAuditLog({
-        actorId: String(auth?.user?.id ?? 'anonymous'),
-        actorRole: auth?.user?.role ?? 'viewer',
-        action: 'graph.contract.validate',
-        resourceType: 'GraphContract',
-        resourceId: 'submitted',
-        outcome: 'denied',
-      })
-      observabilityRepository.recordLatency(Date.now() - start)
-      return response.forbidden({ message: 'Insufficient role. Required: editor or higher.' })
-    }
 
     const payload = request.all()
 

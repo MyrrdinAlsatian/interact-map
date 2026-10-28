@@ -40,6 +40,13 @@ Session login and logout remain active outside development.
 
 New accounts default to `viewer`. In an auth-enabled environment, an operator can assign the first administrator after registration with `node ace users:set-role <email> admin`.
 
+### 4g. RBAC checks (auth-enabled environment)
+- As `viewer`, confirm `GET /users/all`, `POST /uploads`, node archive/restore, and node purge return `403`.
+- As `editor`, confirm upload, archive, and restore are allowed, while `GET /users/all` and node purge return `403`.
+- As `security`, confirm metrics and audit reads are allowed.
+- As `admin`, confirm user listing and permanent node purge are allowed.
+- After a denied request, confirm `/audit/logs` contains an entry with outcome `denied`, the attempted action, and the required role.
+
 ### 4b. No-JS baseline (disable JavaScript in browser DevTools)
 - Navigate to `http://localhost:3333/applications` → full HTML inventory page renders (status 200, Content-Type text/html).
 - Navigate to `http://localhost:3333/services`, `/servers`, `/containers`, `/interactions` → each returns a full HTML page without JS.
