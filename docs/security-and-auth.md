@@ -105,3 +105,5 @@ Operations that emit audit entries:
 
 Audit log is append-only. Query via `GET /audit/logs` (`security+`). Role denials are written with outcome `denied` and the required role in metadata.
 
+Server-rendered pages hide upload and node mutation controls from roles that cannot use them. These checks improve the interface only; route middleware remains responsible for enforcing authorization.
+

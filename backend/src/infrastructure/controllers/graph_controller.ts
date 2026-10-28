@@ -4,6 +4,7 @@ import { observabilityRepository } from '#repositories/observability_repository'
 import { loadCurrentGraphContract } from '#infrastructure/services/graph_store_service'
 import { getGraphSummaryViewModel } from '#infrastructure/services/inventory_data_service'
 import type { HttpContext } from '@adonisjs/core/http'
+import { hasRequiredRole } from '#infrastructure/middleware/auth_middleware'
 
 const validateContract = new ValidateGraphContractUseCase()
 
@@ -14,7 +15,7 @@ const validateContract = new ValidateGraphContractUseCase()
  * POST /graph/contract/validate — validates a submitted GraphContract payload.
  */
 export default class GraphController {
-  async index({ view, response }: HttpContext & { view: any }) {
+  async index({ view, response, auth }: HttpContext & { view: any }) {
     const start = Date.now()
 
     const sampleContract: GraphContract | null = await loadCurrentGraphContract()
@@ -25,6 +26,7 @@ export default class GraphController {
       pageTitle: 'Architecture Graph',
       initialContract: sampleContract ? JSON.stringify(sampleContract) : null,
       summary,
+      canSimulate: hasRequiredRole(auth.user?.role, 'editor'),
     })
 
     observabilityRepository.recordLatency(Date.now() - start)

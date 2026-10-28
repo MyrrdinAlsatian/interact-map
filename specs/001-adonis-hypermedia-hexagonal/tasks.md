@@ -135,6 +135,9 @@
 - [X] T066 [P] Document the clarified `viewer` / `security` / `editor` / `admin` role matrix and endpoint access policy in `specs/001-adonis-hypermedia-hexagonal/data-model.md` and `docs/security-and-auth.md`
 - [X] T067 [P] Update quickstart verification for explicit `422` full-page GET fallback, metric trigger semantics, schema-version window, and accessibility checks in `specs/001-adonis-hypermedia-hexagonal/quickstart.md`
 - [X] T068 Verify clarified FR-009, FR-011, FR-012, FR-014, and FR-015 alignment in `specs/001-adonis-hypermedia-hexagonal/plan.md` and `specs/001-adonis-hypermedia-hexagonal/tasks.md`
+- [X] T069 Add functional RBAC route-matrix and denial-audit coverage in `backend/tests/functional/rbac.spec.ts`
+- [X] T070 Hide import, incident simulation, archive, restore, and purge controls when the current role cannot use them in server-rendered views
+- [X] T071 Extend the RBAC quickstart with UI and automated verification steps
 
 ---
 

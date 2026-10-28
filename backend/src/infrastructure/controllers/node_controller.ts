@@ -7,9 +7,10 @@ import {
 } from '#infrastructure/services/graph_store_service'
 import { getNodeDetailViewModel } from '#infrastructure/services/inventory_data_service'
 import type { HttpContext } from '@adonisjs/core/http'
+import { hasRequiredRole } from '#infrastructure/middleware/auth_middleware'
 
 export default class NodeController {
-  async show({ params, view, response }: HttpContext & { params: any; view: any }) {
+  async show({ params, view, response, auth }: HttpContext & { params: any; view: any }) {
     const start = Date.now()
     const nodeId = decodeURIComponent(params.id)
     const model = await getNodeDetailViewModel(nodeId)
@@ -18,7 +19,11 @@ export default class NodeController {
       return response.status(404).send('Node not found')
     }
 
-    const html = await view.render('nodes/show', model)
+    const html = await view.render('nodes/show', {
+      ...model,
+      canEditNodes: hasRequiredRole(auth.user?.role, 'editor'),
+      canPurgeNodes: hasRequiredRole(auth.user?.role, 'admin'),
+    })
     observabilityRepository.recordLatency(Date.now() - start)
     response.header('Content-Type', 'text/html; charset=utf-8')
     return response.ok(html)

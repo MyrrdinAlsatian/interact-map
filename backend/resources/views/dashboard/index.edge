@@ -6,11 +6,12 @@
   <p class="page-subtitle">Real-time infrastructure monitoring and status overview</p>
 
   <div class="grid grid-2" style="margin-bottom: 24px;">
-    <div class="card">
-      <div class="card-title">
-        <i class="fas fa-file-import"></i> Import infrastructure data
-      </div>
-      <form method="POST" action="/uploads" enctype="multipart/form-data">
+    @if(canImport)
+      <div class="card">
+        <div class="card-title">
+          <i class="fas fa-file-import"></i> Import infrastructure data
+        </div>
+        <form method="POST" action="/uploads" enctype="multipart/form-data">
         <div class="form-row form-row-stack">
           <label>
             <span class="field-label">Source type</span>
@@ -45,8 +46,9 @@
         <div class="action-row" style="margin-top: 12px;">
           <button type="submit" class="btn"><i class="fas fa-upload"></i> Import and merge</button>
         </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    @endif
 
     <div class="card">
       <div class="card-title">

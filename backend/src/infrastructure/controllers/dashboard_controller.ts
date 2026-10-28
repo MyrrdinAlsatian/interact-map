@@ -1,6 +1,7 @@
 import { observabilityRepository } from '#repositories/observability_repository'
 import { getDashboardViewModel } from '#infrastructure/services/inventory_data_service'
 import type { HttpContext } from '@adonisjs/core/http'
+import { hasRequiredRole } from '#infrastructure/middleware/auth_middleware'
 
 /**
  * DashboardController — displays system overview and monitoring dashboard.
@@ -9,10 +10,13 @@ import type { HttpContext } from '@adonisjs/core/http'
  * system health, and recent activity.
  */
 export default class DashboardController {
-  async index({ view, response }: HttpContext & { view: any }) {
+  async index({ view, response, auth }: HttpContext & { view: any }) {
     const start = Date.now()
     const model = await getDashboardViewModel()
-    const html = await view.render('dashboard/index', model)
+    const html = await view.render('dashboard/index', {
+      ...model,
+      canImport: hasRequiredRole(auth.user?.role, 'editor'),
+    })
     observabilityRepository.recordLatency(Date.now() - start)
     response.header('Content-Type', 'text/html; charset=utf-8')
     return response.ok(html)

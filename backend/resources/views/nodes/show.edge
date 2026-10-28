@@ -32,20 +32,24 @@
           </tr>
         </tbody>
       </table>
-      <div class="action-row" style="margin-top: 16px;">
-        @if(node.archived)
-          <form method="POST" action="/nodes/{{ encodeURIComponent(node.id) }}/restore">
-            <button type="submit" class="btn">Restore</button>
-          </form>
-          <form method="POST" action="/nodes/{{ encodeURIComponent(node.id) }}/purge">
-            <button type="submit" class="btn btn-danger">Delete permanently</button>
-          </form>
-        @else
-          <form method="POST" action="/nodes/{{ encodeURIComponent(node.id) }}/archive">
-            <button type="submit" class="btn btn-warning">Archive node</button>
-          </form>
-        @endif
-      </div>
+      @if(canEditNodes)
+        <div class="action-row" style="margin-top: 16px;">
+          @if(node.archived)
+            <form method="POST" action="/nodes/{{ encodeURIComponent(node.id) }}/restore">
+              <button type="submit" class="btn">Restore</button>
+            </form>
+            @if(canPurgeNodes)
+              <form method="POST" action="/nodes/{{ encodeURIComponent(node.id) }}/purge">
+                <button type="submit" class="btn btn-danger">Delete permanently</button>
+              </form>
+            @endif
+          @else
+            <form method="POST" action="/nodes/{{ encodeURIComponent(node.id) }}/archive">
+              <button type="submit" class="btn btn-warning">Archive node</button>
+            </form>
+          @endif
+        </div>
+      @endif
     </div>
 
     <div class="card">

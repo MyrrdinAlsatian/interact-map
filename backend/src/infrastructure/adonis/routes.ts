@@ -90,7 +90,7 @@ router
       .post('/parser/ingest', (ctx) => parserController.ingest(ctx as any))
       .use(middleware.role({ minimumRole: 'editor', action: 'parser.ingest' }))
 
-    // Observability (admin read — role guard applied inside controller)
+    // Observability (security role or higher)
     router
       .get('/observability/metrics', [MetricsController, 'index'])
       .use(middleware.role({ minimumRole: 'security', action: 'metrics.read' }))

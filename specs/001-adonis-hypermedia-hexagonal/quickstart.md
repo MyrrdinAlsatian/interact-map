@@ -45,7 +45,9 @@ New accounts default to `viewer`. In an auth-enabled environment, an operator ca
 - As `editor`, confirm upload, archive, and restore are allowed, while `GET /users/all` and node purge return `403`.
 - As `security`, confirm metrics and audit reads are allowed.
 - As `admin`, confirm user listing and permanent node purge are allowed.
+- Confirm the dashboard hides the upload form and graph page hides incident simulation from viewers; inventory and node pages hide mutation actions from viewers, and purge controls appear only for admins.
 - After a denied request, confirm `/audit/logs` contains an entry with outcome `denied`, the attempted action, and the required role.
+- Automated coverage lives in `backend/tests/functional/rbac.spec.ts` and runs with `cd backend && npm test` in an environment that permits the local test server to listen.
 
 ### 4b. No-JS baseline (disable JavaScript in browser DevTools)
 - Navigate to `http://localhost:3333/applications` → full HTML inventory page renders (status 200, Content-Type text/html).

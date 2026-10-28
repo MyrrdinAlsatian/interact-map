@@ -50,17 +50,21 @@
             @if(item.path)
               <div class="action-row">
                 <a href="{{ item.path }}" up-follow class="btn btn-secondary">Details</a>
-                @if(item.archived)
-                  <form method="POST" action="/nodes/{{ encodeURIComponent(item.id) }}/restore">
-                    <button type="submit" class="btn">Restore</button>
-                  </form>
-                  <form method="POST" action="/nodes/{{ encodeURIComponent(item.id) }}/purge">
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                  </form>
-                @else
-                  <form method="POST" action="/nodes/{{ encodeURIComponent(item.id) }}/archive">
-                    <button type="submit" class="btn btn-warning">Archive</button>
-                  </form>
+                @if(canEditNodes)
+                  @if(item.archived)
+                    <form method="POST" action="/nodes/{{ encodeURIComponent(item.id) }}/restore">
+                      <button type="submit" class="btn">Restore</button>
+                    </form>
+                    @if(canPurgeNodes)
+                      <form method="POST" action="/nodes/{{ encodeURIComponent(item.id) }}/purge">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                      </form>
+                    @endif
+                  @else
+                    <form method="POST" action="/nodes/{{ encodeURIComponent(item.id) }}/archive">
+                      <button type="submit" class="btn btn-warning">Archive</button>
+                    </form>
+                  @endif
                 @endif
               </div>
             @endif
